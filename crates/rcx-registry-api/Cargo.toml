@@ -6,4 +6,13 @@ license.workspace = true
 description = "MCP-compatible HTTP surface for RCX-Registry."
 
 [dependencies]
+axum.workspace = true
+http.workspace = true
+rcx-registry-ingest = { path = "../rcx-registry-ingest" }
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
 
+[dev-dependencies]
+tokio.workspace = true
+tower.workspace = true

@@ -7,4 +7,9 @@ description = "RCX-Registry MCP mirror and snapshot ingestion primitives."
 
 [dependencies]
 blake3.workspace = true
-
+jsonschema.workspace = true
+rcx-registry-crown = { path = "../rcx-registry-crown" }
+reqwest.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true

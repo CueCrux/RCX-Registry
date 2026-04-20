@@ -432,7 +432,7 @@ Maps 1:1 to master plan §12.1 phases. Each milestone has a gate that matches th
 ## Progress (keep updated)
 
 - [ ] M0 — Schema lock & repo skeleton (workspace, schemas, canonicalisation crate, fixtures, CI, and local tests landed; `static.rcxprotocol.org` publication + Vault Transit key provisioning still pending)
-- [ ] M1 — Sync pipeline (24h soak gate; storage migrations `0001_mcp_servers.sql`/`0002_snapshots.sql` and snapshot reconciliation primitives landed)
+- [ ] M1 — Sync pipeline (24h soak gate; storage migrations, upstream page models/client hooks, schema-catalog validation interface, cadence/soft-delete logic, snapshot-receipt planning, and MCP baseline API stubs are landed)
 - [ ] M2 — Auto-enrichment (parity invariant gate)
 - [ ] M3 — Publisher rights verification (3 test publishers gate)
 - [ ] M4 — Publisher-declared enrichment (1 real publisher gate)
@@ -458,3 +458,5 @@ Maps 1:1 to master plan §12.1 phases. Each milestone has a gate that matches th
 - **2026-04-20** — Plan domain strategy tightened per user direction: the ExecPlan now assumes a single `rcxprotocol.org` domain family for API, schema CDN, docs, staging, and launch readiness, removing the prior `cuecrux.com` transition path.
 - **2026-04-20** — Repo-local schema IDs and example fixtures were aligned to `static.rcxprotocol.org` immediately after the plan change so M0 artifacts no longer contradict the active domain strategy.
 - **2026-04-20** — Started M1 with repo-local foundations: `migrations/0001_mcp_servers.sql`, `migrations/0002_snapshots.sql`, a deterministic per-entry hash helper, snapshot-Merkle-root helper, and four-state (`added` / `removed` / `modified` / `unchanged`) reconciliation tests in `crates/rcx-registry-ingest/`.
+- **2026-04-20** — Verified the live upstream MCP registry shape against `https://registry.modelcontextprotocol.io/openapi.yaml` and `GET /v0/servers?limit=1`: the current API exposes `/v0/servers`, `/v0/servers/{serverName}/versions`, and `/v0/servers/{serverName}/versions/{version}` with `updated_since` query support. Treat the ExecPlan’s older `GET /v0/servers/{name}` shorthand as stale and keep the implementation aligned to the live upstream surface.
+- **2026-04-20** — M1 implementation advanced materially: `crates/rcx-registry-ingest/` now includes upstream list-response models, a blocking `reqwest` fetch client with cursor/search/version/`updated_since` support plus ETag/304 handling, a date-pinned schema-catalog validation interface, canonical JSON normalisation, cadence policy, 30-day soft-delete planning, and `RegistrySnapshot` receipt planning. `crates/rcx-registry-api/` now serves MCP-shaped baseline stubs for list, version listing, and version lookup against an in-memory mirror store, with cursor/deleted/latest coverage tests.
