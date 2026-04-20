@@ -6,4 +6,5 @@ license.workspace = true
 description = "Internal onboarding and moderation tools for RCX-Registry."
 
 [dependencies]
-
+rcx-registry-crown = { path = "../rcx-registry-crown" }
+thiserror.workspace = true

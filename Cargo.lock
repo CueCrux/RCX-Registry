@@ -1125,6 +1125,10 @@ dependencies = [
 [[package]]
 name = "rcx-registry-admin"
 version = "0.1.0"
+dependencies = [
+ "rcx-registry-crown",
+ "thiserror",
+]
 
 [[package]]
 name = "rcx-registry-api"
