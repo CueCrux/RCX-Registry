@@ -1,0 +1,22 @@
+{
+  "$schema": "https://static.rcxprotocol.org/schemas/2026-04-19/rcx-enrichment.schema.json",
+  "mcp_name": "io.github.example-org/document-proofer",
+  "rcx_version": "1.0",
+  "category": "tier_gated",
+  "capability_graph": {
+    "version": 1,
+    "nodes": [
+      {
+        "cap": "io.github.example-org.document-proofer/proof_document",
+        "category": "tier_gated",
+        "prefer": "mcp",
+        "shape": "Promise<ProofResult>",
+        "cost_class": "metered",
+        "stability": "stable"
+      }
+    ],
+    "edges": []
+  },
+  "declared_at": "2026-04-19T10:00:00Z",
+  "publisher_passport": "passport:github:example-org"
+}

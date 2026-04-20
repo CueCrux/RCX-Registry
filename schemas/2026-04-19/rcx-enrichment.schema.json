@@ -1,0 +1,374 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://static.rcxprotocol.org/schemas/2026-04-19/rcx-enrichment.schema.json",
+  "title": "RCX Registry Enrichment v1.0",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "mcp_name",
+    "rcx_version",
+    "category",
+    "capability_graph",
+    "declared_at",
+    "publisher_passport"
+  ],
+  "properties": {
+    "$schema": {
+      "const": "https://static.rcxprotocol.org/schemas/2026-04-19/rcx-enrichment.schema.json"
+    },
+    "mcp_name": {
+      "type": "string",
+      "minLength": 3
+    },
+    "rcx_version": {
+      "const": "1.0"
+    },
+    "category": {
+      "enum": ["public", "tier_gated", "affinity_required"]
+    },
+    "min_tier": {
+      "type": "string",
+      "minLength": 1
+    },
+    "required_affinity": {
+      "type": "string",
+      "minLength": 1
+    },
+    "capability_graph": {
+      "anyOf": [
+        { "$ref": "#/$defs/capabilityGraph" },
+        { "type": "null" }
+      ]
+    },
+    "declared_at": {
+      "$ref": "#/$defs/dateTime"
+    },
+    "publisher_passport": {
+      "$ref": "#/$defs/passportId"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "category": { "const": "tier_gated" }
+        }
+      },
+      "then": {
+        "required": ["min_tier"]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": { "const": "affinity_required" }
+        }
+      },
+      "then": {
+        "required": ["required_affinity"]
+      }
+    }
+  ],
+  "$defs": {
+    "dateTime": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "passportId": {
+      "type": "string",
+      "pattern": "^passport:[A-Za-z0-9._-]+:[A-Za-z0-9._-]+$"
+    },
+    "blake3Digest": {
+      "type": "string",
+      "pattern": "^(?:blake3:)?[0-9a-f]{64}$"
+    },
+    "capabilityGraph": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["version", "nodes", "edges"],
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "nodes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/capability"
+          }
+        },
+        "edges": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/edge"
+          }
+        },
+        "exclusions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/exclusion"
+          }
+        },
+        "refresh_hint": {
+          "type": "string"
+        }
+      }
+    },
+    "capability": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["cap", "category", "prefer", "shape", "cost_class", "stability"],
+      "properties": {
+        "cap": {
+          "type": "string",
+          "minLength": 3
+        },
+        "category": {
+          "enum": ["public", "tier_gated", "affinity_required"]
+        },
+        "prefer": {
+          "enum": ["bulk", "mcp"]
+        },
+        "shape": {
+          "type": "string",
+          "minLength": 1
+        },
+        "input_schema": {
+          "$ref": "#/$defs/schemaRef"
+        },
+        "output_schema": {
+          "$ref": "#/$defs/schemaRef"
+        },
+        "min_tier": {
+          "type": "string",
+          "minLength": 1
+        },
+        "required_affinity": {
+          "type": "string",
+          "minLength": 1
+        },
+        "cost_class": {
+          "enum": ["free", "metered", "heavy"]
+        },
+        "cost_estimate": {
+          "$ref": "#/$defs/costEstimate"
+        },
+        "stability": {
+          "enum": ["stable", "beta", "experimental", "deprecated"]
+        },
+        "since": {
+          "type": "string"
+        },
+        "sunset_at": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "model_policy": {
+          "$ref": "#/$defs/modelPolicy"
+        },
+        "attestations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/attestationRef"
+          }
+        },
+        "concurrency": {
+          "$ref": "#/$defs/concurrencyHints"
+        },
+        "impl_path": {
+          "$ref": "#/$defs/implPath"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "category": { "const": "tier_gated" }
+            }
+          },
+          "then": {
+            "required": ["min_tier"]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "category": { "const": "affinity_required" }
+            }
+          },
+          "then": {
+            "required": ["required_affinity"]
+          }
+        }
+      ]
+    },
+    "edge": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["from", "to", "kind"],
+      "properties": {
+        "from": {
+          "type": "string",
+          "minLength": 3
+        },
+        "to": {
+          "type": "string",
+          "minLength": 3
+        },
+        "kind": {
+          "type": "string",
+          "minLength": 1
+        },
+        "weight": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      }
+    },
+    "exclusion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["cap", "reason", "layer"],
+      "properties": {
+        "cap": {
+          "type": "string",
+          "minLength": 3
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        },
+        "layer": {
+          "enum": ["platform", "tenant", "passport"]
+        },
+        "hint": {
+          "type": "string"
+        }
+      }
+    },
+    "modelPolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["auth_required"],
+      "properties": {
+        "min_family": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "min_size": {
+          "type": "string"
+        },
+        "deny_models": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "auth_required": {
+          "type": "boolean"
+        }
+      }
+    },
+    "attestationRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["issuer", "type", "hash"],
+      "properties": {
+        "issuer": {
+          "$ref": "#/$defs/passportId"
+        },
+        "type": {
+          "enum": ["publisher", "reviewer", "auditor", "operator"]
+        },
+        "hash": {
+          "$ref": "#/$defs/blake3Digest"
+        },
+        "uri": {
+          "type": "string",
+          "format": "uri"
+        }
+      }
+    },
+    "schemaRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "uri", "hash"],
+      "properties": {
+        "kind": {
+          "enum": ["json-schema", "cddl", "ipld-schema"]
+        },
+        "uri": {
+          "type": "string",
+          "format": "uri"
+        },
+        "hash": {
+          "$ref": "#/$defs/blake3Digest"
+        }
+      }
+    },
+    "costEstimate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["estimation_method"],
+      "properties": {
+        "p50_crux": {
+          "type": "number",
+          "minimum": 0
+        },
+        "p95_crux": {
+          "type": "number",
+          "minimum": 0
+        },
+        "estimation_method": {
+          "enum": ["historical", "static", "contract"]
+        }
+      }
+    },
+    "concurrencyHints": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "max_parallel": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "rate_limit": {
+          "$ref": "#/$defs/rateLimitHints"
+        }
+      }
+    },
+    "rateLimitHints": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["bursts_allowed"],
+      "properties": {
+        "calls_per_minute": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "tokens_per_minute": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "bursts_allowed": {
+          "type": "boolean"
+        }
+      }
+    },
+    "implPath": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "ce": {
+          "type": "string"
+        },
+        "core": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

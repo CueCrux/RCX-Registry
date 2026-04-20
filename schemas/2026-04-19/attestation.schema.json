@@ -1,0 +1,382 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://static.rcxprotocol.org/schemas/2026-04-19/attestation.schema.json",
+  "title": "RCX Registry Attestation v1.0",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "attestation_id",
+    "schema_uri",
+    "server_name",
+    "issuer_passport",
+    "issuer_tier",
+    "issuer_public_key",
+    "type",
+    "claim",
+    "issued_at",
+    "valid_from",
+    "valid_until",
+    "signature",
+    "signer_kid",
+    "attestation_hash"
+  ],
+  "properties": {
+    "attestation_id": {
+      "type": "string",
+      "pattern": "^(?:[0-9A-HJKMNP-TV-Z]{26}|[0-9a-f]{32})$"
+    },
+    "schema_uri": {
+      "const": "https://static.rcxprotocol.org/schemas/2026-04-19/attestation.schema.json"
+    },
+    "server_name": {
+      "type": "string",
+      "minLength": 3
+    },
+    "server_version": {
+      "type": ["string", "null"]
+    },
+    "issuer_passport": {
+      "$ref": "#/$defs/passportId"
+    },
+    "issuer_tier": {
+      "type": "string",
+      "minLength": 1
+    },
+    "issuer_public_key": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "type": {
+      "enum": ["publisher", "reviewer", "auditor", "operator"]
+    },
+    "claim": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["summary", "structured"],
+      "properties": {
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "structured": {
+          "type": "object"
+        },
+        "evidence": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/evidencePointer"
+          }
+        }
+      }
+    },
+    "issued_at": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "valid_from": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "valid_until": {
+      "type": ["integer", "null"],
+      "minimum": 0
+    },
+    "signature": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{128}$"
+    },
+    "signer_kid": {
+      "type": "string",
+      "minLength": 1
+    },
+    "attestation_hash": {
+      "$ref": "#/$defs/blake3Digest"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "type": { "const": "publisher" }
+        }
+      },
+      "then": {
+        "properties": {
+          "claim": {
+            "properties": {
+              "structured": {
+                "$ref": "#/$defs/publisherClaim"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "type": { "const": "reviewer" }
+        }
+      },
+      "then": {
+        "properties": {
+          "claim": {
+            "properties": {
+              "structured": {
+                "$ref": "#/$defs/reviewerClaim"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "type": { "const": "auditor" }
+        }
+      },
+      "then": {
+        "properties": {
+          "claim": {
+            "properties": {
+              "structured": {
+                "$ref": "#/$defs/auditorClaim"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "type": { "const": "operator" }
+        }
+      },
+      "then": {
+        "properties": {
+          "claim": {
+            "properties": {
+              "structured": {
+                "$ref": "#/$defs/operatorClaim"
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "passportId": {
+      "type": "string",
+      "pattern": "^passport:[A-Za-z0-9._-]+:[A-Za-z0-9._-]+$"
+    },
+    "blake3Digest": {
+      "type": "string",
+      "pattern": "^(?:blake3:)?[0-9a-f]{64}$"
+    },
+    "evidencePointer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "uri", "hash"],
+      "properties": {
+        "kind": {
+          "enum": [
+            "audit_report",
+            "test_result",
+            "code_review",
+            "regulatory_filing",
+            "receipt_chain"
+          ]
+        },
+        "uri": {
+          "type": "string",
+          "format": "uri"
+        },
+        "hash": {
+          "$ref": "#/$defs/blake3Digest"
+        },
+        "description": {
+          "type": "string"
+        }
+      }
+    },
+    "publisherClaim": {
+      "type": "object",
+      "required": [
+        "implements_capabilities",
+        "declared_category",
+        "source_repository",
+        "license"
+      ],
+      "properties": {
+        "implements_capabilities": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "declared_category": {
+          "enum": ["public", "tier_gated", "affinity_required"]
+        },
+        "declared_min_tier": {
+          "type": "string"
+        },
+        "source_repository": {
+          "type": "string",
+          "format": "uri"
+        },
+        "license": {
+          "type": "string"
+        },
+        "supersedes": {
+          "type": "string",
+          "pattern": "^(?:[0-9A-HJKMNP-TV-Z]{26}|[0-9a-f]{32})$"
+        }
+      },
+      "additionalProperties": true
+    },
+    "reviewerClaim": {
+      "type": "object",
+      "required": ["review_scope", "capabilities_reviewed", "findings", "review_date_range"],
+      "properties": {
+        "review_scope": {
+          "enum": ["code", "behaviour", "both"]
+        },
+        "capabilities_reviewed": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "findings": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["capability", "severity", "summary"],
+            "properties": {
+              "capability": {
+                "type": "string"
+              },
+              "severity": {
+                "enum": ["info", "advisory", "warning", "critical"]
+              },
+              "summary": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "review_date_range": {
+          "$ref": "#/$defs/dateRange"
+        },
+        "supersedes": {
+          "type": "string",
+          "pattern": "^(?:[0-9A-HJKMNP-TV-Z]{26}|[0-9a-f]{32})$"
+        }
+      },
+      "additionalProperties": true
+    },
+    "auditorClaim": {
+      "type": "object",
+      "required": [
+        "audit_framework",
+        "audit_scope",
+        "audit_period",
+        "audit_result",
+        "findings_count",
+        "audit_report_uri",
+        "audit_report_hash"
+      ],
+      "properties": {
+        "audit_framework": {
+          "enum": ["SOC2", "ISO27001", "EU_AI_Act_Art13", "custom"]
+        },
+        "audit_scope": {
+          "enum": ["capability_behaviour", "receipt_integrity", "data_handling", "full"]
+        },
+        "audit_period": {
+          "$ref": "#/$defs/dateRange"
+        },
+        "audit_result": {
+          "enum": ["pass", "pass_with_findings", "fail"]
+        },
+        "findings_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "audit_report_uri": {
+          "type": "string",
+          "format": "uri"
+        },
+        "audit_report_hash": {
+          "$ref": "#/$defs/blake3Digest"
+        },
+        "supersedes": {
+          "type": "string",
+          "pattern": "^(?:[0-9A-HJKMNP-TV-Z]{26}|[0-9a-f]{32})$"
+        }
+      },
+      "additionalProperties": true
+    },
+    "operatorClaim": {
+      "type": "object",
+      "required": [
+        "observation_period",
+        "observed_uptime_pct",
+        "observed_latency_p95_ms",
+        "observed_error_rate_pct",
+        "incidents_count",
+        "workload_class"
+      ],
+      "properties": {
+        "observation_period": {
+          "$ref": "#/$defs/dateRange"
+        },
+        "observed_uptime_pct": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "observed_latency_p95_ms": {
+          "type": "number",
+          "minimum": 0
+        },
+        "observed_error_rate_pct": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "incidents_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "workload_class": {
+          "enum": ["production", "staging", "test"]
+        },
+        "supersedes": {
+          "type": "string",
+          "pattern": "^(?:[0-9A-HJKMNP-TV-Z]{26}|[0-9a-f]{32})$"
+        }
+      },
+      "additionalProperties": true
+    },
+    "dateRange": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["start", "end"],
+      "properties": {
+        "start": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "end": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    }
+  }
+}

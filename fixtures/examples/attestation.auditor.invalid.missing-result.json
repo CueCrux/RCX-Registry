@@ -1,0 +1,30 @@
+{
+  "attestation_id": "01JS5Y4M7N4P0Q1Q7A9J6K2T5B",
+  "schema_uri": "https://static.rcxprotocol.org/schemas/2026-04-19/attestation.schema.json",
+  "server_name": "io.github.example-org/document-proofer",
+  "server_version": "1.2.0",
+  "issuer_passport": "passport:cuecrux:auditcrux",
+  "issuer_tier": "pro",
+  "issuer_public_key": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "type": "auditor",
+  "claim": {
+    "summary": "Document proofer correctly implements signed proof receipts per CROWN v1.0",
+    "structured": {
+      "audit_framework": "EU_AI_Act_Art13",
+      "audit_scope": "receipt_integrity",
+      "audit_period": {
+        "start": "2026-04-01T00:00:00Z",
+        "end": "2026-04-18T23:59:59Z"
+      },
+      "findings_count": 1,
+      "audit_report_uri": "https://example.org/audits/document-proofer-2026-04.pdf",
+      "audit_report_hash": "blake3:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    }
+  },
+  "issued_at": 1776683200000,
+  "valid_from": 1776683200000,
+  "valid_until": null,
+  "signature": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+  "signer_kid": "passport:cuecrux:auditcrux#ed25519-1",
+  "attestation_hash": "blake3:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+}
