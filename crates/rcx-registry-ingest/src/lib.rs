@@ -58,10 +58,18 @@ pub struct OfficialRegistryMeta {
     pub is_latest: bool,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct RegistryServerMeta {
     #[serde(rename = "io.modelcontextprotocol.registry/official")]
     pub official: OfficialRegistryMeta,
+    #[serde(flatten, default)]
+    pub extra: BTreeMap<String, Value>,
+}
+
+impl RegistryServerMeta {
+    pub fn insert_extension(&mut self, key: impl Into<String>, value: Value) {
+        self.extra.insert(key.into(), value);
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -708,6 +716,7 @@ mod tests {
                     "isLatest": true
                 }))
                 .expect("official meta should parse"),
+                extra: Default::default(),
             },
         };
 
@@ -883,6 +892,7 @@ mod tests {
                     "isLatest": false
                 }))
                 .expect("official meta should parse"),
+                extra: Default::default(),
             },
         };
 

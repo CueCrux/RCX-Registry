@@ -401,6 +401,7 @@ mod tests {
                         updated_at: Some(updated_at.to_string()),
                         is_latest,
                     },
+                    extra: Default::default(),
                 },
             },
         }
@@ -547,6 +548,48 @@ mod tests {
             })
             .expect("listing with include_deleted should succeed");
         assert_eq!(visible.metadata.count, 1);
+    }
+
+    #[tokio::test]
+    async fn list_endpoint_surfaces_auto_enrichment_under_namespaced_meta() {
+        let mut record = record(
+            "io.github.example/server-a",
+            "2.0.0",
+            "active",
+            true,
+            "2026-04-20T10:00:00Z",
+        );
+        record.envelope.meta.extra.insert(
+            "org.rcxprotocol.registry/auto".to_string(),
+            json!({
+                "category": "public",
+                "capability_graph": null,
+                "attestations_count": 0,
+                "auto_enriched_at": "2026-04-20T12:00:00Z",
+                "auto_enrichment_receipt": "blake3:deadbeef"
+            }),
+        );
+        let app = router(Arc::new(InMemoryMirrorStore::new(vec![record])));
+
+        let response = app
+            .oneshot(
+                Request::builder()
+                    .uri("/v0/servers")
+                    .body(Body::empty())
+                    .expect("request should build"),
+            )
+            .await
+            .expect("request should succeed");
+
+        assert_eq!(response.status(), StatusCode::OK);
+        let body = to_bytes(response.into_body(), usize::MAX)
+            .await
+            .expect("body should read");
+        let json: serde_json::Value = serde_json::from_slice(&body).expect("body should be json");
+        assert_eq!(
+            json["servers"][0]["_meta"]["org.rcxprotocol.registry/auto"]["auto_enrichment_receipt"],
+            "blake3:deadbeef"
+        );
     }
 
     #[test]

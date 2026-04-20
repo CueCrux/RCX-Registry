@@ -1160,6 +1160,13 @@ dependencies = [
 [[package]]
 name = "rcx-registry-enrich"
 version = "0.1.0"
+dependencies = [
+ "hex",
+ "rcx-registry-crown",
+ "rcx-registry-ingest",
+ "serde",
+ "serde_json",
+]
 
 [[package]]
 name = "rcx-registry-ingest"

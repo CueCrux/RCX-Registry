@@ -6,4 +6,8 @@ license.workspace = true
 description = "RCX-Registry enrichment workflows."
 
 [dependencies]
-
+hex.workspace = true
+rcx-registry-crown = { path = "../rcx-registry-crown" }
+rcx-registry-ingest = { path = "../rcx-registry-ingest" }
+serde.workspace = true
+serde_json.workspace = true
