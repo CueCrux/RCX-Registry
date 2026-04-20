@@ -91,7 +91,7 @@ External systems touched:
 
 ## PlanCrux Notes
 
-PlanCrux summary captured 2026-04-20 from `PlanCrux/README.md` (`README.version`: `v1.2`; `README.mtime`: `2026-04-13 00:29:14 +0100`).
+PlanCrux summary captured 2026-04-20 from `PlanCrux/README.md` (`README.version`: `v1.2S`; `README.mtime`: `2026-04-13 00:29:14 +0100`).
 
 - PlanCrux is the canonical CueCrux delivery handbook; start orientation from `buildguide.md`.
 - Follow `docs/handbook/process/codex-standard-dev-cycle.md` for the standard implementation loop.
@@ -462,3 +462,4 @@ Maps 1:1 to master plan §12.1 phases. Each milestone has a gate that matches th
 - **2026-04-20** — M1 implementation advanced materially: `crates/rcx-registry-ingest/` now includes upstream list-response models, a blocking `reqwest` fetch client with cursor/search/version/`updated_since` support plus ETag/304 handling, a date-pinned schema-catalog validation interface, canonical JSON normalisation, cadence policy, 30-day soft-delete planning, and `RegistrySnapshot` receipt planning. `crates/rcx-registry-api/` now serves MCP-shaped baseline stubs for list, version listing, and version lookup against an in-memory mirror store, with cursor/deleted/latest coverage tests.
 - **2026-04-20** — M2 repo-local implementation landed: `migrations/0003_rcx_enrichment.sql`, `crates/rcx-registry-enrich/` auto-enrichment payload/block helpers, `EntryAutoEnriched` receipt planning, parity-invariant checks, and `_meta.org.rcxprotocol.registry/auto` response surfacing via extensible meta handling in the ingest/API models. One open M2 integration task remains for a later pass: wiring this into the sync loop so the parity invariant is enforced against real mirrored rows rather than helper inputs.
 - **2026-04-20** — Began M3 with the local, non-provider-specific pieces: `migrations/0004_publisher_rights.sql`, namespace classification for GitHub / reverse-DNS / anonymous names, conservative `passport:github:<owner>` matching, DNS TXT challenge generation (`_rcx-registry.<domain>`), and `PublisherRightsVerified` receipt planning in `crates/rcx-registry-admin/`. The live GitHub OAuth callback flow, DNS resolver checks, manual-review workflow, and onboarding UI are still outstanding.
+- **2026-04-20** — Refreshed cached `PlanCrux Notes` after detecting `PlanCrux/README.version` advanced from the previously recorded `v1.2` marker to `v1.2S`. Summary content remains valid; version metadata now matches the current handbook marker.
