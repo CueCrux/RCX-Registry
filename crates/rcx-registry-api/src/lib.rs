@@ -1,20 +1,39 @@
 //! MCP-compatible HTTP surface plus RCX-specific extensions.
 
-use std::sync::Arc;
+use std::collections::BTreeMap;
+use std::sync::{Arc, Mutex};
+use std::time::{SystemTime, UNIX_EPOCH};
 
 use axum::extract::{Path, Query, State};
-use axum::response::{IntoResponse, Response};
-use axum::routing::get;
+use axum::response::{Html, IntoResponse, Redirect, Response};
+use axum::routing::{get, post};
 use axum::{Json, Router};
 use http::StatusCode;
+use rcx_registry_admin::{
+    build_publisher_rights_verified_receipt, classify_namespace, dns_txt_challenge,
+    publisher_rights_record, verify_dns_txt, verify_github_passport, verify_manual_review,
+    AdminError, NamespaceKind, PublisherRightsRecord, VerificationMethod,
+};
+use rcx_registry_crown::ULID_LEN;
+use rcx_registry_enrich::{
+    attach_publisher_enrichment, build_entry_enriched_receipt, build_publisher_enrichment_payload,
+    build_publisher_enrichment_record, declaration_hash, validate_publisher_declaration_value,
+    PublisherEnrichmentRecord,
+};
 use rcx_registry_ingest::{ListServersRequest, RegistryServerEnvelope, RegistryServerListResponse};
 use serde::{Deserialize, Serialize};
+use serde_json::Value;
 use thiserror::Error;
 
 /// Canonical upstream registry URL mirrored by RCX-Registry.
 pub const MCP_REGISTRY_BASE_URL: &str = "https://registry.modelcontextprotocol.io";
+pub const DEFAULT_PUBLISHER_SIGNER_KID: &str = "vault:transit:rcx-registry-signing-key-1";
 
 pub type SharedMirrorStore = Arc<dyn MirrorStore>;
+pub type SharedPublisherRightsStore = Arc<dyn PublisherRightsStore>;
+pub type SharedPublisherEnrichmentStore = Arc<dyn PublisherEnrichmentStore>;
+pub type SharedDnsTxtResolver = Arc<dyn DnsTxtResolver>;
+pub type SharedGitHubOAuthProvider = Arc<dyn GitHubOAuthProvider>;
 
 pub trait MirrorStore: Send + Sync + 'static {
     fn list_servers(
@@ -34,6 +53,38 @@ pub trait MirrorStore: Send + Sync + 'static {
     ) -> Result<RegistryServerEnvelope, ApiError>;
 }
 
+pub trait PublisherRightsStore: Send + Sync + 'static {
+    fn upsert(&self, record: PublisherRightsRecord) -> Result<(), ApiError>;
+    fn list_by_publisher(
+        &self,
+        publisher_passport: &str,
+    ) -> Result<Vec<PublisherRightsRecord>, ApiError>;
+    fn lookup(
+        &self,
+        publisher_passport: &str,
+        namespace: &str,
+    ) -> Result<Option<PublisherRightsRecord>, ApiError>;
+}
+
+pub trait PublisherEnrichmentStore: Send + Sync + 'static {
+    fn upsert(&self, record: PublisherEnrichmentRecord) -> Result<(), ApiError>;
+    fn get(&self, server_name: &str) -> Result<Option<PublisherEnrichmentRecord>, ApiError>;
+}
+
+pub trait DnsTxtResolver: Send + Sync + 'static {
+    fn lookup_txt(&self, record_name: &str) -> Result<Vec<String>, ApiError>;
+}
+
+pub trait GitHubOAuthProvider: Send + Sync + 'static {
+    fn authorize_url(
+        &self,
+        owner: &str,
+        redirect_uri: &str,
+        state: &str,
+    ) -> Result<String, ApiError>;
+    fn exchange_code(&self, code: &str, state: &str) -> Result<String, ApiError>;
+}
+
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
 pub struct ErrorModel {
     pub code: &'static str,
@@ -48,6 +99,12 @@ pub enum ApiError {
     InvalidCursor,
     #[error("bad request: {0}")]
     BadRequest(String),
+    #[error("verification failed: {0}")]
+    VerificationFailed(String),
+    #[error("feature unavailable: {0}")]
+    Unavailable(&'static str),
+    #[error("internal store error: {0}")]
+    Store(String),
 }
 
 impl ApiError {
@@ -55,6 +112,9 @@ impl ApiError {
         match self {
             Self::NotFound => StatusCode::NOT_FOUND,
             Self::InvalidCursor | Self::BadRequest(_) => StatusCode::BAD_REQUEST,
+            Self::VerificationFailed(_) => StatusCode::UNPROCESSABLE_ENTITY,
+            Self::Unavailable(_) => StatusCode::NOT_IMPLEMENTED,
+            Self::Store(_) => StatusCode::INTERNAL_SERVER_ERROR,
         }
     }
 
@@ -63,6 +123,20 @@ impl ApiError {
             Self::NotFound => "not_found",
             Self::InvalidCursor => "invalid_cursor",
             Self::BadRequest(_) => "bad_request",
+            Self::VerificationFailed(_) => "verification_failed",
+            Self::Unavailable(_) => "unavailable",
+            Self::Store(_) => "store_error",
+        }
+    }
+}
+
+impl From<AdminError> for ApiError {
+    fn from(value: AdminError) -> Self {
+        match value {
+            AdminError::GitHubPassportMismatch { .. } | AdminError::DnsTxtMismatch { .. } => {
+                Self::VerificationFailed(value.to_string())
+            }
+            _ => Self::BadRequest(value.to_string()),
         }
     }
 }
@@ -74,6 +148,56 @@ impl IntoResponse for ApiError {
             message: self.to_string(),
         });
         (self.status_code(), body).into_response()
+    }
+}
+
+#[derive(Clone)]
+pub struct ApiState {
+    mirror_store: SharedMirrorStore,
+    publisher_rights_store: SharedPublisherRightsStore,
+    publisher_enrichment_store: SharedPublisherEnrichmentStore,
+    dns_resolver: SharedDnsTxtResolver,
+    github_oauth_provider: SharedGitHubOAuthProvider,
+}
+
+impl ApiState {
+    pub fn new(mirror_store: SharedMirrorStore) -> Self {
+        Self {
+            mirror_store,
+            publisher_rights_store: Arc::new(InMemoryPublisherRightsStore::default()),
+            publisher_enrichment_store: Arc::new(InMemoryPublisherEnrichmentStore::default()),
+            dns_resolver: Arc::new(UnavailableDnsTxtResolver),
+            github_oauth_provider: Arc::new(UnavailableGitHubOAuthProvider),
+        }
+    }
+
+    pub fn with_publisher_rights_store(
+        mut self,
+        publisher_rights_store: SharedPublisherRightsStore,
+    ) -> Self {
+        self.publisher_rights_store = publisher_rights_store;
+        self
+    }
+
+    pub fn with_dns_resolver(mut self, dns_resolver: SharedDnsTxtResolver) -> Self {
+        self.dns_resolver = dns_resolver;
+        self
+    }
+
+    pub fn with_publisher_enrichment_store(
+        mut self,
+        publisher_enrichment_store: SharedPublisherEnrichmentStore,
+    ) -> Self {
+        self.publisher_enrichment_store = publisher_enrichment_store;
+        self
+    }
+
+    pub fn with_github_oauth_provider(
+        mut self,
+        github_oauth_provider: SharedGitHubOAuthProvider,
+    ) -> Self {
+        self.github_oauth_provider = github_oauth_provider;
+        self
     }
 }
 
@@ -105,7 +229,75 @@ pub struct IncludeDeletedQuery {
     pub include_deleted: Option<bool>,
 }
 
+#[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
+pub struct DnsChallengeRequest {
+    pub server_name: String,
+    pub publisher_passport: String,
+    pub passport_fingerprint: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+pub struct DnsChallengeResponse {
+    pub publisher_passport: String,
+    pub namespace: String,
+    pub server_name: String,
+    pub verification_method: &'static str,
+    pub record_name: String,
+    pub expected_value: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
+pub struct DnsVerifyRequest {
+    pub server_name: String,
+    pub publisher_passport: String,
+    pub passport_fingerprint: String,
+    pub verified_at: Option<u64>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
+pub struct ManualVerifyRequest {
+    pub server_name: String,
+    pub publisher_passport: String,
+    pub reviewer_passport: String,
+    pub review_note: Option<String>,
+    pub verified_at: Option<u64>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
+pub struct GitHubStartQuery {
+    pub server_name: String,
+    pub publisher_passport: String,
+    pub redirect_uri: String,
+    pub state: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
+pub struct GitHubCallbackQuery {
+    pub server_name: String,
+    pub publisher_passport: String,
+    pub code: String,
+    pub state: String,
+    pub verified_at: Option<u64>,
+}
+
+#[derive(Debug, Clone, PartialEq, Deserialize)]
+pub struct PublisherDeclareRequest {
+    pub server_name: String,
+    pub declared_uri: String,
+    pub declaration: Value,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+pub struct PublisherRightsListResponse {
+    pub publisher_passport: String,
+    pub rights: Vec<PublisherRightsRecord>,
+}
+
 pub fn router(store: SharedMirrorStore) -> Router {
+    router_with_state(ApiState::new(store))
+}
+
+pub fn router_with_state(state: ApiState) -> Router {
     Router::new()
         .route("/v0/servers", get(list_servers))
         .route("/v0/servers/{server_name}/versions", get(list_versions))
@@ -113,37 +305,385 @@ pub fn router(store: SharedMirrorStore) -> Router {
             "/v0/servers/{server_name}/versions/{version}",
             get(get_version),
         )
-        .with_state(store)
+        .route("/publish", get(publish_onboarding_page))
+        .route("/v0/publisher-rights/dns-challenge", post(dns_challenge))
+        .route("/v0/publisher-rights/dns-verify", post(dns_verify))
+        .route("/v0/publisher-rights/manual-verify", post(manual_verify))
+        .route("/v0/publisher-rights/github/start", get(github_oauth_start))
+        .route(
+            "/v0/publisher-rights/github/callback",
+            get(github_oauth_callback),
+        )
+        .route("/v0/publishers/declare", post(declare_publisher_enrichment))
+        .route(
+            "/v0/publishers/{publisher_passport}",
+            get(list_publisher_rights),
+        )
+        .with_state(state)
 }
 
 async fn list_servers(
-    State(store): State<SharedMirrorStore>,
+    State(state): State<ApiState>,
     Query(query): Query<ListServersQuery>,
 ) -> Result<Json<RegistryServerListResponse>, ApiError> {
-    Ok(Json(store.list_servers(&query.into())?))
+    Ok(Json(decorate_list_response(
+        &state,
+        state.mirror_store.list_servers(&query.into())?,
+    )?))
 }
 
 async fn list_versions(
-    State(store): State<SharedMirrorStore>,
+    State(state): State<ApiState>,
     Path(server_name): Path<String>,
     Query(query): Query<IncludeDeletedQuery>,
 ) -> Result<Json<RegistryServerListResponse>, ApiError> {
-    Ok(Json(store.list_versions(
-        &server_name,
-        query.include_deleted.unwrap_or(false),
+    Ok(Json(decorate_list_response(
+        &state,
+        state
+            .mirror_store
+            .list_versions(&server_name, query.include_deleted.unwrap_or(false))?,
     )?))
 }
 
 async fn get_version(
-    State(store): State<SharedMirrorStore>,
+    State(state): State<ApiState>,
     Path((server_name, version)): Path<(String, String)>,
     Query(query): Query<IncludeDeletedQuery>,
 ) -> Result<Json<RegistryServerEnvelope>, ApiError> {
-    Ok(Json(store.get_version(
-        &server_name,
-        &version,
-        query.include_deleted.unwrap_or(false),
+    Ok(Json(decorate_envelope(
+        &state,
+        state.mirror_store.get_version(
+            &server_name,
+            &version,
+            query.include_deleted.unwrap_or(false),
+        )?,
     )?))
+}
+
+async fn publish_onboarding_page() -> Html<&'static str> {
+    Html(
+        r#"<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>RCX-Registry Publisher Onboarding</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+      body { font-family: sans-serif; margin: 2rem auto; max-width: 48rem; line-height: 1.5; padding: 0 1rem; }
+      code { background: #f4f4f4; padding: 0.1rem 0.3rem; border-radius: 0.2rem; }
+      h1, h2 { line-height: 1.2; }
+      .card { border: 1px solid #ddd; border-radius: 0.5rem; padding: 1rem; margin: 1rem 0; }
+    </style>
+  </head>
+  <body>
+    <h1>RCX-Registry Publisher Onboarding</h1>
+    <p>Rights verification supports three paths in v1.0: GitHub OAuth for <code>io.github.&lt;owner&gt;</code>, DNS TXT for <code>io.&lt;domain&gt;</code>, and manual review for edge cases.</p>
+    <div class="card">
+      <h2>GitHub OAuth</h2>
+      <p>Begin with <code>GET /v0/publisher-rights/github/start</code>. The deployed service must provide GitHub OAuth app credentials before this path can complete against live GitHub.</p>
+    </div>
+    <div class="card">
+      <h2>DNS TXT</h2>
+      <p>Request the challenge via <code>POST /v0/publisher-rights/dns-challenge</code>, publish the TXT record, then complete verification with <code>POST /v0/publisher-rights/dns-verify</code>.</p>
+    </div>
+    <div class="card">
+      <h2>Manual Review</h2>
+      <p>Use <code>POST /v0/publisher-rights/manual-verify</code> for operator-mediated edge cases. Anonymous namespaces remain accepted but unverified in v1.0.</p>
+    </div>
+  </body>
+</html>"#,
+    )
+}
+
+async fn dns_challenge(
+    Json(body): Json<DnsChallengeRequest>,
+) -> Result<Json<DnsChallengeResponse>, ApiError> {
+    let claim = classify_namespace(&body.server_name)?;
+    let NamespaceKind::ReverseDns { domain } = &claim.kind else {
+        return Err(ApiError::BadRequest(
+            "dns txt verification only applies to reverse-dns namespaces".to_string(),
+        ));
+    };
+    let challenge = dns_txt_challenge(domain, &body.passport_fingerprint);
+    Ok(Json(DnsChallengeResponse {
+        publisher_passport: body.publisher_passport,
+        namespace: claim.namespace,
+        server_name: claim.server_name,
+        verification_method: VerificationMethod::DnsTxt.as_str(),
+        record_name: challenge.record_name,
+        expected_value: challenge.expected_value,
+    }))
+}
+
+async fn dns_verify(
+    State(state): State<ApiState>,
+    Json(body): Json<DnsVerifyRequest>,
+) -> Result<(StatusCode, Json<PublisherRightsRecord>), ApiError> {
+    let claim = classify_namespace(&body.server_name)?;
+    let NamespaceKind::ReverseDns { domain } = &claim.kind else {
+        return Err(ApiError::BadRequest(
+            "dns txt verification only applies to reverse-dns namespaces".to_string(),
+        ));
+    };
+    let challenge = dns_txt_challenge(domain, &body.passport_fingerprint);
+    let observed_values = state.dns_resolver.lookup_txt(&challenge.record_name)?;
+    verify_dns_txt(&claim, &body.passport_fingerprint, &observed_values)?;
+
+    let verified_at = body.verified_at.unwrap_or_else(now_ms);
+    let record = build_verified_rights_record(
+        &claim,
+        &body.publisher_passport,
+        VerificationMethod::DnsTxt,
+        verified_at,
+    );
+    state.publisher_rights_store.upsert(record.clone())?;
+    Ok((StatusCode::CREATED, Json(record)))
+}
+
+async fn manual_verify(
+    State(state): State<ApiState>,
+    Json(body): Json<ManualVerifyRequest>,
+) -> Result<(StatusCode, Json<PublisherRightsRecord>), ApiError> {
+    if body.reviewer_passport.trim().is_empty() {
+        return Err(ApiError::BadRequest(
+            "reviewer_passport must not be empty".to_string(),
+        ));
+    }
+
+    let claim = classify_namespace(&body.server_name)?;
+    verify_manual_review(&claim)?;
+
+    let verified_at = body.verified_at.unwrap_or_else(now_ms);
+    let record = build_verified_rights_record(
+        &claim,
+        &body.publisher_passport,
+        VerificationMethod::Manual,
+        verified_at,
+    );
+    state.publisher_rights_store.upsert(record.clone())?;
+    Ok((StatusCode::CREATED, Json(record)))
+}
+
+async fn github_oauth_start(
+    State(state): State<ApiState>,
+    Query(query): Query<GitHubStartQuery>,
+) -> Result<Redirect, ApiError> {
+    let claim = classify_namespace(&query.server_name)?;
+    verify_github_passport(&claim, &query.publisher_passport)?;
+
+    let owner = match &claim.kind {
+        NamespaceKind::GitHub { owner } => owner,
+        _ => {
+            return Err(ApiError::BadRequest(
+                "github oauth only applies to io.github.<owner> namespaces".to_string(),
+            ))
+        }
+    };
+
+    let authorize_url =
+        state
+            .github_oauth_provider
+            .authorize_url(owner, &query.redirect_uri, &query.state)?;
+    Ok(Redirect::temporary(&authorize_url))
+}
+
+async fn github_oauth_callback(
+    State(state): State<ApiState>,
+    Query(query): Query<GitHubCallbackQuery>,
+) -> Result<(StatusCode, Json<PublisherRightsRecord>), ApiError> {
+    let claim = classify_namespace(&query.server_name)?;
+    verify_github_passport(&claim, &query.publisher_passport)?;
+
+    let expected_owner = match &claim.kind {
+        NamespaceKind::GitHub { owner } => owner,
+        _ => {
+            return Err(ApiError::BadRequest(
+                "github oauth only applies to io.github.<owner> namespaces".to_string(),
+            ))
+        }
+    };
+
+    let resolved_owner = state
+        .github_oauth_provider
+        .exchange_code(&query.code, &query.state)?;
+    if &resolved_owner != expected_owner {
+        return Err(ApiError::VerificationFailed(format!(
+            "github callback resolved owner `{resolved_owner}` but namespace requires `{expected_owner}`"
+        )));
+    }
+
+    let verified_at = query.verified_at.unwrap_or_else(now_ms);
+    let record = build_verified_rights_record(
+        &claim,
+        &query.publisher_passport,
+        VerificationMethod::GitHubOAuth,
+        verified_at,
+    );
+    state.publisher_rights_store.upsert(record.clone())?;
+    Ok((StatusCode::CREATED, Json(record)))
+}
+
+async fn declare_publisher_enrichment(
+    State(state): State<ApiState>,
+    Json(body): Json<PublisherDeclareRequest>,
+) -> Result<(StatusCode, Json<PublisherEnrichmentRecord>), ApiError> {
+    let claim = classify_namespace(&body.server_name)?;
+    let declaration =
+        validate_publisher_declaration_value(&body.declaration, Some(&body.server_name))
+            .map_err(|error| ApiError::BadRequest(error.to_string()))?;
+
+    let rights = state
+        .publisher_rights_store
+        .lookup(&declaration.publisher_passport, &claim.namespace)?
+        .ok_or_else(|| {
+            ApiError::VerificationFailed(format!(
+                "publisher passport `{}` has no verified rights for namespace `{}`",
+                declaration.publisher_passport, claim.namespace
+            ))
+        })?;
+
+    let (declared_hash, _canonical_json) = declaration_hash(&body.declaration);
+    let payload = build_publisher_enrichment_payload(
+        &declaration,
+        &body.declared_uri,
+        &declared_hash,
+        &rights.verification_method,
+        None,
+    );
+    let prior = state.publisher_enrichment_store.get(&body.server_name)?;
+    let prior_hash_bytes = prior
+        .as_ref()
+        .and_then(|record| parse_blake3_prefixed_hash(&record.block.enrichment_receipt_hash));
+    let receipt = build_entry_enriched_receipt(
+        &body.server_name,
+        &declaration,
+        &body.declared_uri,
+        declared_hash,
+        &payload,
+        derived_event_id(&format!(
+            "{}:{}:{}:{}",
+            body.server_name,
+            declaration.publisher_passport,
+            body.declared_uri,
+            declaration.declared_at
+        )),
+        DEFAULT_PUBLISHER_SIGNER_KID,
+        prior_hash_bytes,
+    )
+    .map_err(|error| ApiError::BadRequest(error.to_string()))?;
+    let record = build_publisher_enrichment_record(
+        &body.server_name,
+        &declaration,
+        &payload,
+        &receipt.receipt_hash,
+        prior.map(|record| record.block.enrichment_receipt_hash),
+    );
+    state.publisher_enrichment_store.upsert(record.clone())?;
+    Ok((StatusCode::CREATED, Json(record)))
+}
+
+async fn list_publisher_rights(
+    State(state): State<ApiState>,
+    Path(publisher_passport): Path<String>,
+) -> Result<Json<PublisherRightsListResponse>, ApiError> {
+    let rights = state
+        .publisher_rights_store
+        .list_by_publisher(&publisher_passport)?;
+    Ok(Json(PublisherRightsListResponse {
+        publisher_passport,
+        rights,
+    }))
+}
+
+fn decorate_list_response(
+    state: &ApiState,
+    response: RegistryServerListResponse,
+) -> Result<RegistryServerListResponse, ApiError> {
+    let servers = response
+        .servers
+        .into_iter()
+        .map(|envelope| decorate_envelope(state, envelope))
+        .collect::<Result<Vec<_>, _>>()?;
+
+    Ok(RegistryServerListResponse {
+        servers,
+        metadata: response.metadata,
+    })
+}
+
+fn decorate_envelope(
+    state: &ApiState,
+    mut envelope: RegistryServerEnvelope,
+) -> Result<RegistryServerEnvelope, ApiError> {
+    let Some(server_name) = envelope
+        .server
+        .get("name")
+        .and_then(Value::as_str)
+        .map(ToString::to_string)
+    else {
+        return Ok(envelope);
+    };
+
+    if let Some(record) = state.publisher_enrichment_store.get(&server_name)? {
+        attach_publisher_enrichment(&mut envelope, &record.block)
+            .map_err(|error| ApiError::Store(error.to_string()))?;
+    }
+
+    Ok(envelope)
+}
+
+fn build_verified_rights_record(
+    claim: &rcx_registry_admin::NamespaceClaim,
+    publisher_passport: &str,
+    method: VerificationMethod,
+    verified_at: u64,
+) -> PublisherRightsRecord {
+    let receipt = build_publisher_rights_verified_receipt(
+        derived_event_id(&format!(
+            "{}:{}:{}:{}",
+            claim.server_name,
+            publisher_passport,
+            method.as_str(),
+            verified_at
+        )),
+        publisher_passport,
+        &claim.namespace,
+        method.clone(),
+        verified_at,
+        DEFAULT_PUBLISHER_SIGNER_KID,
+    );
+    publisher_rights_record(
+        claim,
+        publisher_passport,
+        method,
+        verified_at,
+        &receipt.receipt_hash,
+    )
+}
+
+fn parse_blake3_prefixed_hash(value: &str) -> Option<[u8; 32]> {
+    let hex_value = value.strip_prefix("blake3:").unwrap_or(value);
+    let bytes = hex::decode(hex_value).ok()?;
+    if bytes.len() != 32 {
+        return None;
+    }
+    let mut out = [0u8; 32];
+    out.copy_from_slice(&bytes);
+    Some(out)
+}
+
+fn derived_event_id(seed: &str) -> [u8; ULID_LEN] {
+    let digest = blake3::hash(seed.as_bytes());
+    let mut event_id = [0u8; ULID_LEN];
+    event_id.copy_from_slice(&digest.as_bytes()[..ULID_LEN]);
+    event_id
+}
+
+fn now_ms() -> u64 {
+    SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap_or_default()
+        .as_millis() as u64
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -365,18 +905,158 @@ impl MirrorStore for InMemoryMirrorStore {
     }
 }
 
+#[derive(Default)]
+pub struct InMemoryPublisherRightsStore {
+    records: Mutex<BTreeMap<(String, String), PublisherRightsRecord>>,
+}
+
+impl PublisherRightsStore for InMemoryPublisherRightsStore {
+    fn upsert(&self, record: PublisherRightsRecord) -> Result<(), ApiError> {
+        let mut guard = self
+            .records
+            .lock()
+            .map_err(|_| ApiError::Store("publisher rights mutex poisoned".to_string()))?;
+        guard.insert(
+            (record.publisher_passport.clone(), record.namespace.clone()),
+            record,
+        );
+        Ok(())
+    }
+
+    fn list_by_publisher(
+        &self,
+        publisher_passport: &str,
+    ) -> Result<Vec<PublisherRightsRecord>, ApiError> {
+        let guard = self
+            .records
+            .lock()
+            .map_err(|_| ApiError::Store("publisher rights mutex poisoned".to_string()))?;
+        let mut records = guard
+            .values()
+            .filter(|record| record.publisher_passport == publisher_passport)
+            .cloned()
+            .collect::<Vec<_>>();
+        records.sort_by(|left, right| left.namespace.cmp(&right.namespace));
+        Ok(records)
+    }
+
+    fn lookup(
+        &self,
+        publisher_passport: &str,
+        namespace: &str,
+    ) -> Result<Option<PublisherRightsRecord>, ApiError> {
+        let guard = self
+            .records
+            .lock()
+            .map_err(|_| ApiError::Store("publisher rights mutex poisoned".to_string()))?;
+        Ok(guard
+            .get(&(publisher_passport.to_string(), namespace.to_string()))
+            .cloned())
+    }
+}
+
+#[derive(Default)]
+pub struct InMemoryPublisherEnrichmentStore {
+    records: Mutex<BTreeMap<String, PublisherEnrichmentRecord>>,
+}
+
+impl PublisherEnrichmentStore for InMemoryPublisherEnrichmentStore {
+    fn upsert(&self, record: PublisherEnrichmentRecord) -> Result<(), ApiError> {
+        let mut guard = self
+            .records
+            .lock()
+            .map_err(|_| ApiError::Store("publisher enrichment mutex poisoned".to_string()))?;
+        guard.insert(record.server_name.clone(), record);
+        Ok(())
+    }
+
+    fn get(&self, server_name: &str) -> Result<Option<PublisherEnrichmentRecord>, ApiError> {
+        let guard = self
+            .records
+            .lock()
+            .map_err(|_| ApiError::Store("publisher enrichment mutex poisoned".to_string()))?;
+        Ok(guard.get(server_name).cloned())
+    }
+}
+
+#[derive(Default)]
+pub struct InMemoryDnsTxtResolver {
+    records: BTreeMap<String, Vec<String>>,
+}
+
+impl InMemoryDnsTxtResolver {
+    pub fn new(records: BTreeMap<String, Vec<String>>) -> Self {
+        Self { records }
+    }
+}
+
+impl DnsTxtResolver for InMemoryDnsTxtResolver {
+    fn lookup_txt(&self, record_name: &str) -> Result<Vec<String>, ApiError> {
+        Ok(self.records.get(record_name).cloned().unwrap_or_default())
+    }
+}
+
+pub struct UnavailableDnsTxtResolver;
+
+impl DnsTxtResolver for UnavailableDnsTxtResolver {
+    fn lookup_txt(&self, _record_name: &str) -> Result<Vec<String>, ApiError> {
+        Err(ApiError::Unavailable("dns_txt_resolver_not_configured"))
+    }
+}
+
+pub struct UnavailableGitHubOAuthProvider;
+
+impl GitHubOAuthProvider for UnavailableGitHubOAuthProvider {
+    fn authorize_url(
+        &self,
+        _owner: &str,
+        _redirect_uri: &str,
+        _state: &str,
+    ) -> Result<String, ApiError> {
+        Err(ApiError::Unavailable("github_oauth_not_configured"))
+    }
+
+    fn exchange_code(&self, _code: &str, _state: &str) -> Result<String, ApiError> {
+        Err(ApiError::Unavailable("github_oauth_not_configured"))
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::{
-        router, ApiError, InMemoryMirrorStore, MirrorStore, SharedMirrorStore, StoredServerRecord,
+        router, router_with_state, ApiError, ApiState, GitHubOAuthProvider, InMemoryDnsTxtResolver,
+        InMemoryMirrorStore, InMemoryPublisherEnrichmentStore, InMemoryPublisherRightsStore,
+        MirrorStore, PublisherRightsStore, SharedMirrorStore, StoredServerRecord,
     };
     use axum::body::{to_bytes, Body};
     use axum::response::IntoResponse;
     use http::{Request, StatusCode};
+    use rcx_registry_admin::PublisherRightsRecord;
     use rcx_registry_ingest::{OfficialRegistryMeta, RegistryServerEnvelope, RegistryServerMeta};
     use serde_json::json;
+    use std::collections::BTreeMap;
     use std::sync::Arc;
     use tower::util::ServiceExt;
+
+    struct StaticGitHubOAuthProvider {
+        authorize_url: String,
+        resolved_owner: String,
+    }
+
+    impl GitHubOAuthProvider for StaticGitHubOAuthProvider {
+        fn authorize_url(
+            &self,
+            _owner: &str,
+            _redirect_uri: &str,
+            _state: &str,
+        ) -> Result<String, super::ApiError> {
+            Ok(self.authorize_url.clone())
+        }
+
+        fn exchange_code(&self, _code: &str, _state: &str) -> Result<String, super::ApiError> {
+            Ok(self.resolved_owner.clone())
+        }
+    }
 
     fn record(
         name: &str,
@@ -433,11 +1113,67 @@ mod tests {
         ]))
     }
 
+    fn publisher_state() -> ApiState {
+        let mut dns_records = BTreeMap::new();
+        dns_records.insert(
+            "_rcx-registry.example.com".to_string(),
+            vec!["fingerprint:abc123".to_string()],
+        );
+
+        ApiState::new(store())
+            .with_publisher_rights_store(Arc::new(InMemoryPublisherRightsStore::default()))
+            .with_publisher_enrichment_store(Arc::new(InMemoryPublisherEnrichmentStore::default()))
+            .with_dns_resolver(Arc::new(InMemoryDnsTxtResolver::new(dns_records)))
+            .with_github_oauth_provider(Arc::new(StaticGitHubOAuthProvider {
+                authorize_url: "https://github.com/login/oauth/authorize?client_id=test"
+                    .to_string(),
+                resolved_owner: "example-org".to_string(),
+            }))
+    }
+
+    fn publisher_state_with_verified_rights() -> ApiState {
+        let rights_store = Arc::new(InMemoryPublisherRightsStore::default());
+        rights_store
+            .upsert(PublisherRightsRecord {
+                publisher_passport: "passport:github:example-org".to_string(),
+                namespace: "io.github.example-org".to_string(),
+                server_name: "io.github.example-org/document-proofer".to_string(),
+                verification_method: "github_oauth".to_string(),
+                verified_at: 1_776_683_200_000,
+                receipt_hash:
+                    "blake3:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                        .to_string(),
+            })
+            .expect("seed github rights should insert");
+
+        let mut dns_records = BTreeMap::new();
+        dns_records.insert(
+            "_rcx-registry.example.com".to_string(),
+            vec!["fingerprint:abc123".to_string()],
+        );
+
+        ApiState::new(Arc::new(InMemoryMirrorStore::new(vec![record(
+            "io.github.example-org/document-proofer",
+            "1.2.0",
+            "active",
+            true,
+            "2026-04-20T10:00:00Z",
+        )])))
+        .with_publisher_rights_store(rights_store)
+        .with_publisher_enrichment_store(Arc::new(InMemoryPublisherEnrichmentStore::default()))
+        .with_dns_resolver(Arc::new(InMemoryDnsTxtResolver::new(dns_records)))
+        .with_github_oauth_provider(Arc::new(StaticGitHubOAuthProvider {
+            authorize_url: "https://github.com/login/oauth/authorize?client_id=test".to_string(),
+            resolved_owner: "example-org".to_string(),
+        }))
+    }
+
     #[tokio::test]
     async fn list_endpoint_returns_paginated_mcp_shaped_response() {
         let app = router(store());
 
         let response = app
+            .clone()
             .oneshot(
                 Request::builder()
                     .uri("/v0/servers?limit=1")
@@ -468,6 +1204,7 @@ mod tests {
         let app = router(store());
 
         let response = app
+            .clone()
             .oneshot(
                 Request::builder()
                     .uri("/v0/servers?cursor=missing:cursor")
@@ -589,6 +1326,317 @@ mod tests {
         assert_eq!(
             json["servers"][0]["_meta"]["org.rcxprotocol.registry/auto"]["auto_enrichment_receipt"],
             "blake3:deadbeef"
+        );
+    }
+
+    #[tokio::test]
+    async fn publish_page_renders_minimal_onboarding_html() {
+        let app = router_with_state(publisher_state());
+
+        let response = app
+            .oneshot(
+                Request::builder()
+                    .uri("/publish")
+                    .body(Body::empty())
+                    .expect("request should build"),
+            )
+            .await
+            .expect("request should succeed");
+
+        assert_eq!(response.status(), StatusCode::OK);
+        let body = to_bytes(response.into_body(), usize::MAX)
+            .await
+            .expect("body should read");
+        let html = String::from_utf8(body.to_vec()).expect("html should decode");
+        assert!(html.contains("RCX-Registry Publisher Onboarding"));
+        assert!(html.contains("/v0/publisher-rights/dns-challenge"));
+    }
+
+    #[tokio::test]
+    async fn dns_challenge_route_returns_expected_record_name() {
+        let app = router_with_state(publisher_state());
+
+        let response = app
+            .oneshot(
+                Request::builder()
+                    .method("POST")
+                    .uri("/v0/publisher-rights/dns-challenge")
+                    .header("content-type", "application/json")
+                    .body(Body::from(
+                        serde_json::to_vec(&json!({
+                            "server_name": "io.example.com/document-proofer",
+                            "publisher_passport": "passport:dns:example.com",
+                            "passport_fingerprint": "fingerprint:abc123"
+                        }))
+                        .expect("json body should serialize"),
+                    ))
+                    .expect("request should build"),
+            )
+            .await
+            .expect("request should succeed");
+
+        assert_eq!(response.status(), StatusCode::OK);
+        let body = to_bytes(response.into_body(), usize::MAX)
+            .await
+            .expect("body should read");
+        let json: serde_json::Value = serde_json::from_slice(&body).expect("body should be json");
+        assert_eq!(json["record_name"], "_rcx-registry.example.com");
+        assert_eq!(json["verification_method"], "dns_txt");
+    }
+
+    #[tokio::test]
+    async fn dns_verify_route_persists_verified_namespace() {
+        let app = router_with_state(publisher_state());
+
+        let response = app
+            .clone()
+            .oneshot(
+                Request::builder()
+                    .method("POST")
+                    .uri("/v0/publisher-rights/dns-verify")
+                    .header("content-type", "application/json")
+                    .body(Body::from(
+                        serde_json::to_vec(&json!({
+                            "server_name": "io.example.com/document-proofer",
+                            "publisher_passport": "passport:dns:example.com",
+                            "passport_fingerprint": "fingerprint:abc123",
+                            "verified_at": 1776683200000u64
+                        }))
+                        .expect("json body should serialize"),
+                    ))
+                    .expect("request should build"),
+            )
+            .await
+            .expect("request should succeed");
+
+        assert_eq!(response.status(), StatusCode::CREATED);
+        let body = to_bytes(response.into_body(), usize::MAX)
+            .await
+            .expect("body should read");
+        let json: serde_json::Value = serde_json::from_slice(&body).expect("body should be json");
+        assert_eq!(json["namespace"], "io.example.com");
+        assert_eq!(json["verification_method"], "dns_txt");
+
+        let list_response = app
+            .clone()
+            .oneshot(
+                Request::builder()
+                    .uri("/v0/publishers/passport:dns:example.com")
+                    .body(Body::empty())
+                    .expect("request should build"),
+            )
+            .await
+            .expect("request should succeed");
+        assert_eq!(list_response.status(), StatusCode::OK);
+    }
+
+    #[tokio::test]
+    async fn manual_verify_route_records_non_anonymous_namespace() {
+        let app = router_with_state(publisher_state());
+
+        let response = app
+            .oneshot(
+                Request::builder()
+                    .method("POST")
+                    .uri("/v0/publisher-rights/manual-verify")
+                    .header("content-type", "application/json")
+                    .body(Body::from(
+                        serde_json::to_vec(&json!({
+                            "server_name": "io.github.example-org/document-proofer",
+                            "publisher_passport": "passport:github:example-org",
+                            "reviewer_passport": "passport:ops:reviewer-1",
+                            "review_note": "Validated via operator workflow",
+                            "verified_at": 1776683200000u64
+                        }))
+                        .expect("json body should serialize"),
+                    ))
+                    .expect("request should build"),
+            )
+            .await
+            .expect("request should succeed");
+
+        assert_eq!(response.status(), StatusCode::CREATED);
+        let body = to_bytes(response.into_body(), usize::MAX)
+            .await
+            .expect("body should read");
+        let json: serde_json::Value = serde_json::from_slice(&body).expect("body should be json");
+        assert_eq!(json["verification_method"], "manual");
+    }
+
+    #[tokio::test]
+    async fn github_start_route_redirects_when_provider_is_configured() {
+        let app = router_with_state(publisher_state());
+
+        let response = app
+            .oneshot(
+                Request::builder()
+                    .uri("/v0/publisher-rights/github/start?server_name=io.github.example-org%2Fdocument-proofer&publisher_passport=passport:github:example-org&redirect_uri=https%3A%2F%2Fregistry.rcxprotocol.org%2Fv0%2Fpublisher-rights%2Fgithub%2Fcallback&state=test-state")
+                    .body(Body::empty())
+                    .expect("request should build"),
+            )
+            .await
+            .expect("request should succeed");
+
+        assert_eq!(response.status(), StatusCode::TEMPORARY_REDIRECT);
+        assert_eq!(
+            response
+                .headers()
+                .get("location")
+                .and_then(|value| value.to_str().ok()),
+            Some("https://github.com/login/oauth/authorize?client_id=test")
+        );
+    }
+
+    #[tokio::test]
+    async fn github_callback_route_records_verified_owner() {
+        let app = router_with_state(publisher_state());
+
+        let response = app
+            .oneshot(
+                Request::builder()
+                    .uri("/v0/publisher-rights/github/callback?server_name=io.github.example-org%2Fdocument-proofer&publisher_passport=passport:github:example-org&code=abc123&state=test-state&verified_at=1776683200000")
+                    .body(Body::empty())
+                    .expect("request should build"),
+            )
+            .await
+            .expect("request should succeed");
+
+        assert_eq!(response.status(), StatusCode::CREATED);
+        let body = to_bytes(response.into_body(), usize::MAX)
+            .await
+            .expect("body should read");
+        let json: serde_json::Value = serde_json::from_slice(&body).expect("body should be json");
+        assert_eq!(json["verification_method"], "github_oauth");
+        assert_eq!(json["namespace"], "io.github.example-org");
+    }
+
+    #[tokio::test]
+    async fn declare_route_requires_verified_namespace_rights() {
+        let app = router_with_state(publisher_state());
+        let declaration = serde_json::from_str::<serde_json::Value>(include_str!(
+            "../../../fixtures/examples/rcx-enrichment.valid.json"
+        ))
+        .expect("fixture should parse");
+
+        let response = app
+            .oneshot(
+                Request::builder()
+                    .method("POST")
+                    .uri("/v0/publishers/declare")
+                    .header("content-type", "application/json")
+                    .body(Body::from(
+                        serde_json::to_vec(&json!({
+                            "server_name": "io.github.example-org/document-proofer",
+                            "declared_uri": "https://example.org/.rcx/document-proofer.rcx.json",
+                            "declaration": declaration
+                        }))
+                        .expect("json body should serialize"),
+                    ))
+                    .expect("request should build"),
+            )
+            .await
+            .expect("request should succeed");
+
+        assert_eq!(response.status(), StatusCode::UNPROCESSABLE_ENTITY);
+    }
+
+    #[tokio::test]
+    async fn declare_route_persists_and_surfaces_publisher_enrichment() {
+        let app = router_with_state(publisher_state_with_verified_rights());
+        let declaration = serde_json::from_str::<serde_json::Value>(include_str!(
+            "../../../fixtures/examples/rcx-enrichment.valid.json"
+        ))
+        .expect("fixture should parse");
+
+        let first_response = app
+            .clone()
+            .oneshot(
+                Request::builder()
+                    .method("POST")
+                    .uri("/v0/publishers/declare")
+                    .header("content-type", "application/json")
+                    .body(Body::from(
+                        serde_json::to_vec(&json!({
+                            "server_name": "io.github.example-org/document-proofer",
+                            "declared_uri": "https://example.org/.rcx/document-proofer.rcx.json",
+                            "declaration": declaration
+                        }))
+                        .expect("json body should serialize"),
+                    ))
+                    .expect("request should build"),
+            )
+            .await
+            .expect("request should succeed");
+
+        assert_eq!(first_response.status(), StatusCode::CREATED);
+        let first_body = to_bytes(first_response.into_body(), usize::MAX)
+            .await
+            .expect("body should read");
+        let first_json: serde_json::Value =
+            serde_json::from_slice(&first_body).expect("body should be json");
+        assert_eq!(first_json["block"]["category"], "tier_gated");
+        assert_eq!(first_json["block"]["verification_method"], "github_oauth");
+
+        let list_response = app
+            .clone()
+            .oneshot(
+                Request::builder()
+                    .uri("/v0/servers")
+                    .body(Body::empty())
+                    .expect("request should build"),
+            )
+            .await
+            .expect("request should succeed");
+        assert_eq!(list_response.status(), StatusCode::OK);
+        let list_body = to_bytes(list_response.into_body(), usize::MAX)
+            .await
+            .expect("body should read");
+        let list_json: serde_json::Value =
+            serde_json::from_slice(&list_body).expect("body should be json");
+        assert_eq!(
+            list_json["servers"][0]["_meta"]["org.rcxprotocol.registry/publisher"]["declared_uri"],
+            "https://example.org/.rcx/document-proofer.rcx.json"
+        );
+        assert_eq!(
+            list_json["servers"][0]["_meta"]["org.rcxprotocol.registry/publisher"]
+                ["verification_method"],
+            "github_oauth"
+        );
+
+        let mut updated_declaration = serde_json::from_str::<serde_json::Value>(include_str!(
+            "../../../fixtures/examples/rcx-enrichment.valid.json"
+        ))
+        .expect("fixture should parse");
+        updated_declaration["declared_at"] = json!("2026-04-20T11:00:00Z");
+
+        let second_response = app
+            .oneshot(
+                Request::builder()
+                    .method("POST")
+                    .uri("/v0/publishers/declare")
+                    .header("content-type", "application/json")
+                    .body(Body::from(
+                        serde_json::to_vec(&json!({
+                            "server_name": "io.github.example-org/document-proofer",
+                            "declared_uri": "https://example.org/.rcx/document-proofer.rcx.json",
+                            "declaration": updated_declaration
+                        }))
+                        .expect("json body should serialize"),
+                    ))
+                    .expect("request should build"),
+            )
+            .await
+            .expect("request should succeed");
+
+        assert_eq!(second_response.status(), StatusCode::CREATED);
+        let second_body = to_bytes(second_response.into_body(), usize::MAX)
+            .await
+            .expect("body should read");
+        let second_json: serde_json::Value =
+            serde_json::from_slice(&second_body).expect("body should be json");
+        assert_eq!(
+            second_json["supersedes_prior_receipt_hash"],
+            first_json["block"]["enrichment_receipt_hash"]
         );
     }
 

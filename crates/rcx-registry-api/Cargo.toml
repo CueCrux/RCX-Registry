@@ -7,7 +7,12 @@ description = "MCP-compatible HTTP surface for RCX-Registry."
 
 [dependencies]
 axum.workspace = true
+blake3.workspace = true
+hex.workspace = true
 http.workspace = true
+rcx-registry-admin = { path = "../rcx-registry-admin" }
+rcx-registry-crown = { path = "../rcx-registry-crown" }
+rcx-registry-enrich = { path = "../rcx-registry-enrich" }
 rcx-registry-ingest = { path = "../rcx-registry-ingest" }
 serde.workspace = true
 serde_json.workspace = true
