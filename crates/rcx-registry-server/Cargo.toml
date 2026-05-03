@@ -1,0 +1,41 @@
+[package]
+name = "rcx-registry-server"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "RCX-Registry HTTP server: axum boot, Postgres-backed stores, sync/enrichment loops, Vault Transit signer."
+
+[[bin]]
+name = "rcx-registry-server"
+path = "src/main.rs"
+
+[dependencies]
+axum.workspace = true
+base64.workspace = true
+blake3.workspace = true
+chrono.workspace = true
+dotenvy.workspace = true
+hex.workspace = true
+hickory-resolver.workspace = true
+http.workspace = true
+postgres.workspace = true
+r2d2.workspace = true
+r2d2_postgres.workspace = true
+rcx-registry-admin = { path = "../rcx-registry-admin" }
+rcx-registry-api = { path = "../rcx-registry-api" }
+rcx-registry-crown = { path = "../rcx-registry-crown" }
+rcx-registry-enrich = { path = "../rcx-registry-enrich" }
+rcx-registry-ingest = { path = "../rcx-registry-ingest" }
+reqwest.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+tokio.workspace = true
+tower.workspace = true
+tower-http.workspace = true
+tracing.workspace = true
+tracing-subscriber.workspace = true
+url.workspace = true
+
+[dev-dependencies]
+tokio.workspace = true

@@ -398,6 +398,7 @@ pub fn build_publisher_enrichment_payload(
     }
 }
 
+#[allow(clippy::too_many_arguments)]
 pub fn build_entry_enriched_receipt(
     server_name: &str,
     declaration: &PublisherDeclaration,

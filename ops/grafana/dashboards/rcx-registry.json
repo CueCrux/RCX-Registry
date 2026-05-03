@@ -1,0 +1,99 @@
+{
+  "annotations": { "list": [] },
+  "schemaVersion": 39,
+  "version": 1,
+  "title": "RCX-Registry",
+  "uid": "rcx-registry-v1",
+  "tags": ["cuecrux", "rcx-registry"],
+  "timezone": "browser",
+  "refresh": "30s",
+  "time": { "from": "now-6h", "to": "now" },
+  "panels": [
+    {
+      "type": "stat",
+      "title": "Mirrored servers",
+      "id": 1,
+      "gridPos": { "h": 4, "w": 6, "x": 0, "y": 0 },
+      "targets": [
+        {
+          "expr": "rcx_registry_mcp_servers_mirrored",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "type": "stat",
+      "title": "Snapshots minted (1h)",
+      "id": 2,
+      "gridPos": { "h": 4, "w": 6, "x": 6, "y": 0 },
+      "targets": [
+        {
+          "expr": "increase(rcx_registry_snapshots_total[1h])",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "MCP fetch errors",
+      "id": 3,
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 4 },
+      "targets": [
+        {
+          "expr": "rate(rcx_registry_mcp_fetch_errors_total[5m])",
+          "legendFormat": "errors/s",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Sync loop runs vs errors",
+      "id": 4,
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 4 },
+      "targets": [
+        {
+          "expr": "rate(rcx_registry_sync_loop_runs_total[5m])",
+          "legendFormat": "runs/s",
+          "refId": "A"
+        },
+        {
+          "expr": "rate(rcx_registry_sync_loop_errors_total[5m])",
+          "legendFormat": "errors/s",
+          "refId": "B"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Publisher declarations accepted/rejected",
+      "id": 5,
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 12 },
+      "targets": [
+        {
+          "expr": "rate(rcx_registry_publisher_declarations_total[5m])",
+          "legendFormat": "accepted/s",
+          "refId": "A"
+        },
+        {
+          "expr": "rate(rcx_registry_publisher_declaration_errors_total[5m])",
+          "legendFormat": "rejected/s",
+          "refId": "B"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Publisher rights verified",
+      "id": 6,
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 12 },
+      "targets": [
+        {
+          "expr": "rate(rcx_registry_publisher_rights_verified_total[15m])",
+          "legendFormat": "verifications/s",
+          "refId": "A"
+        }
+      ]
+    }
+  ]
+}

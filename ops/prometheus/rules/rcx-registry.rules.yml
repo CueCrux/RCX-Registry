@@ -1,0 +1,43 @@
+groups:
+  - name: rcx-registry.alerts
+    interval: 1m
+    rules:
+      - alert: RcxRegistrySnapshotStale
+        expr: time() - max_over_time(rcx_registry_snapshots_total[2h]) > 7200
+        for: 10m
+        labels:
+          severity: warning
+          service: rcx-registry
+        annotations:
+          summary: "RCX-Registry snapshot >2h stale"
+          description: "No new snapshot was minted for 2h. The MCP scrape may be stuck."
+
+      - alert: RcxRegistryFetchErrorBurst
+        expr: increase(rcx_registry_mcp_fetch_errors_total[15m]) > 5
+        for: 15m
+        labels:
+          severity: warning
+          service: rcx-registry
+        annotations:
+          summary: "RCX-Registry MCP fetch error burst"
+          description: ">5 MCP fetch errors in the last 15 minutes."
+
+      - alert: RcxRegistrySyncLoopDead
+        expr: increase(rcx_registry_sync_loop_runs_total[1h]) == 0
+        for: 1h
+        labels:
+          severity: critical
+          service: rcx-registry
+        annotations:
+          summary: "RCX-Registry sync loop has not run in 1h"
+          description: "Sync loop is not ticking — restart and investigate."
+
+      - alert: RcxRegistryEnrichmentLoopErrorRate
+        expr: rate(rcx_registry_enrichment_loop_errors_total[1h]) > 0.1
+        for: 30m
+        labels:
+          severity: warning
+          service: rcx-registry
+        annotations:
+          summary: "RCX-Registry enrichment loop error rate >10% per hour"
+          description: "Publisher declaration refreshes are failing repeatedly."

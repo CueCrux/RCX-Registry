@@ -6,6 +6,7 @@ members = [
   "crates/rcx-registry-crown",
   "crates/rcx-registry-enrich",
   "crates/rcx-registry-ingest",
+  "crates/rcx-registry-server",
 ]
 resolver = "2"
 
@@ -17,15 +18,26 @@ repository = "https://github.com/CueCrux/RCX-Registry"
 
 [workspace.dependencies]
 axum = "=0.8.6"
+base64 = "=0.22.1"
 blake3 = "=1.5.1"
+chrono = { version = "=0.4.41", default-features = false, features = ["std", "clock", "serde"] }
+dotenvy = "=0.15.7"
 ed25519-dalek = { version = "=2.1.1", features = ["std"] }
 half = "=2.4.1"
 hex = "=0.4.3"
+hickory-resolver = "=0.24.4"
 http = "=1.3.1"
 jsonschema = "=0.33.0"
+postgres = { version = "=0.19.10", features = ["with-chrono-0_4", "with-serde_json-1"] }
+r2d2 = "=0.8.10"
+r2d2_postgres = "=0.18.2"
 reqwest = { version = "=0.12.28", default-features = false, features = ["blocking", "json", "rustls-tls"] }
 serde = { version = "=1.0.228", features = ["derive"] }
 serde_json = { version = "=1.0.139", features = ["preserve_order"] }
-tokio = { version = "=1.52.1", features = ["macros", "rt-multi-thread"] }
+tokio = { version = "=1.52.1", features = ["macros", "rt-multi-thread", "signal", "time", "sync"] }
 tower = { version = "=0.5.2", features = ["util"] }
+tower-http = { version = "=0.6.8", features = ["trace"] }
+tracing = "=0.1.41"
+tracing-subscriber = { version = "=0.3.20", default-features = false, features = ["env-filter", "fmt", "ansi"] }
 thiserror = "=2.0.12"
+url = "=2.5.4"

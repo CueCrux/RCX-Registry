@@ -1,0 +1,50 @@
+// Tailscale ACL snippet for RCX-Registry administration.
+//
+// Drop into your tailnet's ACL alongside the rest of CueCrux. The
+// `tag:rcx-registry` tag is applied to the Hetzner CCX13 host running
+// the server; only members of `group:ops` may SSH or hit the operator
+// surfaces (Postgres, /metrics).
+//
+// Usage:
+//
+//   1. Tag the node when you join the tailnet:
+//        sudo tailscale up --advertise-tags=tag:rcx-registry
+//   2. Approve the tag in the admin console once.
+//   3. Merge this snippet into your `policy.hujson`.
+
+{
+  "tagOwners": {
+    "tag:rcx-registry": ["group:ops"]
+  },
+
+  "groups": {
+    // Add Tailscale identities here; matches the broader CueCrux ops list.
+    "group:ops": ["myles@cuecrux.com"]
+  },
+
+  "acls": [
+    // Operators can fully reach the registry node (SSH, Postgres, /metrics).
+    {
+      "action": "accept",
+      "src": ["group:ops"],
+      "dst": ["tag:rcx-registry:*"]
+    },
+
+    // Other tailnet members can hit only the public API port from inside
+    // the tailnet (useful for canary tests before DNS cuts over).
+    {
+      "action": "accept",
+      "src": ["autogroup:member"],
+      "dst": ["tag:rcx-registry:3030"]
+    }
+  ],
+
+  "ssh": [
+    {
+      "action": "accept",
+      "src": ["group:ops"],
+      "dst": ["tag:rcx-registry"],
+      "users": ["root", "rcx"]
+    }
+  ]
+}

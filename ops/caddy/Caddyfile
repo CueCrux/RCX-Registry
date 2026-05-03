@@ -1,0 +1,67 @@
+# Caddy site config for RCX-Registry production.
+#
+# Caddy auto-provisions Let's Encrypt certificates for the listed
+# hosts. Drop-in via:
+#
+#   sudo cp Caddyfile /etc/caddy/Caddyfile
+#   sudo systemctl reload caddy
+#
+# Bind your operator email below — required for ACME contact:
+#
+#   {
+#     email ops@rcxprotocol.org
+#   }
+
+# Primary API host.
+registry.rcxprotocol.org {
+    encode gzip zstd
+
+    # Operator-only routes — restrict by Tailscale CGNAT (100.64.0.0/10).
+    @operator path /metrics /healthz /readyz
+    handle @operator {
+        @lan remote_ip 100.64.0.0/10 127.0.0.1/32
+        handle @lan {
+            reverse_proxy localhost:3030
+        }
+        respond 403
+    }
+
+    # Public API + publisher onboarding.
+    handle {
+        reverse_proxy localhost:3030 {
+            header_up X-Forwarded-Proto {scheme}
+            header_up X-Forwarded-Host {host}
+        }
+    }
+
+    log {
+        output file /var/log/caddy/registry.access.log {
+            roll_size 50mb
+            roll_keep 14
+        }
+    }
+}
+
+# Schema CDN — date-pinned static JSON Schemas under /schemas/<YYYY-MM-DD>/.
+static.rcxprotocol.org {
+    encode gzip zstd
+    root * /var/www/static.rcxprotocol.org
+    file_server
+    header /schemas/* {
+        Cache-Control "public, max-age=31536000, immutable"
+        Access-Control-Allow-Origin "*"
+    }
+    log {
+        output file /var/log/caddy/static.access.log {
+            roll_size 50mb
+            roll_keep 14
+        }
+    }
+}
+
+# Docs landing — bound to the apex domain.
+rcxprotocol.org, www.rcxprotocol.org {
+    encode gzip zstd
+    root * /var/www/rcxprotocol.org
+    file_server
+}

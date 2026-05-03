@@ -1,0 +1,29 @@
+# Prometheus scrape config for RCX-Registry.
+#
+# Drop into the existing CueCrux Prometheus instance:
+#
+#   scrape_configs:
+#     - <merge the rcx_registry job below>
+#
+# Or run a standalone Prometheus on the same Hetzner host with this
+# file as `/etc/prometheus/prometheus.yml`.
+
+global:
+  scrape_interval: 30s
+  evaluation_interval: 30s
+  external_labels:
+    service: rcx-registry
+    env: production
+
+scrape_configs:
+  - job_name: rcx_registry
+    metrics_path: /metrics
+    scheme: http
+    static_configs:
+      - targets: ["localhost:3030"]
+        labels:
+          host: registry.rcxprotocol.org
+          component: server
+
+rule_files:
+  - rules/rcx-registry.rules.yml

@@ -551,6 +551,7 @@ pub struct SnapshotPlan {
     pub snapshot_receipt: RegistrySnapshotReceipt,
 }
 
+#[allow(clippy::too_many_arguments)]
 pub fn build_snapshot_plan(
     current: &[MirroredServer],
     previous: &[MirroredServer],
