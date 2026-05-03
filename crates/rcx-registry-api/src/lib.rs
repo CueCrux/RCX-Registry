@@ -29,9 +29,16 @@ use thiserror::Error;
 pub const MCP_REGISTRY_BASE_URL: &str = "https://registry.modelcontextprotocol.io";
 pub const DEFAULT_PUBLISHER_SIGNER_KID: &str = "vault:transit:rcx-registry-signing-key-1";
 
+pub mod published_records;
+pub use published_records::{
+    InMemoryPublishedRecordStore, PassportFilter, PassportPublishRecord, ProjectFilter, ProjectPublishRecord,
+    PublishedRecordStore,
+};
+
 pub type SharedMirrorStore = Arc<dyn MirrorStore>;
 pub type SharedPublisherRightsStore = Arc<dyn PublisherRightsStore>;
 pub type SharedPublisherEnrichmentStore = Arc<dyn PublisherEnrichmentStore>;
+pub type SharedPublishedRecordStore = Arc<dyn PublishedRecordStore>;
 pub type SharedDnsTxtResolver = Arc<dyn DnsTxtResolver>;
 pub type SharedGitHubOAuthProvider = Arc<dyn GitHubOAuthProvider>;
 
@@ -158,6 +165,7 @@ pub struct ApiState {
     publisher_enrichment_store: SharedPublisherEnrichmentStore,
     dns_resolver: SharedDnsTxtResolver,
     github_oauth_provider: SharedGitHubOAuthProvider,
+    published_record_store: SharedPublishedRecordStore,
 }
 
 impl ApiState {
@@ -168,7 +176,13 @@ impl ApiState {
             publisher_enrichment_store: Arc::new(InMemoryPublisherEnrichmentStore::default()),
             dns_resolver: Arc::new(UnavailableDnsTxtResolver),
             github_oauth_provider: Arc::new(UnavailableGitHubOAuthProvider),
+            published_record_store: Arc::new(InMemoryPublishedRecordStore::default()),
         }
+    }
+
+    pub fn with_published_record_store(mut self, store: SharedPublishedRecordStore) -> Self {
+        self.published_record_store = store;
+        self
     }
 
     pub fn with_publisher_rights_store(
@@ -319,7 +333,79 @@ pub fn router_with_state(state: ApiState) -> Router {
             "/v0/publishers/{publisher_passport}",
             get(list_publisher_rights),
         )
+        // Plan C R2 — passport + project discovery.
+        .route("/v0/passports", get(list_passports_handler))
+        .route("/v0/passports/{passport_fpr}", get(get_passport_handler))
+        .route("/v0/projects", get(list_projects_handler))
+        .route(
+            "/v0/projects/{publisher_passport}/{project_id}",
+            get(get_project_handler),
+        )
         .with_state(state)
+}
+
+#[derive(Debug, Deserialize)]
+struct ListPassportsQuery {
+    category: Option<String>,
+    min_tier: Option<String>,
+    agent_work_gate: Option<bool>,
+}
+
+async fn list_passports_handler(
+    State(state): State<ApiState>,
+    Query(query): Query<ListPassportsQuery>,
+) -> Result<Json<serde_json::Value>, ApiError> {
+    let filter = PassportFilter {
+        category: query.category.filter(|s| !s.is_empty()),
+        min_tier: query.min_tier.filter(|s| !s.is_empty()),
+        agent_work_gate: query.agent_work_gate,
+    };
+    let records = state.published_record_store.list_passports(&filter)?;
+    Ok(Json(serde_json::json!({
+        "count": records.len(),
+        "passports": records,
+    })))
+}
+
+async fn get_passport_handler(
+    State(state): State<ApiState>,
+    Path(passport_fpr): Path<String>,
+) -> Result<Json<PassportPublishRecord>, ApiError> {
+    state
+        .published_record_store
+        .get_passport(&passport_fpr)?
+        .map(Json)
+        .ok_or(ApiError::NotFound)
+}
+
+#[derive(Debug, Deserialize)]
+struct ListProjectsQuery {
+    publisher: Option<String>,
+}
+
+async fn list_projects_handler(
+    State(state): State<ApiState>,
+    Query(query): Query<ListProjectsQuery>,
+) -> Result<Json<serde_json::Value>, ApiError> {
+    let filter = ProjectFilter {
+        publisher: query.publisher.filter(|s| !s.is_empty()),
+    };
+    let records = state.published_record_store.list_projects(&filter)?;
+    Ok(Json(serde_json::json!({
+        "count": records.len(),
+        "projects": records,
+    })))
+}
+
+async fn get_project_handler(
+    State(state): State<ApiState>,
+    Path((publisher_passport, project_id)): Path<(String, String)>,
+) -> Result<Json<ProjectPublishRecord>, ApiError> {
+    state
+        .published_record_store
+        .get_project(&publisher_passport, &project_id)?
+        .map(Json)
+        .ok_or(ApiError::NotFound)
 }
 
 async fn list_servers(
@@ -1025,8 +1111,9 @@ impl GitHubOAuthProvider for UnavailableGitHubOAuthProvider {
 mod tests {
     use super::{
         router, router_with_state, ApiError, ApiState, GitHubOAuthProvider, InMemoryDnsTxtResolver,
-        InMemoryMirrorStore, InMemoryPublisherEnrichmentStore, InMemoryPublisherRightsStore,
-        MirrorStore, PublisherRightsStore, SharedMirrorStore, StoredServerRecord,
+        InMemoryMirrorStore, InMemoryPublishedRecordStore, InMemoryPublisherEnrichmentStore,
+        InMemoryPublisherRightsStore, MirrorStore, PassportPublishRecord, ProjectPublishRecord,
+        PublishedRecordStore, PublisherRightsStore, SharedMirrorStore, StoredServerRecord,
     };
     use axum::body::{to_bytes, Body};
     use axum::response::IntoResponse;
@@ -1644,5 +1731,152 @@ mod tests {
     fn not_found_error_maps_to_404() {
         let response = ApiError::NotFound.into_response();
         assert_eq!(response.status(), StatusCode::NOT_FOUND);
+    }
+
+    fn empty_mirror_store() -> Arc<InMemoryMirrorStore> {
+        Arc::new(InMemoryMirrorStore::new(Vec::new()))
+    }
+
+    fn sample_passport_record(fpr: &str, category: &str, tier: &str) -> PassportPublishRecord {
+        PassportPublishRecord {
+            schema_uri: "https://static.rcxprotocol.org/schemas/2026-05-01/passport-publish.schema.json"
+                .to_string(),
+            publisher_passport: "p_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa".to_string(),
+            passport_fpr: fpr.to_string(),
+            passport_id: "alpha".to_string(),
+            category: category.to_string(),
+            public_key_hex: "0".repeat(64),
+            sponsor_passport_fpr: None,
+            reputation_tier: tier.to_string(),
+            receipt_count: 0,
+            agent_work_gate: false,
+            is_default_for_category: true,
+            operator_metadata: None,
+            issued_at: "2026-05-01T00:00:00Z".to_string(),
+            published_at: "2026-05-01T00:00:00Z".to_string(),
+            signature: "0".repeat(128),
+            signer_kid: "p_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa".to_string(),
+            passport_hash: "0".repeat(64),
+        }
+    }
+
+    #[tokio::test]
+    async fn passport_get_endpoint_returns_404_when_missing() {
+        let state = ApiState::new(empty_mirror_store());
+        let app = router_with_state(state);
+        let resp = app
+            .oneshot(
+                Request::builder()
+                    .uri("/v0/passports/p_unknown00000000000000000000000")
+                    .body(Body::empty())
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+        assert_eq!(resp.status(), StatusCode::NOT_FOUND);
+    }
+
+    #[tokio::test]
+    async fn passport_get_endpoint_returns_seeded_record() {
+        let store = Arc::new(InMemoryPublishedRecordStore::default());
+        store
+            .upsert_passport(sample_passport_record(
+                "p_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "personal",
+                "basic",
+            ))
+            .unwrap();
+        let state = ApiState::new(empty_mirror_store()).with_published_record_store(store);
+        let app = router_with_state(state);
+        let resp = app
+            .oneshot(
+                Request::builder()
+                    .uri("/v0/passports/p_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
+                    .body(Body::empty())
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+        assert_eq!(resp.status(), StatusCode::OK);
+        let body = to_bytes(resp.into_body(), usize::MAX).await.unwrap();
+        let parsed: PassportPublishRecord = serde_json::from_slice(&body).unwrap();
+        assert_eq!(parsed.passport_fpr, "p_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+        assert_eq!(parsed.category, "personal");
+    }
+
+    #[tokio::test]
+    async fn passport_list_endpoint_filters_by_min_tier() {
+        let store = Arc::new(InMemoryPublishedRecordStore::default());
+        store
+            .upsert_passport(sample_passport_record(
+                "p_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "personal",
+                "basic",
+            ))
+            .unwrap();
+        store
+            .upsert_passport(sample_passport_record(
+                "p_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+                "work",
+                "elite",
+            ))
+            .unwrap();
+        let state = ApiState::new(empty_mirror_store()).with_published_record_store(store);
+        let app = router_with_state(state);
+        let resp = app
+            .oneshot(
+                Request::builder()
+                    .uri("/v0/passports?min_tier=trusted")
+                    .body(Body::empty())
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+        assert_eq!(resp.status(), StatusCode::OK);
+        let body = to_bytes(resp.into_body(), usize::MAX).await.unwrap();
+        let parsed: serde_json::Value = serde_json::from_slice(&body).unwrap();
+        assert_eq!(parsed["count"], 1);
+        assert_eq!(parsed["passports"][0]["passport_fpr"], "p_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb");
+    }
+
+    #[tokio::test]
+    async fn project_get_endpoint_returns_seeded_record_with_correct_publisher() {
+        let store = Arc::new(InMemoryPublishedRecordStore::default());
+        store
+            .upsert_project(ProjectPublishRecord {
+                schema_uri: "https://static.rcxprotocol.org/schemas/2026-05-01/project-publish.schema.json"
+                    .to_string(),
+                publisher_passport: "p_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa".to_string(),
+                project_id: "alpha".to_string(),
+                name: "Alpha".to_string(),
+                planning_target: Some("github://owner/repo".to_string()),
+                default_passport_fpr: "p_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa".to_string(),
+                allowed_passport_fprs: vec!["p_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa".to_string()],
+                working_tenant_categories: vec!["personal".to_string()],
+                linked_github_repos: vec!["owner/repo".to_string()],
+                operator_metadata: None,
+                created_at: "2026-05-01T00:00:00Z".to_string(),
+                published_at: "2026-05-01T00:00:00Z".to_string(),
+                signature: "0".repeat(128),
+                signer_kid: "p_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa".to_string(),
+                project_hash: "0".repeat(64),
+            })
+            .unwrap();
+        let state = ApiState::new(empty_mirror_store()).with_published_record_store(store);
+        let app = router_with_state(state);
+        let resp = app
+            .oneshot(
+                Request::builder()
+                    .uri("/v0/projects/p_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/alpha")
+                    .body(Body::empty())
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+        assert_eq!(resp.status(), StatusCode::OK);
+        let body = to_bytes(resp.into_body(), usize::MAX).await.unwrap();
+        let parsed: ProjectPublishRecord = serde_json::from_slice(&body).unwrap();
+        assert_eq!(parsed.project_id, "alpha");
+        assert_eq!(parsed.planning_target.as_deref(), Some("github://owner/repo"));
     }
 }

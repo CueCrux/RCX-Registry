@@ -1,0 +1,109 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://static.rcxprotocol.org/schemas/2026-05-01/passport-publish.schema.json",
+  "title": "RCX Registry — Passport Publish v1.0",
+  "description": "Publishable descriptor of an agent passport. Carries identity, sponsor lineage, reputation tier, and capability declarations — but never private key material. Designed to be discoverable across the RCX ecosystem so other agents/orgs can resolve a passport and verify its lineage. Sourced from a Crux Daemon's `__passport__::{id}` fact via `corecruxctl publish passport <id>`.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_uri",
+    "publisher_passport",
+    "passport_fpr",
+    "passport_id",
+    "category",
+    "public_key_hex",
+    "reputation_tier",
+    "receipt_count",
+    "agent_work_gate",
+    "issued_at",
+    "published_at",
+    "signature",
+    "signer_kid",
+    "passport_hash"
+  ],
+  "properties": {
+    "schema_uri": {
+      "type": "string",
+      "const": "https://static.rcxprotocol.org/schemas/2026-05-01/passport-publish.schema.json"
+    },
+    "publisher_passport": {
+      "type": "string",
+      "description": "Daemon-root passport that signed the publish event (BLAKE3 fingerprint, p_<32 hex>).",
+      "pattern": "^p_[0-9a-f]{32}$"
+    },
+    "passport_fpr": {
+      "type": "string",
+      "description": "Fingerprint of the passport being published. Identical format to publisher_passport.",
+      "pattern": "^p_[0-9a-f]{32}$"
+    },
+    "passport_id": {
+      "type": "string",
+      "description": "Operator-chosen slug (e.g. 'personal-default', 'work-team-alpha'). Lowercase alphanumeric, with hyphens/underscores.",
+      "pattern": "^[a-z0-9_-]{1,64}$"
+    },
+    "category": {
+      "type": "string",
+      "enum": ["personal", "work", "public"],
+      "description": "Tenant-category convention. Filterable so other agents can find passports of a given posture."
+    },
+    "public_key_hex": {
+      "type": "string",
+      "description": "Lowercase hex-encoded ed25519 verifying key (32 bytes → 64 hex chars).",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "sponsor_passport_fpr": {
+      "type": ["string", "null"],
+      "description": "Optional sponsor lineage. Points at the parent passport that vouched for this one.",
+      "pattern": "^p_[0-9a-f]{32}$"
+    },
+    "reputation_tier": {
+      "type": "string",
+      "enum": ["unverified", "basic", "established", "trusted", "elite"],
+      "description": "Five-tier reputation derived from local receipt count. Sync gates may filter on this."
+    },
+    "receipt_count": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Number of receipted operations the passport has accrued at publish time. Drives reputation_tier."
+    },
+    "agent_work_gate": {
+      "type": "boolean",
+      "description": "When true, the passport's owner has opted into human-in-the-loop on agent state changes. Other orgs can filter for 'agents that pause for review' vs. 'agents that act autonomously'."
+    },
+    "is_default_for_category": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the source daemon treats this as the default passport for its category."
+    },
+    "operator_metadata": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "Optional opaque metadata block. Free-form JSON the operator can attach. The registry MAY ignore unknown fields."
+    },
+    "issued_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the passport was first issued on its source daemon (RFC 3339)."
+    },
+    "published_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When this publish-event was minted (RFC 3339)."
+    },
+    "signature": {
+      "type": "string",
+      "description": "Ed25519 signature over the canonical CBOR encoding of all preceding fields (passport_hash). Hex-encoded.",
+      "pattern": "^[0-9a-f]{128}$"
+    },
+    "signer_kid": {
+      "type": "string",
+      "description": "Key id of the signer — for the passport-publish flow, equals the publisher_passport's fingerprint.",
+      "pattern": "^p_[0-9a-f]{32}$"
+    },
+    "passport_hash": {
+      "type": "string",
+      "description": "BLAKE3 hash of the canonical CBOR encoding (32 bytes → 64 hex chars). Drives signature integrity.",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  }
+}

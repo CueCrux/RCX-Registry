@@ -1,0 +1,114 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://static.rcxprotocol.org/schemas/2026-05-01/project-publish.schema.json",
+  "title": "RCX Registry — Project Publish v1.0",
+  "description": "Publishable descriptor of a Crux Daemon project. Captures planning target + allowed-passport ids + working-tenant categories, but NOT individual work items (those stay private to the source daemon). Lets other agents/orgs subscribe to a project's passport set and discover what kind of work is happening there.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_uri",
+    "publisher_passport",
+    "project_id",
+    "name",
+    "default_passport_fpr",
+    "allowed_passport_fprs",
+    "working_tenant_categories",
+    "created_at",
+    "published_at",
+    "signature",
+    "signer_kid",
+    "project_hash"
+  ],
+  "properties": {
+    "schema_uri": {
+      "type": "string",
+      "const": "https://static.rcxprotocol.org/schemas/2026-05-01/project-publish.schema.json"
+    },
+    "publisher_passport": {
+      "type": "string",
+      "description": "Daemon-root passport that signed the publish event (BLAKE3 fingerprint, p_<32 hex>).",
+      "pattern": "^p_[0-9a-f]{32}$"
+    },
+    "project_id": {
+      "type": "string",
+      "description": "Operator-chosen slug. Combined with publisher_passport this yields a globally unique project identifier.",
+      "pattern": "^[a-z0-9_-]{1,64}$"
+    },
+    "name": {
+      "type": "string",
+      "description": "Human-readable project name. May contain spaces.",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "planning_target": {
+      "type": ["string", "null"],
+      "description": "Where planning artifacts live. Either `tenant://<tenant_id>` (a Crux tenant on the source daemon) or `github://<owner>/<repo>`. Null = no planning target yet.",
+      "pattern": "^(tenant://[a-z0-9_:./-]+|github://[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+)$"
+    },
+    "default_passport_fpr": {
+      "type": "string",
+      "description": "Fingerprint of the project's default passport. Resolves the chain when sessions don't supply an explicit passport.",
+      "pattern": "^p_[0-9a-f]{32}$"
+    },
+    "allowed_passport_fprs": {
+      "type": "array",
+      "description": "Passports this project allows acting on its behalf. Other agents can subscribe by establishing a sponsor lineage to one of these.",
+      "items": {
+        "type": "string",
+        "pattern": "^p_[0-9a-f]{32}$"
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "working_tenant_categories": {
+      "type": "array",
+      "description": "Distinct tenant categories (personal/work/public) used by this project's working tenants. Lets discovery surface 'projects that operate publicly' vs. 'projects with private posture'.",
+      "items": {
+        "type": "string",
+        "enum": ["personal", "work", "public"]
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "linked_github_repos": {
+      "type": "array",
+      "description": "GitHub repositories the project is indexing as shared memory (owner/repo). Empty when GitHub isn't connected on the source daemon.",
+      "items": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$"
+      },
+      "uniqueItems": true,
+      "default": []
+    },
+    "operator_metadata": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "Optional opaque metadata block."
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the project was first created on the source daemon (RFC 3339)."
+    },
+    "published_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When this publish-event was minted (RFC 3339)."
+    },
+    "signature": {
+      "type": "string",
+      "description": "Ed25519 signature over the canonical CBOR encoding of all preceding fields (project_hash). Hex-encoded.",
+      "pattern": "^[0-9a-f]{128}$"
+    },
+    "signer_kid": {
+      "type": "string",
+      "description": "Key id of the signer — for project-publish, equals publisher_passport.",
+      "pattern": "^p_[0-9a-f]{32}$"
+    },
+    "project_hash": {
+      "type": "string",
+      "description": "BLAKE3 hash of the canonical CBOR encoding (32 bytes → 64 hex chars).",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  }
+}
