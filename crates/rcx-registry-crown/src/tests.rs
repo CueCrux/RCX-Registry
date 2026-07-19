@@ -26,7 +26,16 @@ fn repo_root() -> PathBuf {
 }
 
 fn session_fixture_dirs() -> Vec<PathBuf> {
-    let fixtures_root = cuecrux_root().join("CueCrux-Shared/packages/session/fixtures");
+    // Prefer the live golden set from the sibling RCX-Protocol repo when this
+    // repo is checked out inside the CueCrux workspace; fall back to the
+    // vendored copy so the check also runs on standalone/CI checkouts.
+    // Re-vendor with: cp -r CueCrux-Shared/packages/session/fixtures/* fixtures/session-goldens/
+    let sibling = cuecrux_root().join("CueCrux-Shared/packages/session/fixtures");
+    let fixtures_root = if sibling.is_dir() {
+        sibling
+    } else {
+        repo_root().join("fixtures/session-goldens")
+    };
     let mut dirs: Vec<PathBuf> = fs::read_dir(&fixtures_root)
         .expect("read session fixtures dir")
         .filter_map(|entry| {

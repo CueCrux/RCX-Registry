@@ -29,7 +29,7 @@ RUN --mount=type=cache,target=/usr/local/cargo/registry \
  && cp /workspace/target/release/rcx-registry-server /usr/local/bin/rcx-registry-server
 
 FROM cgr.dev/chainguard/wolfi-base:latest AS runtime
-RUN apk add --no-cache ca-certificates tini libgcc \
+RUN apk add --no-cache ca-certificates tini libgcc wget \
  && addgroup -S rcx && adduser -S -G rcx -h /home/rcx rcx
 
 COPY --from=builder /usr/local/bin/rcx-registry-server /usr/local/bin/rcx-registry-server

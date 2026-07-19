@@ -6,7 +6,8 @@
 > Repo: [github.com/CueCrux/RCX-Registry](https://github.com/CueCrux/RCX-Registry) (empty at execplan creation)
 > Author: Myles Bryning
 > ExecPlan created: 2026-04-19
-> Status: In progress — M0–M4 deployable in `rcx-registry-server` binary (Postgres-backed stores, sync + enrichment loops, Vault Transit signer, hickory DNS, GitHub OAuth, ops assets). Hetzner provision + live 24h soak + real publisher E2E + Vault key + schema CDN are the remaining gates.
+> Status: **DEPLOYED (first-boot) 2026-07-18 (fact `gate:recommission-server`)** — RCX registry LIVE on the recommissioned ex-vault VM `100.76.91.69` (Docker + compose: server + Postgres both healthy, 5 migrations applied, `/healthz`+`/readyz`+`/v0/servers` all 200, master flag OFF). First live run surfaced + fixed two blockers: the `/v0/servers` sync-postgres-in-async panic (spawn_blocking, PR #1) and the wget-missing healthcheck (Dockerfile). **Remaining operator gates:** public IP + DNS (`registry`/`static.rcxprotocol.org`), Caddy/TLS, GitHub OAuth app, Vault transit key `rcx-registry-signing-key-1` on vaultcrux-vault, schema CDN, tailscale ACL, then `FEATURE_RCX_REGISTRY=true` + 24h soak + real publisher E2E. PR #1 CI is GitHub-Actions-billing-blocked (not code). \
+> _(orig)_ In progress — M0–M4 deployable in `rcx-registry-server` binary (Postgres-backed stores, sync + enrichment loops, Vault Transit signer, hickory DNS, GitHub OAuth, ops assets). Hetzner provision + live 24h soak + real publisher E2E + Vault key + schema CDN are the remaining gates.
 
 ## Purpose
 

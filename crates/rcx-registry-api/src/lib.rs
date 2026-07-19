@@ -31,8 +31,8 @@ pub const DEFAULT_PUBLISHER_SIGNER_KID: &str = "vault:transit:rcx-registry-signi
 
 pub mod published_records;
 pub use published_records::{
-    InMemoryPublishedRecordStore, PassportFilter, PassportPublishRecord, ProjectFilter, ProjectPublishRecord,
-    PublishedRecordStore,
+    InMemoryPublishedRecordStore, PassportFilter, PassportPublishRecord, ProjectFilter,
+    ProjectPublishRecord, PublishedRecordStore,
 };
 
 pub type SharedMirrorStore = Arc<dyn MirrorStore>;
@@ -344,6 +344,20 @@ pub fn router_with_state(state: ApiState) -> Router {
         .with_state(state)
 }
 
+/// Run synchronous store work (the `r2d2_postgres` layer blocks on a runtime
+/// internally) on a blocking thread so it never nests inside the async runtime.
+/// Without this the sync `postgres` client panics with "Cannot start a runtime
+/// from within a runtime" and aborts the process.
+async fn spawn_store<T, F>(f: F) -> Result<T, ApiError>
+where
+    F: FnOnce() -> Result<T, ApiError> + Send + 'static,
+    T: Send + 'static,
+{
+    tokio::task::spawn_blocking(f)
+        .await
+        .map_err(|error| ApiError::Store(format!("blocking task failed: {error}")))?
+}
+
 #[derive(Debug, Deserialize)]
 struct ListPassportsQuery {
     category: Option<String>,
@@ -355,27 +369,29 @@ async fn list_passports_handler(
     State(state): State<ApiState>,
     Query(query): Query<ListPassportsQuery>,
 ) -> Result<Json<serde_json::Value>, ApiError> {
-    let filter = PassportFilter {
-        category: query.category.filter(|s| !s.is_empty()),
-        min_tier: query.min_tier.filter(|s| !s.is_empty()),
-        agent_work_gate: query.agent_work_gate,
-    };
-    let records = state.published_record_store.list_passports(&filter)?;
-    Ok(Json(serde_json::json!({
-        "count": records.len(),
-        "passports": records,
-    })))
+    let value = spawn_store(move || {
+        let filter = PassportFilter {
+            category: query.category.filter(|s| !s.is_empty()),
+            min_tier: query.min_tier.filter(|s| !s.is_empty()),
+            agent_work_gate: query.agent_work_gate,
+        };
+        let records = state.published_record_store.list_passports(&filter)?;
+        Ok(serde_json::json!({
+            "count": records.len(),
+            "passports": records,
+        }))
+    })
+    .await?;
+    Ok(Json(value))
 }
 
 async fn get_passport_handler(
     State(state): State<ApiState>,
     Path(passport_fpr): Path<String>,
 ) -> Result<Json<PassportPublishRecord>, ApiError> {
-    state
-        .published_record_store
-        .get_passport(&passport_fpr)?
-        .map(Json)
-        .ok_or(ApiError::NotFound)
+    let record =
+        spawn_store(move || state.published_record_store.get_passport(&passport_fpr)).await?;
+    record.map(Json).ok_or(ApiError::NotFound)
 }
 
 #[derive(Debug, Deserialize)]
@@ -387,35 +403,42 @@ async fn list_projects_handler(
     State(state): State<ApiState>,
     Query(query): Query<ListProjectsQuery>,
 ) -> Result<Json<serde_json::Value>, ApiError> {
-    let filter = ProjectFilter {
-        publisher: query.publisher.filter(|s| !s.is_empty()),
-    };
-    let records = state.published_record_store.list_projects(&filter)?;
-    Ok(Json(serde_json::json!({
-        "count": records.len(),
-        "projects": records,
-    })))
+    let value = spawn_store(move || {
+        let filter = ProjectFilter {
+            publisher: query.publisher.filter(|s| !s.is_empty()),
+        };
+        let records = state.published_record_store.list_projects(&filter)?;
+        Ok(serde_json::json!({
+            "count": records.len(),
+            "projects": records,
+        }))
+    })
+    .await?;
+    Ok(Json(value))
 }
 
 async fn get_project_handler(
     State(state): State<ApiState>,
     Path((publisher_passport, project_id)): Path<(String, String)>,
 ) -> Result<Json<ProjectPublishRecord>, ApiError> {
-    state
-        .published_record_store
-        .get_project(&publisher_passport, &project_id)?
-        .map(Json)
-        .ok_or(ApiError::NotFound)
+    let record = spawn_store(move || {
+        state
+            .published_record_store
+            .get_project(&publisher_passport, &project_id)
+    })
+    .await?;
+    record.map(Json).ok_or(ApiError::NotFound)
 }
 
 async fn list_servers(
     State(state): State<ApiState>,
     Query(query): Query<ListServersQuery>,
 ) -> Result<Json<RegistryServerListResponse>, ApiError> {
-    Ok(Json(decorate_list_response(
-        &state,
-        state.mirror_store.list_servers(&query.into())?,
-    )?))
+    let resp = spawn_store(move || {
+        decorate_list_response(&state, state.mirror_store.list_servers(&query.into())?)
+    })
+    .await?;
+    Ok(Json(resp))
 }
 
 async fn list_versions(
@@ -423,12 +446,14 @@ async fn list_versions(
     Path(server_name): Path<String>,
     Query(query): Query<IncludeDeletedQuery>,
 ) -> Result<Json<RegistryServerListResponse>, ApiError> {
-    Ok(Json(decorate_list_response(
-        &state,
-        state
+    let resp = spawn_store(move || {
+        let listing = state
             .mirror_store
-            .list_versions(&server_name, query.include_deleted.unwrap_or(false))?,
-    )?))
+            .list_versions(&server_name, query.include_deleted.unwrap_or(false))?;
+        decorate_list_response(&state, listing)
+    })
+    .await?;
+    Ok(Json(resp))
 }
 
 async fn get_version(
@@ -436,14 +461,16 @@ async fn get_version(
     Path((server_name, version)): Path<(String, String)>,
     Query(query): Query<IncludeDeletedQuery>,
 ) -> Result<Json<RegistryServerEnvelope>, ApiError> {
-    Ok(Json(decorate_envelope(
-        &state,
-        state.mirror_store.get_version(
+    let envelope = spawn_store(move || {
+        let found = state.mirror_store.get_version(
             &server_name,
             &version,
             query.include_deleted.unwrap_or(false),
-        )?,
-    )?))
+        )?;
+        decorate_envelope(&state, found)
+    })
+    .await?;
+    Ok(Json(envelope))
 }
 
 async fn publish_onboarding_page() -> Html<&'static str> {
@@ -505,24 +532,28 @@ async fn dns_verify(
     State(state): State<ApiState>,
     Json(body): Json<DnsVerifyRequest>,
 ) -> Result<(StatusCode, Json<PublisherRightsRecord>), ApiError> {
-    let claim = classify_namespace(&body.server_name)?;
-    let NamespaceKind::ReverseDns { domain } = &claim.kind else {
-        return Err(ApiError::BadRequest(
-            "dns txt verification only applies to reverse-dns namespaces".to_string(),
-        ));
-    };
-    let challenge = dns_txt_challenge(domain, &body.passport_fingerprint);
-    let observed_values = state.dns_resolver.lookup_txt(&challenge.record_name)?;
-    verify_dns_txt(&claim, &body.passport_fingerprint, &observed_values)?;
+    let record = spawn_store(move || {
+        let claim = classify_namespace(&body.server_name)?;
+        let NamespaceKind::ReverseDns { domain } = &claim.kind else {
+            return Err(ApiError::BadRequest(
+                "dns txt verification only applies to reverse-dns namespaces".to_string(),
+            ));
+        };
+        let challenge = dns_txt_challenge(domain, &body.passport_fingerprint);
+        let observed_values = state.dns_resolver.lookup_txt(&challenge.record_name)?;
+        verify_dns_txt(&claim, &body.passport_fingerprint, &observed_values)?;
 
-    let verified_at = body.verified_at.unwrap_or_else(now_ms);
-    let record = build_verified_rights_record(
-        &claim,
-        &body.publisher_passport,
-        VerificationMethod::DnsTxt,
-        verified_at,
-    );
-    state.publisher_rights_store.upsert(record.clone())?;
+        let verified_at = body.verified_at.unwrap_or_else(now_ms);
+        let record = build_verified_rights_record(
+            &claim,
+            &body.publisher_passport,
+            VerificationMethod::DnsTxt,
+            verified_at,
+        );
+        state.publisher_rights_store.upsert(record.clone())?;
+        Ok(record)
+    })
+    .await?;
     Ok((StatusCode::CREATED, Json(record)))
 }
 
@@ -530,23 +561,27 @@ async fn manual_verify(
     State(state): State<ApiState>,
     Json(body): Json<ManualVerifyRequest>,
 ) -> Result<(StatusCode, Json<PublisherRightsRecord>), ApiError> {
-    if body.reviewer_passport.trim().is_empty() {
-        return Err(ApiError::BadRequest(
-            "reviewer_passport must not be empty".to_string(),
-        ));
-    }
+    let record = spawn_store(move || {
+        if body.reviewer_passport.trim().is_empty() {
+            return Err(ApiError::BadRequest(
+                "reviewer_passport must not be empty".to_string(),
+            ));
+        }
 
-    let claim = classify_namespace(&body.server_name)?;
-    verify_manual_review(&claim)?;
+        let claim = classify_namespace(&body.server_name)?;
+        verify_manual_review(&claim)?;
 
-    let verified_at = body.verified_at.unwrap_or_else(now_ms);
-    let record = build_verified_rights_record(
-        &claim,
-        &body.publisher_passport,
-        VerificationMethod::Manual,
-        verified_at,
-    );
-    state.publisher_rights_store.upsert(record.clone())?;
+        let verified_at = body.verified_at.unwrap_or_else(now_ms);
+        let record = build_verified_rights_record(
+            &claim,
+            &body.publisher_passport,
+            VerificationMethod::Manual,
+            verified_at,
+        );
+        state.publisher_rights_store.upsert(record.clone())?;
+        Ok(record)
+    })
+    .await?;
     Ok((StatusCode::CREATED, Json(record)))
 }
 
@@ -577,35 +612,41 @@ async fn github_oauth_callback(
     State(state): State<ApiState>,
     Query(query): Query<GitHubCallbackQuery>,
 ) -> Result<(StatusCode, Json<PublisherRightsRecord>), ApiError> {
-    let claim = classify_namespace(&query.server_name)?;
-    verify_github_passport(&claim, &query.publisher_passport)?;
+    let record = spawn_store(move || {
+        let claim = classify_namespace(&query.server_name)?;
+        verify_github_passport(&claim, &query.publisher_passport)?;
 
-    let expected_owner = match &claim.kind {
-        NamespaceKind::GitHub { owner } => owner,
-        _ => {
-            return Err(ApiError::BadRequest(
-                "github oauth only applies to io.github.<owner> namespaces".to_string(),
-            ))
+        let expected_owner = match &claim.kind {
+            NamespaceKind::GitHub { owner } => owner,
+            _ => {
+                return Err(ApiError::BadRequest(
+                    "github oauth only applies to io.github.<owner> namespaces".to_string(),
+                ))
+            }
+        };
+
+        // `exchange_code` uses a blocking reqwest client, so it must run off the
+        // async runtime here alongside the sync store write (see spawn_store).
+        let resolved_owner = state
+            .github_oauth_provider
+            .exchange_code(&query.code, &query.state)?;
+        if &resolved_owner != expected_owner {
+            return Err(ApiError::VerificationFailed(format!(
+                "github callback resolved owner `{resolved_owner}` but namespace requires `{expected_owner}`"
+            )));
         }
-    };
 
-    let resolved_owner = state
-        .github_oauth_provider
-        .exchange_code(&query.code, &query.state)?;
-    if &resolved_owner != expected_owner {
-        return Err(ApiError::VerificationFailed(format!(
-            "github callback resolved owner `{resolved_owner}` but namespace requires `{expected_owner}`"
-        )));
-    }
-
-    let verified_at = query.verified_at.unwrap_or_else(now_ms);
-    let record = build_verified_rights_record(
-        &claim,
-        &query.publisher_passport,
-        VerificationMethod::GitHubOAuth,
-        verified_at,
-    );
-    state.publisher_rights_store.upsert(record.clone())?;
+        let verified_at = query.verified_at.unwrap_or_else(now_ms);
+        let record = build_verified_rights_record(
+            &claim,
+            &query.publisher_passport,
+            VerificationMethod::GitHubOAuth,
+            verified_at,
+        );
+        state.publisher_rights_store.upsert(record.clone())?;
+        Ok(record)
+    })
+    .await?;
     Ok((StatusCode::CREATED, Json(record)))
 }
 
@@ -613,58 +654,62 @@ async fn declare_publisher_enrichment(
     State(state): State<ApiState>,
     Json(body): Json<PublisherDeclareRequest>,
 ) -> Result<(StatusCode, Json<PublisherEnrichmentRecord>), ApiError> {
-    let claim = classify_namespace(&body.server_name)?;
-    let declaration =
-        validate_publisher_declaration_value(&body.declaration, Some(&body.server_name))
-            .map_err(|error| ApiError::BadRequest(error.to_string()))?;
+    let record = spawn_store(move || {
+        let claim = classify_namespace(&body.server_name)?;
+        let declaration =
+            validate_publisher_declaration_value(&body.declaration, Some(&body.server_name))
+                .map_err(|error| ApiError::BadRequest(error.to_string()))?;
 
-    let rights = state
-        .publisher_rights_store
-        .lookup(&declaration.publisher_passport, &claim.namespace)?
-        .ok_or_else(|| {
-            ApiError::VerificationFailed(format!(
-                "publisher passport `{}` has no verified rights for namespace `{}`",
-                declaration.publisher_passport, claim.namespace
-            ))
-        })?;
+        let rights = state
+            .publisher_rights_store
+            .lookup(&declaration.publisher_passport, &claim.namespace)?
+            .ok_or_else(|| {
+                ApiError::VerificationFailed(format!(
+                    "publisher passport `{}` has no verified rights for namespace `{}`",
+                    declaration.publisher_passport, claim.namespace
+                ))
+            })?;
 
-    let (declared_hash, _canonical_json) = declaration_hash(&body.declaration);
-    let payload = build_publisher_enrichment_payload(
-        &declaration,
-        &body.declared_uri,
-        &declared_hash,
-        &rights.verification_method,
-        None,
-    );
-    let prior = state.publisher_enrichment_store.get(&body.server_name)?;
-    let prior_hash_bytes = prior
-        .as_ref()
-        .and_then(|record| parse_blake3_prefixed_hash(&record.block.enrichment_receipt_hash));
-    let receipt = build_entry_enriched_receipt(
-        &body.server_name,
-        &declaration,
-        &body.declared_uri,
-        declared_hash,
-        &payload,
-        derived_event_id(&format!(
-            "{}:{}:{}:{}",
-            body.server_name,
-            declaration.publisher_passport,
-            body.declared_uri,
-            declaration.declared_at
-        )),
-        DEFAULT_PUBLISHER_SIGNER_KID,
-        prior_hash_bytes,
-    )
-    .map_err(|error| ApiError::BadRequest(error.to_string()))?;
-    let record = build_publisher_enrichment_record(
-        &body.server_name,
-        &declaration,
-        &payload,
-        &receipt.receipt_hash,
-        prior.map(|record| record.block.enrichment_receipt_hash),
-    );
-    state.publisher_enrichment_store.upsert(record.clone())?;
+        let (declared_hash, _canonical_json) = declaration_hash(&body.declaration);
+        let payload = build_publisher_enrichment_payload(
+            &declaration,
+            &body.declared_uri,
+            &declared_hash,
+            &rights.verification_method,
+            None,
+        );
+        let prior = state.publisher_enrichment_store.get(&body.server_name)?;
+        let prior_hash_bytes = prior
+            .as_ref()
+            .and_then(|record| parse_blake3_prefixed_hash(&record.block.enrichment_receipt_hash));
+        let receipt = build_entry_enriched_receipt(
+            &body.server_name,
+            &declaration,
+            &body.declared_uri,
+            declared_hash,
+            &payload,
+            derived_event_id(&format!(
+                "{}:{}:{}:{}",
+                body.server_name,
+                declaration.publisher_passport,
+                body.declared_uri,
+                declaration.declared_at
+            )),
+            DEFAULT_PUBLISHER_SIGNER_KID,
+            prior_hash_bytes,
+        )
+        .map_err(|error| ApiError::BadRequest(error.to_string()))?;
+        let record = build_publisher_enrichment_record(
+            &body.server_name,
+            &declaration,
+            &payload,
+            &receipt.receipt_hash,
+            prior.map(|record| record.block.enrichment_receipt_hash),
+        );
+        state.publisher_enrichment_store.upsert(record.clone())?;
+        Ok(record)
+    })
+    .await?;
     Ok((StatusCode::CREATED, Json(record)))
 }
 
@@ -672,9 +717,13 @@ async fn list_publisher_rights(
     State(state): State<ApiState>,
     Path(publisher_passport): Path<String>,
 ) -> Result<Json<PublisherRightsListResponse>, ApiError> {
-    let rights = state
-        .publisher_rights_store
-        .list_by_publisher(&publisher_passport)?;
+    let lookup_passport = publisher_passport.clone();
+    let rights = spawn_store(move || {
+        state
+            .publisher_rights_store
+            .list_by_publisher(&lookup_passport)
+    })
+    .await?;
     Ok(Json(PublisherRightsListResponse {
         publisher_passport,
         rights,
@@ -1739,8 +1788,9 @@ mod tests {
 
     fn sample_passport_record(fpr: &str, category: &str, tier: &str) -> PassportPublishRecord {
         PassportPublishRecord {
-            schema_uri: "https://static.rcxprotocol.org/schemas/2026-05-01/passport-publish.schema.json"
-                .to_string(),
+            schema_uri:
+                "https://static.rcxprotocol.org/schemas/2026-05-01/passport-publish.schema.json"
+                    .to_string(),
             publisher_passport: "p_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa".to_string(),
             passport_fpr: fpr.to_string(),
             passport_id: "alpha".to_string(),
@@ -1836,7 +1886,10 @@ mod tests {
         let body = to_bytes(resp.into_body(), usize::MAX).await.unwrap();
         let parsed: serde_json::Value = serde_json::from_slice(&body).unwrap();
         assert_eq!(parsed["count"], 1);
-        assert_eq!(parsed["passports"][0]["passport_fpr"], "p_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb");
+        assert_eq!(
+            parsed["passports"][0]["passport_fpr"],
+            "p_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        );
     }
 
     #[tokio::test]
@@ -1844,8 +1897,9 @@ mod tests {
         let store = Arc::new(InMemoryPublishedRecordStore::default());
         store
             .upsert_project(ProjectPublishRecord {
-                schema_uri: "https://static.rcxprotocol.org/schemas/2026-05-01/project-publish.schema.json"
-                    .to_string(),
+                schema_uri:
+                    "https://static.rcxprotocol.org/schemas/2026-05-01/project-publish.schema.json"
+                        .to_string(),
                 publisher_passport: "p_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa".to_string(),
                 project_id: "alpha".to_string(),
                 name: "Alpha".to_string(),
@@ -1877,6 +1931,9 @@ mod tests {
         let body = to_bytes(resp.into_body(), usize::MAX).await.unwrap();
         let parsed: ProjectPublishRecord = serde_json::from_slice(&body).unwrap();
         assert_eq!(parsed.project_id, "alpha");
-        assert_eq!(parsed.planning_target.as_deref(), Some("github://owner/repo"));
+        assert_eq!(
+            parsed.planning_target.as_deref(),
+            Some("github://owner/repo")
+        );
     }
 }

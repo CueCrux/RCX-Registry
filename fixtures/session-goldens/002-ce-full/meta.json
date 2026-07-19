@@ -1,0 +1,9 @@
+{
+  "name": "002-ce-full",
+  "description": "CE full v2 graph with intent shaping and parent chain",
+  "receipt_mode": "local",
+  "expected_hash_hex": "3869bc49a0814c74575cb8875fb55a6d1a2095f123de1c314cd23f2a0929a660",
+  "expected_cbor_len": 7553,
+  "expected_json_len": 9084,
+  "signer_public_key_hex": null
+}

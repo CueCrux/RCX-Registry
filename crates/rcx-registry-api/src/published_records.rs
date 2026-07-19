@@ -93,10 +93,16 @@ pub fn tier_rank(tier: &str) -> Option<usize> {
 pub trait PublishedRecordStore: Send + Sync + 'static {
     fn upsert_passport(&self, record: PassportPublishRecord) -> Result<(), ApiError>;
     fn get_passport(&self, passport_fpr: &str) -> Result<Option<PassportPublishRecord>, ApiError>;
-    fn list_passports(&self, filter: &PassportFilter) -> Result<Vec<PassportPublishRecord>, ApiError>;
+    fn list_passports(
+        &self,
+        filter: &PassportFilter,
+    ) -> Result<Vec<PassportPublishRecord>, ApiError>;
     fn upsert_project(&self, record: ProjectPublishRecord) -> Result<(), ApiError>;
-    fn get_project(&self, publisher_passport: &str, project_id: &str)
-        -> Result<Option<ProjectPublishRecord>, ApiError>;
+    fn get_project(
+        &self,
+        publisher_passport: &str,
+        project_id: &str,
+    ) -> Result<Option<ProjectPublishRecord>, ApiError>;
     fn list_projects(&self, filter: &ProjectFilter) -> Result<Vec<ProjectPublishRecord>, ApiError>;
 }
 
@@ -125,7 +131,10 @@ impl PublishedRecordStore for InMemoryPublishedRecordStore {
         Ok(guard.get(passport_fpr).cloned())
     }
 
-    fn list_passports(&self, filter: &PassportFilter) -> Result<Vec<PassportPublishRecord>, ApiError> {
+    fn list_passports(
+        &self,
+        filter: &PassportFilter,
+    ) -> Result<Vec<PassportPublishRecord>, ApiError> {
         let guard = self
             .passports
             .lock()
@@ -133,11 +142,15 @@ impl PublishedRecordStore for InMemoryPublishedRecordStore {
         let min_rank = filter.min_tier.as_deref().and_then(tier_rank);
         let out: Vec<_> = guard
             .values()
-            .filter(|r| filter.category.as_deref().map_or(true, |c| r.category == c))
-            .filter(|r| filter.agent_work_gate.map_or(true, |g| r.agent_work_gate == g))
+            .filter(|r| filter.category.as_deref().is_none_or(|c| r.category == c))
+            .filter(|r| {
+                filter
+                    .agent_work_gate
+                    .is_none_or(|g| r.agent_work_gate == g)
+            })
             .filter(|r| {
                 min_rank
-                    .map(|m| tier_rank(&r.reputation_tier).map_or(false, |t| t >= m))
+                    .map(|m| tier_rank(&r.reputation_tier).is_some_and(|t| t >= m))
                     .unwrap_or(true)
             })
             .cloned()
@@ -182,7 +195,7 @@ impl PublishedRecordStore for InMemoryPublishedRecordStore {
                 filter
                     .publisher
                     .as_deref()
-                    .map_or(true, |p| r.publisher_passport == p)
+                    .is_none_or(|p| r.publisher_passport == p)
             })
             .cloned()
             .collect();
@@ -196,8 +209,9 @@ mod tests {
 
     fn sample_passport(fpr: &str, category: &str, tier: &str) -> PassportPublishRecord {
         PassportPublishRecord {
-            schema_uri: "https://static.rcxprotocol.org/schemas/2026-05-01/passport-publish.schema.json"
-                .to_string(),
+            schema_uri:
+                "https://static.rcxprotocol.org/schemas/2026-05-01/passport-publish.schema.json"
+                    .to_string(),
             publisher_passport: "p_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa".to_string(),
             passport_fpr: fpr.to_string(),
             passport_id: "alpha".to_string(),
@@ -222,7 +236,10 @@ mod tests {
         let store = InMemoryPublishedRecordStore::default();
         let rec = sample_passport("p_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "personal", "basic");
         store.upsert_passport(rec.clone()).expect("upsert");
-        let loaded = store.get_passport(&rec.passport_fpr).expect("get").expect("present");
+        let loaded = store
+            .get_passport(&rec.passport_fpr)
+            .expect("get")
+            .expect("present");
         assert_eq!(loaded, rec);
     }
 
@@ -266,15 +283,19 @@ mod tests {
             })
             .unwrap();
         assert_eq!(work_only.len(), 1);
-        assert_eq!(work_only[0].passport_fpr, "p_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb");
+        assert_eq!(
+            work_only[0].passport_fpr,
+            "p_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        );
     }
 
     #[test]
     fn project_keyed_by_publisher_and_id() {
         let store = InMemoryPublishedRecordStore::default();
         let rec = ProjectPublishRecord {
-            schema_uri: "https://static.rcxprotocol.org/schemas/2026-05-01/project-publish.schema.json"
-                .to_string(),
+            schema_uri:
+                "https://static.rcxprotocol.org/schemas/2026-05-01/project-publish.schema.json"
+                    .to_string(),
             publisher_passport: "p_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa".to_string(),
             project_id: "alpha".to_string(),
             name: "Alpha".to_string(),

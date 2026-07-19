@@ -1,0 +1,9 @@
+{
+  "name": "009-audit-mode",
+  "description": "Hosted audit-mode plan without a signature",
+  "receipt_mode": "audit",
+  "expected_hash_hex": "f066faaefd08cd4795fa4a731b6c2048fcfc49e9edaeba183e2331e607f008e1",
+  "expected_cbor_len": 7135,
+  "expected_json_len": 8938,
+  "signer_public_key_hex": null
+}

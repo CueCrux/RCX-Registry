@@ -1,0 +1,9 @@
+{
+  "name": "008-unicode-principal",
+  "description": "Hosted verified plan with unicode principal and graph metadata",
+  "receipt_mode": "verified",
+  "expected_hash_hex": "1f725553ed0208fe7130e5ca4add3af065130d9709b8751c8790a43723b4119f",
+  "expected_cbor_len": 7260,
+  "expected_json_len": 9121,
+  "signer_public_key_hex": "66cd608b928b88e50e0efeaa33faf1c43cefe07294b0b87e9fe0aba6a3cf7633"
+}

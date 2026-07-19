@@ -1,0 +1,9 @@
+{
+  "name": "007-empty-affinities",
+  "description": "Hosted verified plan with no visible capabilities after denies",
+  "receipt_mode": "verified",
+  "expected_hash_hex": "40e0a84278ef9f8ce4f2b62d479a637bb5a4606a229e1085d3768f5a0f750a5a",
+  "expected_cbor_len": 994,
+  "expected_json_len": 1369,
+  "signer_public_key_hex": "66cd608b928b88e50e0efeaa33faf1c43cefe07294b0b87e9fe0aba6a3cf7633"
+}
