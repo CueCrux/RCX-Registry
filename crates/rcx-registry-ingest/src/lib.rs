@@ -293,7 +293,12 @@ pub struct McpRegistryClient {
 
 impl McpRegistryClient {
     pub fn new(base_url: impl Into<String>) -> Result<Self, IngestError> {
-        let client = Client::builder().build()?;
+        // Without a timeout one stalled upstream response wedges the sync
+        // loop forever (observed on the live host 2026-07-19).
+        let client = Client::builder()
+            .connect_timeout(Duration::from_secs(10))
+            .timeout(Duration::from_secs(60))
+            .build()?;
         Ok(Self {
             base_url: base_url.into(),
             client,

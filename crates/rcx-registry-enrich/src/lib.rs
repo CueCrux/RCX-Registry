@@ -1,6 +1,7 @@
 //! Auto and publisher-declared enrichment workflows.
 
 use std::collections::BTreeSet;
+use std::time::Duration;
 
 use blake3::Hasher;
 use jsonschema::validator_for;
@@ -198,8 +199,13 @@ pub struct PublisherDeclarationClient {
 
 impl PublisherDeclarationClient {
     pub fn new() -> Result<Self, EnrichError> {
+        // Match the ingest client: a declaration host that never responds
+        // must not wedge the 24h refresh loop.
         Ok(Self {
-            client: Client::builder().build()?,
+            client: Client::builder()
+                .connect_timeout(Duration::from_secs(10))
+                .timeout(Duration::from_secs(60))
+                .build()?,
         })
     }
 
