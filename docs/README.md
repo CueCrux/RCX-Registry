@@ -1,7 +1,8 @@
 # Docs
 
-Repository-local documentation lives here. User-facing spec mirrors and onboarding
-guides will be added in later milestones.
+Repository-local documentation lives here.
+
+- [publishing.md](publishing.md) — publisher quickstart: verify namespace rights, host a declaration, submit, and see the enrichment overlay live.
 
 Current repo-local publisher onboarding surface:
 
