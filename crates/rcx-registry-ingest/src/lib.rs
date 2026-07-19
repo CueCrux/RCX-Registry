@@ -180,14 +180,15 @@ pub fn canonicalize_json(value: &Value) -> String {
 }
 
 pub fn schema_date_from_uri(schema_uri: &str) -> Result<String, IngestError> {
-    let marker = "/schemas/";
-    let Some(remainder) = schema_uri.split(marker).nth(1) else {
-        return Err(IngestError::InvalidSchemaUri(schema_uri.to_string()));
-    };
-    // The date segment is not always first: current upstream URIs look like
-    // `/schemas/2025-12-11/server.schema.json`, but older published rows still
-    // carry `/schemas/server/2025-12-11.json`. Accept the first date-shaped
-    // path segment, ignoring any file extension.
+    // Live upstream rows carry three URI shapes so far:
+    // `/schemas/2025-12-11/server.schema.json` (current),
+    // `/schemas/server/2025-12-11.json` and `/v0/schema/2025-12-11` (legacy).
+    // Accept the first date-shaped path segment after either marker,
+    // ignoring any file extension.
+    let remainder = ["/schemas/", "/schema/"]
+        .iter()
+        .find_map(|marker| schema_uri.split(marker).nth(1))
+        .ok_or_else(|| IngestError::InvalidSchemaUri(schema_uri.to_string()))?;
     remainder
         .split('/')
         .map(|segment| segment.split('.').next().unwrap_or(segment))
@@ -677,13 +678,20 @@ mod tests {
 
     #[test]
     fn schema_date_extracts_from_legacy_registry_uri() {
-        // Older published rows on the live upstream still carry this shape;
-        // it poisoned every sync tick on the first deployed boot (2026-07-18).
-        let schema_uri = "https://registry.modelcontextprotocol.io/schemas/server/2025-12-11.json";
-        assert_eq!(
-            schema_date_from_uri(schema_uri).expect("schema date should parse"),
-            "2025-12-11"
-        );
+        // Older published rows on the live upstream still carry these shapes;
+        // the first poisoned every sync tick on the first deployed boot
+        // (2026-07-18), the second surfaced as a skipped envelope on the
+        // first completed tick (2026-07-19).
+        for uri in [
+            "https://registry.modelcontextprotocol.io/schemas/server/2025-12-11.json",
+            "https://registry.modelcontextprotocol.io/v0/schema/2025-12-11",
+        ] {
+            assert_eq!(
+                schema_date_from_uri(uri).expect("schema date should parse"),
+                "2025-12-11",
+                "uri: {uri}"
+            );
+        }
     }
 
     #[test]

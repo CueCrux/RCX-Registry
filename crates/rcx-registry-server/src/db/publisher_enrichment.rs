@@ -65,21 +65,8 @@ impl PublisherEnrichmentStore for PgPublisherEnrichmentStore {
         )
         .map_err(|error| ApiError::Store(error.to_string()))?;
 
-        // Persist the auxiliary fields (verification metadata) as JSON in a
-        // sidecar table to avoid a destructive migration on `rcx_enrichment`.
-        conn.execute(
-            "CREATE TABLE IF NOT EXISTS rcx_enrichment_publisher_meta (\
-                server_name TEXT PRIMARY KEY REFERENCES rcx_enrichment(server_name) ON DELETE CASCADE,\
-                publisher_passport TEXT NOT NULL,\
-                publisher_rights_verified BOOLEAN NOT NULL,\
-                verification_method TEXT NOT NULL,\
-                refresh_interval_seconds BIGINT,\
-                supersedes_prior_receipt_hash TEXT\
-            )",
-            &[],
-        )
-        .map_err(|error| ApiError::Store(error.to_string()))?;
-
+        // Verification metadata lives in the sidecar table created by
+        // migration 0006 — DDL must not run in the request path.
         let refresh_interval = block.refresh_interval_seconds.map(|seconds| seconds as i64);
         conn.execute(
             "INSERT INTO rcx_enrichment_publisher_meta (\
