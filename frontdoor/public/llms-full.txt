@@ -49,7 +49,7 @@ https://registry.rcxprotocol.org:
 - GET /v0/servers — list servers, cursor pagination, `limit` parameter.
 - GET /v0/servers/{name}/versions — list versions for a server.
 - GET /v0/servers/{name}/versions/{version} — fetch one version.
-- GET /openapi.json — self-contained OpenAPI spec (inline definitions, no external $ref).
+- GET https://rcxprotocol.org/openapi.json — self-contained OpenAPI spec for the registry API (inline definitions, no external $ref).
 
 Publisher rights + enrichment (RCX extensions):
 

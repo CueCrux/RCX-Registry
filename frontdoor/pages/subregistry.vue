@@ -58,7 +58,7 @@ const routes = [
         </p>
         <div class="flex flex-wrap gap-3">
           <a :href="`${api}/v0/servers?limit=5`" class="btn btn-quiet">Try /v0/servers ↗</a>
-          <a :href="`${api}/openapi.json`" class="btn btn-quiet">OpenAPI spec ↗</a>
+          <a href="/openapi.json" class="btn btn-quiet">OpenAPI spec ↗</a>
         </div>
       </div>
     </section>
@@ -130,8 +130,9 @@ const routes = [
       </div>
       <p class="text-sm text-ink3 max-w-[70ch]">
         Any client that lets you configure the registry base URL points here the same way. And
-        because the registry publishes an <span class="font-mono">/openapi.json</span>, OpenAPI-to-MCP
-        tooling can wrap the registry itself as a server — one more surface, no extra work from us.
+        because there is a self-contained <a href="/openapi.json" class="underline">/openapi.json</a>,
+        OpenAPI-to-MCP tooling can wrap the registry itself as a server — one more surface, no extra
+        work from us.
       </p>
     </section>
 

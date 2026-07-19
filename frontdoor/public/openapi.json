@@ -1,0 +1,176 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "RCX-Registry API",
+    "version": "0.1.0",
+    "summary": "Verifiable, MCP-compatible subregistry.",
+    "description": "Baseline read API is shape-compatible with the upstream MCP registry `/v0` surface, so existing MCP registry clients work unchanged. RCX extensions add publisher namespace verification and RCX capability enrichment, surfaced under `_meta.org.rcxprotocol.registry`. Every state change is an ed25519-signed, hash-chained CROWN receipt. This document is self-contained (no external $ref).",
+    "license": { "name": "Apache-2.0", "url": "https://www.apache.org/licenses/LICENSE-2.0" },
+    "contact": { "name": "RCX-Registry", "url": "https://rcxprotocol.org" }
+  },
+  "servers": [{ "url": "https://registry.rcxprotocol.org", "description": "Production API host" }],
+  "externalDocs": { "description": "Source", "url": "https://github.com/CueCrux/RCX-Registry" },
+  "tags": [
+    { "name": "registry", "description": "Baseline mirror read API (upstream /v0-compatible)." },
+    { "name": "publisher-rights", "description": "Namespace ownership verification." },
+    { "name": "enrichment", "description": "RCX capability metadata declarations." }
+  ],
+  "paths": {
+    "/v0/servers": {
+      "get": {
+        "tags": ["registry"],
+        "summary": "List servers",
+        "description": "Cursor-paginated list of mirrored MCP servers. Shape-compatible with the upstream MCP registry.",
+        "parameters": [
+          { "name": "limit", "in": "query", "required": false, "schema": { "type": "integer", "minimum": 1, "maximum": 100, "default": 30 } },
+          { "name": "cursor", "in": "query", "required": false, "schema": { "type": "string" }, "description": "Opaque pagination cursor from a prior response's `metadata.next_cursor`." }
+        ],
+        "responses": {
+          "200": {
+            "description": "A page of servers.",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ServerList" } } }
+          }
+        }
+      }
+    },
+    "/v0/servers/{name}/versions": {
+      "get": {
+        "tags": ["registry"],
+        "summary": "List versions for a server",
+        "parameters": [{ "$ref": "#/components/parameters/ServerName" }],
+        "responses": {
+          "200": { "description": "All known versions.", "content": { "application/json": { "schema": { "type": "object", "properties": { "servers": { "type": "array", "items": { "$ref": "#/components/schemas/Server" } } } } } } },
+          "404": { "$ref": "#/components/responses/NotFound" }
+        }
+      }
+    },
+    "/v0/servers/{name}/versions/{version}": {
+      "get": {
+        "tags": ["registry"],
+        "summary": "Fetch one version",
+        "parameters": [
+          { "$ref": "#/components/parameters/ServerName" },
+          { "name": "version", "in": "path", "required": true, "schema": { "type": "string" }, "example": "1.2.0" }
+        ],
+        "responses": {
+          "200": { "description": "One server version.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Server" } } } },
+          "404": { "$ref": "#/components/responses/NotFound" }
+        }
+      }
+    },
+    "/v0/publisher-rights/dns-challenge": {
+      "post": {
+        "tags": ["publisher-rights"],
+        "summary": "Start a DNS TXT namespace challenge",
+        "description": "Returns a token to publish as a `_rcx-registry.<domain>` TXT record.",
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "type": "object", "required": ["namespace"], "properties": { "namespace": { "type": "string", "example": "com.example" } } } } } },
+        "responses": { "200": { "description": "Challenge issued.", "content": { "application/json": { "schema": { "type": "object", "properties": { "record_name": { "type": "string" }, "record_value": { "type": "string" }, "expires_at": { "type": "string", "format": "date-time" } } } } } } }
+      }
+    },
+    "/v0/publisher-rights/dns-verify": {
+      "post": {
+        "tags": ["publisher-rights"],
+        "summary": "Verify a DNS TXT challenge",
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "type": "object", "required": ["namespace"], "properties": { "namespace": { "type": "string" } } } } } },
+        "responses": { "200": { "description": "Verification result (a signed rights receipt on success).", "content": { "application/json": { "schema": { "type": "object", "properties": { "verified": { "type": "boolean" }, "receipt": { "$ref": "#/components/schemas/ReceiptRef" } } } } } } }
+      }
+    },
+    "/v0/publisher-rights/github/start": {
+      "get": {
+        "tags": ["publisher-rights"],
+        "summary": "Begin GitHub OAuth namespace verification",
+        "description": "For `io.github.*` namespaces. Redirects to GitHub OAuth.",
+        "responses": { "302": { "description": "Redirect to GitHub OAuth." } }
+      }
+    },
+    "/v0/publisher-rights/github/callback": {
+      "get": {
+        "tags": ["publisher-rights"],
+        "summary": "GitHub OAuth callback",
+        "parameters": [
+          { "name": "code", "in": "query", "required": true, "schema": { "type": "string" } },
+          { "name": "state", "in": "query", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": { "200": { "description": "Namespace rights established (signed receipt)." } }
+      }
+    },
+    "/v0/publishers/declare": {
+      "post": {
+        "tags": ["enrichment"],
+        "summary": "Submit an RCX enrichment declaration",
+        "description": "A verified publisher declares RCX capability metadata for a server. Schema-validated against static.rcxprotocol.org/schemas/<date>/rcx-enrichment.schema.json, hashed, and receipted.",
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "type": "object", "description": "An rcx-enrichment declaration (see the published JSON Schema).", "additionalProperties": true } } } },
+        "responses": {
+          "200": { "description": "Declaration accepted; enrichment receipted.", "content": { "application/json": { "schema": { "type": "object", "properties": { "accepted": { "type": "boolean" }, "receipt": { "$ref": "#/components/schemas/ReceiptRef" } } } } } },
+          "402": { "description": "Publisher rights not verified for this namespace." }
+        }
+      }
+    },
+    "/v0/publishers/{publisher_passport}": {
+      "get": {
+        "tags": ["publisher-rights"],
+        "summary": "Fetch a publisher rights record",
+        "parameters": [{ "name": "publisher_passport", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "responses": { "200": { "description": "Publisher rights + verified namespaces." }, "404": { "$ref": "#/components/responses/NotFound" } }
+      }
+    }
+  },
+  "components": {
+    "parameters": {
+      "ServerName": { "name": "name", "in": "path", "required": true, "schema": { "type": "string" }, "description": "Reverse-DNS server name; `/` must be percent-encoded (`%2F`).", "example": "io.github.owner%2Fserver" }
+    },
+    "responses": {
+      "NotFound": { "description": "No such resource.", "content": { "application/json": { "schema": { "type": "object", "properties": { "error": { "type": "string" } } } } } }
+    },
+    "schemas": {
+      "ServerList": {
+        "type": "object",
+        "description": "Upstream-compatible server list envelope.",
+        "properties": {
+          "servers": { "type": "array", "items": { "$ref": "#/components/schemas/Server" } },
+          "metadata": { "type": "object", "properties": { "next_cursor": { "type": ["string", "null"] }, "count": { "type": "integer" } } }
+        }
+      },
+      "Server": {
+        "type": "object",
+        "description": "A server envelope, shape-compatible with the upstream MCP registry `server.json`, with an RCX `_meta` extension.",
+        "properties": {
+          "name": { "type": "string", "description": "Reverse-DNS server name.", "example": "io.github.owner/server" },
+          "description": { "type": "string" },
+          "version": { "type": "string" },
+          "status": { "type": "string", "enum": ["active", "deprecated", "deleted"] },
+          "repository": { "type": "object", "properties": { "url": { "type": "string", "format": "uri" }, "source": { "type": "string" } } },
+          "packages": { "type": "array", "items": { "type": "object", "additionalProperties": true } },
+          "remotes": { "type": "array", "items": { "type": "object", "additionalProperties": true } },
+          "_meta": {
+            "type": "object",
+            "description": "Extension metadata. RCX surfaces publisher verification + enrichment here.",
+            "properties": {
+              "org.rcxprotocol.registry/publisher": {
+                "type": "object",
+                "description": "Publisher verification state + declared enrichment for this server.",
+                "additionalProperties": true
+              },
+              "org.rcxprotocol.registry/auto": {
+                "type": "object",
+                "description": "Auto-derived enrichment.",
+                "additionalProperties": true
+              }
+            },
+            "additionalProperties": true
+          }
+        },
+        "required": ["name"]
+      },
+      "ReceiptRef": {
+        "type": "object",
+        "description": "Reference to a signed CROWN receipt over this state change.",
+        "properties": {
+          "id": { "type": "string", "description": "CROWN receipt id." },
+          "prev": { "type": ["string", "null"], "description": "Previous receipt hash (hash-chained)." },
+          "signature_alg": { "type": "string", "const": "ed25519" }
+        }
+      }
+    }
+  }
+}

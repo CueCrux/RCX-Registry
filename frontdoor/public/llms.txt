@@ -13,7 +13,7 @@
 - `GET /v0/servers` — list servers (cursor pagination, `limit`); shape-compatible with the upstream MCP registry.
 - `GET /v0/servers/{name}/versions` — list versions for a server.
 - `GET /v0/servers/{name}/versions/{version}` — fetch one version.
-- `GET /openapi.json` — self-contained OpenAPI spec.
+- `GET https://rcxprotocol.org/openapi.json` — self-contained OpenAPI spec describing the registry API.
 
 ## Publisher verification
 
