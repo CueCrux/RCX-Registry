@@ -1,0 +1,678 @@
+{
+  "format": "rcx-protocol-spec-v1/canonical-cbor@1",
+  "production_function": "rcx_registry_crown::CborValue::encode",
+  "typed_value_format": {
+    "uint": "decimal string",
+    "float": "IEEE-754 binary64 bits as 16 lowercase hex digits",
+    "bytes": "lowercase hex",
+    "map": "ordered entry array so duplicate keys remain representable"
+  },
+  "notes": [
+    "Only unsigned integers are representable by the production CborValue type.",
+    "Map keys are text and sort by their complete encoded CBOR key bytes.",
+    "Finite floats use the shortest exact f16, f32, or f64 encoding."
+  ],
+  "cases": [
+    {
+      "id": "unsigned-integer-boundaries",
+      "input": {
+        "type": "array",
+        "items": [
+          {
+            "type": "uint",
+            "value": "0"
+          },
+          {
+            "type": "uint",
+            "value": "23"
+          },
+          {
+            "type": "uint",
+            "value": "24"
+          },
+          {
+            "type": "uint",
+            "value": "255"
+          },
+          {
+            "type": "uint",
+            "value": "256"
+          },
+          {
+            "type": "uint",
+            "value": "65535"
+          },
+          {
+            "type": "uint",
+            "value": "65536"
+          },
+          {
+            "type": "uint",
+            "value": "4294967295"
+          },
+          {
+            "type": "uint",
+            "value": "4294967296"
+          },
+          {
+            "type": "uint",
+            "value": "18446744073709551615"
+          }
+        ]
+      },
+      "canonical_cbor_hex": "8a0017181818ff19010019ffff1a000100001affffffff1b00000001000000001bffffffffffffffff",
+      "decoded": {
+        "type": "array",
+        "items": [
+          {
+            "type": "uint",
+            "value": "0"
+          },
+          {
+            "type": "uint",
+            "value": "23"
+          },
+          {
+            "type": "uint",
+            "value": "24"
+          },
+          {
+            "type": "uint",
+            "value": "255"
+          },
+          {
+            "type": "uint",
+            "value": "256"
+          },
+          {
+            "type": "uint",
+            "value": "65535"
+          },
+          {
+            "type": "uint",
+            "value": "65536"
+          },
+          {
+            "type": "uint",
+            "value": "4294967295"
+          },
+          {
+            "type": "uint",
+            "value": "4294967296"
+          },
+          {
+            "type": "uint",
+            "value": "18446744073709551615"
+          }
+        ]
+      }
+    },
+    {
+      "id": "integer-versus-float",
+      "input": {
+        "type": "array",
+        "items": [
+          {
+            "type": "uint",
+            "value": "1"
+          },
+          {
+            "type": "float",
+            "f64_bits_hex": "3ff0000000000000"
+          }
+        ]
+      },
+      "canonical_cbor_hex": "8201f93c00",
+      "decoded": {
+        "type": "array",
+        "items": [
+          {
+            "type": "uint",
+            "value": "1"
+          },
+          {
+            "type": "float",
+            "f64_bits_hex": "3ff0000000000000"
+          }
+        ]
+      }
+    },
+    {
+      "id": "negative-zero",
+      "input": {
+        "type": "float",
+        "f64_bits_hex": "8000000000000000"
+      },
+      "canonical_cbor_hex": "f98000",
+      "decoded": {
+        "type": "float",
+        "f64_bits_hex": "8000000000000000"
+      }
+    },
+    {
+      "id": "shortest-float-widths",
+      "input": {
+        "type": "array",
+        "items": [
+          {
+            "type": "float",
+            "f64_bits_hex": "3ff8000000000000"
+          },
+          {
+            "type": "float",
+            "f64_bits_hex": "40f86a0000000000"
+          },
+          {
+            "type": "float",
+            "f64_bits_hex": "3ff199999999999a"
+          }
+        ]
+      },
+      "canonical_cbor_hex": "83f93e00fa47c35000fb3ff199999999999a",
+      "decoded": {
+        "type": "array",
+        "items": [
+          {
+            "type": "float",
+            "f64_bits_hex": "3ff8000000000000"
+          },
+          {
+            "type": "float",
+            "f64_bits_hex": "40f86a0000000000"
+          },
+          {
+            "type": "float",
+            "f64_bits_hex": "3ff199999999999a"
+          }
+        ]
+      }
+    },
+    {
+      "id": "map-key-ordering-by-encoded-key",
+      "input": {
+        "type": "map",
+        "entries": [
+          {
+            "key": "aa",
+            "value": {
+              "type": "uint",
+              "value": "2"
+            }
+          },
+          {
+            "key": "😀",
+            "value": {
+              "type": "uint",
+              "value": "5"
+            }
+          },
+          {
+            "key": "b",
+            "value": {
+              "type": "uint",
+              "value": "3"
+            }
+          },
+          {
+            "key": "é",
+            "value": {
+              "type": "uint",
+              "value": "4"
+            }
+          },
+          {
+            "key": "a",
+            "value": {
+              "type": "uint",
+              "value": "1"
+            }
+          }
+        ]
+      },
+      "canonical_cbor_hex": "a56161016162036261610262c3a90464f09f988005",
+      "decoded": {
+        "type": "map",
+        "entries": [
+          {
+            "key": "a",
+            "value": {
+              "type": "uint",
+              "value": "1"
+            }
+          },
+          {
+            "key": "b",
+            "value": {
+              "type": "uint",
+              "value": "3"
+            }
+          },
+          {
+            "key": "aa",
+            "value": {
+              "type": "uint",
+              "value": "2"
+            }
+          },
+          {
+            "key": "é",
+            "value": {
+              "type": "uint",
+              "value": "4"
+            }
+          },
+          {
+            "key": "😀",
+            "value": {
+              "type": "uint",
+              "value": "5"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "text-escaping-is-raw-utf8",
+      "input": {
+        "type": "text",
+        "value": "quote: \" backslash: \\ controls: \u0000\n\t",
+        "utf8_hex": "71756f74653a2022206261636b736c6173683a205c20636f6e74726f6c733a20000a09"
+      },
+      "canonical_cbor_hex": "782371756f74653a2022206261636b736c6173683a205c20636f6e74726f6c733a20000a09",
+      "decoded": {
+        "type": "text",
+        "value": "quote: \" backslash: \\ controls: \u0000\n\t",
+        "utf8_hex": "71756f74653a2022206261636b736c6173683a205c20636f6e74726f6c733a20000a09"
+      }
+    },
+    {
+      "id": "unicode-astral-and-combining",
+      "input": {
+        "type": "array",
+        "items": [
+          {
+            "type": "text",
+            "value": "😀",
+            "utf8_hex": "f09f9880"
+          },
+          {
+            "type": "text",
+            "value": "é",
+            "utf8_hex": "65cc81"
+          },
+          {
+            "type": "text",
+            "value": "é",
+            "utf8_hex": "c3a9"
+          }
+        ]
+      },
+      "canonical_cbor_hex": "8364f09f98806365cc8162c3a9",
+      "decoded": {
+        "type": "array",
+        "items": [
+          {
+            "type": "text",
+            "value": "😀",
+            "utf8_hex": "f09f9880"
+          },
+          {
+            "type": "text",
+            "value": "é",
+            "utf8_hex": "65cc81"
+          },
+          {
+            "type": "text",
+            "value": "é",
+            "utf8_hex": "c3a9"
+          }
+        ]
+      }
+    },
+    {
+      "id": "nested",
+      "input": {
+        "type": "map",
+        "entries": [
+          {
+            "key": "z",
+            "value": {
+              "type": "array",
+              "items": [
+                {
+                  "type": "map",
+                  "entries": [
+                    {
+                      "key": "y",
+                      "value": {
+                        "type": "uint",
+                        "value": "2"
+                      }
+                    },
+                    {
+                      "key": "x",
+                      "value": {
+                        "type": "uint",
+                        "value": "1"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "array",
+                  "items": []
+                }
+              ]
+            }
+          },
+          {
+            "key": "a",
+            "value": {
+              "type": "map",
+              "entries": [
+                {
+                  "key": "false",
+                  "value": {
+                    "type": "bool",
+                    "value": false
+                  }
+                },
+                {
+                  "key": "null",
+                  "value": {
+                    "type": "null"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "canonical_cbor_hex": "a26161a2646e756c6cf66566616c7365f4617a82a261780161790280",
+      "decoded": {
+        "type": "map",
+        "entries": [
+          {
+            "key": "a",
+            "value": {
+              "type": "map",
+              "entries": [
+                {
+                  "key": "null",
+                  "value": {
+                    "type": "null"
+                  }
+                },
+                {
+                  "key": "false",
+                  "value": {
+                    "type": "bool",
+                    "value": false
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "key": "z",
+            "value": {
+              "type": "array",
+              "items": [
+                {
+                  "type": "map",
+                  "entries": [
+                    {
+                      "key": "x",
+                      "value": {
+                        "type": "uint",
+                        "value": "1"
+                      }
+                    },
+                    {
+                      "key": "y",
+                      "value": {
+                        "type": "uint",
+                        "value": "2"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "array",
+                  "items": []
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "empty-containers",
+      "input": {
+        "type": "array",
+        "items": [
+          {
+            "type": "bytes",
+            "hex": ""
+          },
+          {
+            "type": "text",
+            "value": "",
+            "utf8_hex": ""
+          },
+          {
+            "type": "array",
+            "items": []
+          },
+          {
+            "type": "map",
+            "entries": []
+          }
+        ]
+      },
+      "canonical_cbor_hex": "84406080a0",
+      "decoded": {
+        "type": "array",
+        "items": [
+          {
+            "type": "bytes",
+            "hex": ""
+          },
+          {
+            "type": "text",
+            "value": "",
+            "utf8_hex": ""
+          },
+          {
+            "type": "array",
+            "items": []
+          },
+          {
+            "type": "map",
+            "entries": []
+          }
+        ]
+      }
+    },
+    {
+      "id": "bytes-bools-and-null",
+      "input": {
+        "type": "array",
+        "items": [
+          {
+            "type": "bytes",
+            "hex": "007f80ff"
+          },
+          {
+            "type": "bool",
+            "value": false
+          },
+          {
+            "type": "bool",
+            "value": true
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "canonical_cbor_hex": "8444007f80fff4f5f6",
+      "decoded": {
+        "type": "array",
+        "items": [
+          {
+            "type": "bytes",
+            "hex": "007f80ff"
+          },
+          {
+            "type": "bool",
+            "value": false
+          },
+          {
+            "type": "bool",
+            "value": true
+          },
+          {
+            "type": "null"
+          }
+        ]
+      }
+    },
+    {
+      "id": "duplicate-map-keys-retained",
+      "input": {
+        "type": "map",
+        "entries": [
+          {
+            "key": "same",
+            "value": {
+              "type": "uint",
+              "value": "1"
+            }
+          },
+          {
+            "key": "same",
+            "value": {
+              "type": "uint",
+              "value": "2"
+            }
+          }
+        ]
+      },
+      "canonical_cbor_hex": "a26473616d65016473616d6502",
+      "decoded": {
+        "type": "map",
+        "entries": [
+          {
+            "key": "same",
+            "value": {
+              "type": "uint",
+              "value": "1"
+            }
+          },
+          {
+            "key": "same",
+            "value": {
+              "type": "uint",
+              "value": "2"
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "decoder_rejections": {
+    "production_function": "rcx_registry_crown::decode",
+    "notes": [
+      "Every listed input MUST be rejected.",
+      "Out-of-order and duplicate map keys are intentionally absent under OQ-6."
+    ],
+    "cases": [
+      {
+        "id": "non-minimal-additional-info-24",
+        "input_cbor_hex": "1817",
+        "must_reject": true,
+        "reason_code": "non-minimal-integer-head",
+        "production_decoder_error": "decode: non-canonical integer head"
+      },
+      {
+        "id": "non-minimal-additional-info-25",
+        "input_cbor_hex": "1900ff",
+        "must_reject": true,
+        "reason_code": "non-minimal-integer-head",
+        "production_decoder_error": "decode: non-canonical integer head"
+      },
+      {
+        "id": "non-minimal-additional-info-26",
+        "input_cbor_hex": "1a0000ffff",
+        "must_reject": true,
+        "reason_code": "non-minimal-integer-head",
+        "production_decoder_error": "decode: non-canonical integer head"
+      },
+      {
+        "id": "non-minimal-additional-info-27",
+        "input_cbor_hex": "1b00000000ffffffff",
+        "must_reject": true,
+        "reason_code": "non-minimal-integer-head",
+        "production_decoder_error": "decode: non-canonical integer head"
+      },
+      {
+        "id": "non-shortest-f32-representable-as-f16",
+        "input_cbor_hex": "fa3fc00000",
+        "must_reject": true,
+        "reason_code": "non-shortest-float",
+        "production_decoder_error": "decode: non-canonical float encoding"
+      },
+      {
+        "id": "non-shortest-f64-representable-as-f32",
+        "input_cbor_hex": "fb40f86a0000000000",
+        "must_reject": true,
+        "reason_code": "non-shortest-float",
+        "production_decoder_error": "decode: non-canonical float encoding"
+      },
+      {
+        "id": "trailing-top-level-item",
+        "input_cbor_hex": "00f6",
+        "must_reject": true,
+        "reason_code": "trailing-bytes",
+        "production_decoder_error": "decode: trailing bytes at offset 1"
+      },
+      {
+        "id": "non-text-map-key",
+        "input_cbor_hex": "a10000",
+        "must_reject": true,
+        "reason_code": "non-text-map-key",
+        "production_decoder_error": "decode: non-text map keys are not supported"
+      },
+      {
+        "id": "reserved-additional-info-28",
+        "input_cbor_hex": "1c",
+        "must_reject": true,
+        "reason_code": "reserved-additional-info",
+        "production_decoder_error": "decode: reserved info value 28 not allowed in canonical cbor"
+      },
+      {
+        "id": "reserved-additional-info-29",
+        "input_cbor_hex": "1d",
+        "must_reject": true,
+        "reason_code": "reserved-additional-info",
+        "production_decoder_error": "decode: reserved info value 29 not allowed in canonical cbor"
+      },
+      {
+        "id": "reserved-additional-info-30",
+        "input_cbor_hex": "1e",
+        "must_reject": true,
+        "reason_code": "reserved-additional-info",
+        "production_decoder_error": "decode: reserved info value 30 not allowed in canonical cbor"
+      },
+      {
+        "id": "reserved-additional-info-31",
+        "input_cbor_hex": "1f",
+        "must_reject": true,
+        "reason_code": "reserved-additional-info",
+        "production_decoder_error": "decode: reserved info value 31 not allowed in canonical cbor"
+      }
+    ]
+  }
+}
