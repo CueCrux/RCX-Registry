@@ -11,13 +11,14 @@ use rcx_registry_crown::{
 use rcx_registry_enrich::{
     build_entry_auto_enriched_receipt, build_entry_enriched_receipt,
     build_publisher_enrichment_payload, declaration_hash, AutoEnrichmentPayload,
-    PublisherDeclaration,
+    PublisherDeclaration, PublisherEnrichmentPayload,
 };
 use rcx_registry_ingest::{
     build_snapshot_plan, canonical_server_hash, canonicalize_json, snapshot_merkle_root,
     MirroredServer, NoopSchemaCatalog, OfficialRegistryMeta, RegistryServerEnvelope,
     RegistryServerMeta,
 };
+use serde::Deserialize;
 use serde_json::{json, Value};
 
 const FORMAT_PREFIX: &str = "rcx-protocol-spec-v1";
@@ -52,18 +53,34 @@ pub fn check_vectors() -> Result<(), String> {
     let expected = render_vectors()?;
     let directory = vector_directory();
     let mut failures = Vec::new();
+    let mut checked_in_chains = None;
 
     for (name, expected_contents) in &expected {
         let path = directory.join(name);
         match fs::read_to_string(&path) {
-            Ok(actual) if actual == *expected_contents => {}
-            Ok(actual) => failures.push(format!(
-                "{} differs (checked-in {} bytes, production-derived {} bytes)",
-                path.display(),
-                actual.len(),
-                expected_contents.len()
-            )),
+            Ok(actual) => {
+                if *name == "chains.json" {
+                    checked_in_chains = Some(actual.clone());
+                }
+                if actual != *expected_contents {
+                    failures.push(format!(
+                        "{} differs (checked-in {} bytes, production-derived {} bytes)",
+                        path.display(),
+                        actual.len(),
+                        expected_contents.len()
+                    ));
+                }
+            }
             Err(error) => failures.push(format!("read {}: {error}", path.display())),
+        }
+    }
+
+    if let Some(chains) = checked_in_chains {
+        if let Err(error) = check_chain_receipts_from_structured_inputs(&chains) {
+            failures.push(format!(
+                "rebuild {}: {error}",
+                directory.join("chains.json").display()
+            ));
         }
     }
 
@@ -106,7 +123,9 @@ fn render_vectors() -> Result<BTreeMap<&'static str, String>, String> {
     let mut vectors = BTreeMap::new();
     vectors.insert("canonical-cbor.json", render(canonical_cbor_vectors())?);
     vectors.insert("canonical-json.json", render(canonical_json_vectors()?)?);
-    vectors.insert("chains.json", render(chain_vectors()?)?);
+    let chains = render(chain_vectors()?)?;
+    check_chain_receipts_from_structured_inputs(&chains)?;
+    vectors.insert("chains.json", chains);
     vectors.insert("hashes.json", render(hash_vectors()?)?);
     vectors.insert("receipts.json", render(receipt_vectors()?)?);
     vectors.insert("snapshot-merkle.json", render(snapshot_vectors()?)?);
@@ -1106,6 +1125,426 @@ fn chain_vectors() -> Result<Value, String> {
     }))
 }
 
+#[derive(Debug, Deserialize)]
+struct StructuredChainVectors {
+    test_key: StructuredChainTestKey,
+    snapshot_chain: StructuredChain<StructuredSnapshotLink>,
+    entry_enriched_receipt_chain: StructuredChain<StructuredEnrichmentLink>,
+}
+
+#[derive(Debug, Deserialize)]
+struct StructuredChainTestKey {
+    seed_hex: String,
+    public_key_hex: String,
+    signer_kid: String,
+}
+
+#[derive(Debug, Deserialize)]
+struct StructuredChain<T> {
+    links: Vec<T>,
+}
+
+#[derive(Debug, Deserialize)]
+struct StructuredServerInput {
+    name: String,
+    version: String,
+    canonical_json: String,
+}
+
+#[derive(Debug, Deserialize)]
+struct StructuredSnapshotChanges {
+    added: u64,
+    removed: u64,
+    modified: u64,
+}
+
+#[derive(Debug, Deserialize)]
+struct StructuredSnapshotLink {
+    link: usize,
+    event_id_hex: String,
+    snapshot_id_hex: String,
+    scraped_at_unix_ms: u64,
+    servers: Vec<StructuredServerInput>,
+    previous_servers: Vec<StructuredServerInput>,
+    previous_snapshot_hash_hex: Option<String>,
+    upstream_registry_uri: String,
+    upstream_snapshot_etag: Option<String>,
+    signer_kid: String,
+    snapshot_merkle_root_hex: String,
+    server_count: u64,
+    changes: StructuredSnapshotChanges,
+    zeroed_canonical_cbor_hex: String,
+    receipt_hash_hex: String,
+    signature_preimage_canonical_cbor_hex: String,
+    receipt_signature_hex: String,
+    signed_canonical_cbor_hex: String,
+}
+
+#[derive(Debug, Deserialize)]
+struct StructuredEnrichmentLink {
+    link: usize,
+    event_id_hex: String,
+    server_name: String,
+    declaration: PublisherDeclaration,
+    canonical_declaration_json: String,
+    declared_uri: String,
+    declared_hash_hex: String,
+    enrichment_payload: PublisherEnrichmentPayload,
+    signer_kid: String,
+    supersedes_prior_receipt_hash_hex: Option<String>,
+    zeroed_canonical_cbor_hex: String,
+    receipt_hash_hex: String,
+    signature_preimage_canonical_cbor_hex: String,
+    receipt_signature_hex: String,
+    signed_canonical_cbor_hex: String,
+}
+
+fn check_chain_receipts_from_structured_inputs(contents: &str) -> Result<(), String> {
+    let vectors = serde_json::from_str::<StructuredChainVectors>(contents)
+        .map_err(|error| format!("parse structured chain inputs: {error}"))?;
+    let seed = decode_fixed_hex::<32>("test_key.seed_hex", &vectors.test_key.seed_hex)?;
+    let expected_public_key =
+        decode_fixed_hex::<32>("test_key.public_key_hex", &vectors.test_key.public_key_hex)?;
+    let signing_key = SigningKey::from_bytes(&seed);
+    let public_key = signing_key.verifying_key().to_bytes();
+    if public_key != expected_public_key {
+        return Err("test_key.public_key_hex does not match test_key.seed_hex".into());
+    }
+
+    let mut previous_snapshot_root = None;
+    for (index, link) in vectors.snapshot_chain.links.iter().enumerate() {
+        let expected_link = index + 1;
+        if link.link != expected_link {
+            return Err(format!(
+                "snapshot link order mismatch: expected {expected_link}, found {}",
+                link.link
+            ));
+        }
+        if link.signer_kid != vectors.test_key.signer_kid {
+            return Err(format!(
+                "snapshot link {} signer_kid does not match test_key.signer_kid",
+                link.link
+            ));
+        }
+        previous_snapshot_root = Some(check_structured_snapshot_link(
+            link,
+            previous_snapshot_root,
+            &signing_key,
+            &public_key,
+        )?);
+    }
+
+    let mut previous_enrichment_receipt_hash = None;
+    for (index, link) in vectors
+        .entry_enriched_receipt_chain
+        .links
+        .iter()
+        .enumerate()
+    {
+        let expected_link = index + 1;
+        if link.link != expected_link {
+            return Err(format!(
+                "entry enrichment link order mismatch: expected {expected_link}, found {}",
+                link.link
+            ));
+        }
+        if link.signer_kid != vectors.test_key.signer_kid {
+            return Err(format!(
+                "entry enrichment link {} signer_kid does not match test_key.signer_kid",
+                link.link
+            ));
+        }
+        previous_enrichment_receipt_hash = Some(check_structured_enrichment_link(
+            link,
+            previous_enrichment_receipt_hash,
+            &signing_key,
+            &public_key,
+        )?);
+    }
+
+    Ok(())
+}
+
+fn check_structured_snapshot_link(
+    link: &StructuredSnapshotLink,
+    expected_previous_root: Option<[u8; HASH_LEN]>,
+    signing_key: &SigningKey,
+    public_key: &[u8; 32],
+) -> Result<[u8; HASH_LEN], String> {
+    let context = format!("snapshot link {}", link.link);
+    let event_id = decode_fixed_hex::<16>(&format!("{context} event_id_hex"), &link.event_id_hex)?;
+    let snapshot_id =
+        decode_fixed_hex::<16>(&format!("{context} snapshot_id_hex"), &link.snapshot_id_hex)?;
+    let previous_snapshot_hash = decode_optional_fixed_hex::<HASH_LEN>(
+        &format!("{context} previous_snapshot_hash_hex"),
+        link.previous_snapshot_hash_hex.as_deref(),
+    )?;
+    if previous_snapshot_hash != expected_previous_root {
+        return Err(format!(
+            "{context} previous_snapshot_hash_hex does not link to the prior snapshot root"
+        ));
+    }
+
+    let current = mirrored_servers_from_structured_inputs(&link.servers, &context)?;
+    let previous = mirrored_servers_from_structured_inputs(
+        &link.previous_servers,
+        &format!("{context} previous_servers"),
+    )?;
+    let plan = build_snapshot_plan(
+        &current,
+        &previous,
+        event_id,
+        snapshot_id,
+        link.scraped_at_unix_ms,
+        previous_snapshot_hash,
+        link.upstream_snapshot_etag.as_deref(),
+        &link.signer_kid,
+    );
+    let mut receipt = plan.snapshot_receipt;
+
+    let expected_root = decode_fixed_hex::<HASH_LEN>(
+        &format!("{context} snapshot_merkle_root_hex"),
+        &link.snapshot_merkle_root_hex,
+    )?;
+    if receipt.snapshot_merkle_root != expected_root {
+        return Err(format!("{context} snapshot_merkle_root_hex mismatch"));
+    }
+    if receipt.server_count != link.server_count {
+        return Err(format!("{context} server_count mismatch"));
+    }
+    if receipt.changes.added != link.changes.added
+        || receipt.changes.removed != link.changes.removed
+        || receipt.changes.modified != link.changes.modified
+    {
+        return Err(format!("{context} changes mismatch"));
+    }
+    if receipt.event_id != event_id
+        || receipt.snapshot_id != snapshot_id
+        || receipt.scraped_at != link.scraped_at_unix_ms
+        || receipt.previous_snapshot_hash != previous_snapshot_hash
+        || receipt.upstream_registry_uri.as_str() != link.upstream_registry_uri.as_str()
+        || receipt.upstream_snapshot_etag.as_deref() != link.upstream_snapshot_etag.as_deref()
+        || receipt.signer_kid.as_str() != link.signer_kid.as_str()
+    {
+        return Err(format!("{context} constructor field mismatch"));
+    }
+
+    check_embedded_hex(
+        &format!("{context} zeroed_canonical_cbor_hex"),
+        &link.zeroed_canonical_cbor_hex,
+        &receipt.to_zeroed_canonical_cbor(),
+    )?;
+    check_embedded_hex(
+        &format!("{context} receipt_hash_hex"),
+        &link.receipt_hash_hex,
+        &receipt.receipt_hash,
+    )?;
+    let signature_preimage = receipt.to_canonical_cbor();
+    check_embedded_hex(
+        &format!("{context} signature_preimage_canonical_cbor_hex"),
+        &link.signature_preimage_canonical_cbor_hex,
+        &signature_preimage,
+    )?;
+    let receipt_signature = signing_key.sign(&signature_preimage).to_bytes();
+    check_embedded_hex(
+        &format!("{context} receipt_signature_hex"),
+        &link.receipt_signature_hex,
+        &receipt_signature,
+    )?;
+    receipt.receipt_signature = receipt_signature;
+    check_embedded_hex(
+        &format!("{context} signed_canonical_cbor_hex"),
+        &link.signed_canonical_cbor_hex,
+        &receipt.to_canonical_cbor(),
+    )?;
+    verify_receipt_signature(&receipt, public_key)
+        .map_err(|error| format!("{context} rebuilt signature did not verify: {error}"))?;
+
+    Ok(receipt.snapshot_merkle_root)
+}
+
+fn check_structured_enrichment_link(
+    link: &StructuredEnrichmentLink,
+    expected_supersedes_prior: Option<[u8; HASH_LEN]>,
+    signing_key: &SigningKey,
+    public_key: &[u8; 32],
+) -> Result<[u8; HASH_LEN], String> {
+    let context = format!("entry enrichment link {}", link.link);
+    let event_id = decode_fixed_hex::<16>(&format!("{context} event_id_hex"), &link.event_id_hex)?;
+    let declared_hash = decode_fixed_hex::<HASH_LEN>(
+        &format!("{context} declared_hash_hex"),
+        &link.declared_hash_hex,
+    )?;
+    let supersedes_prior = decode_optional_fixed_hex::<HASH_LEN>(
+        &format!("{context} supersedes_prior_receipt_hash_hex"),
+        link.supersedes_prior_receipt_hash_hex.as_deref(),
+    )?;
+    if supersedes_prior != expected_supersedes_prior {
+        return Err(format!(
+            "{context} supersedes_prior_receipt_hash_hex does not link to the prior receipt hash"
+        ));
+    }
+
+    let declaration_value = serde_json::to_value(&link.declaration)
+        .map_err(|error| format!("{context} serialize declaration: {error}"))?;
+    let (computed_declared_hash, computed_canonical_declaration) =
+        declaration_hash(&declaration_value);
+    if computed_declared_hash != declared_hash {
+        return Err(format!("{context} declared_hash_hex mismatch"));
+    }
+    if computed_canonical_declaration != link.canonical_declaration_json {
+        return Err(format!("{context} canonical_declaration_json mismatch"));
+    }
+    let rebuilt_payload = build_publisher_enrichment_payload(
+        &link.declaration,
+        &link.declared_uri,
+        &declared_hash,
+        &link.enrichment_payload.verification_method,
+        link.enrichment_payload.refresh_interval_seconds,
+    );
+    if rebuilt_payload != link.enrichment_payload {
+        return Err(format!("{context} enrichment_payload mismatch"));
+    }
+
+    let mut receipt = build_entry_enriched_receipt(
+        &link.server_name,
+        &link.declaration,
+        &link.declared_uri,
+        declared_hash,
+        &link.enrichment_payload,
+        event_id,
+        &link.signer_kid,
+        supersedes_prior,
+    )
+    .map_err(|error| format!("{context} production constructor failed: {error}"))?;
+    if receipt.event_id != event_id
+        || receipt.server_name.as_str() != link.server_name.as_str()
+        || receipt.publisher_passport.as_str() != link.declaration.publisher_passport.as_str()
+        || receipt.declared_uri.as_str() != link.declared_uri.as_str()
+        || receipt.declared_hash != declared_hash
+        || receipt.supersedes_prior != supersedes_prior
+        || receipt.signer_kid.as_str() != link.signer_kid.as_str()
+    {
+        return Err(format!("{context} constructor field mismatch"));
+    }
+
+    check_embedded_hex(
+        &format!("{context} zeroed_canonical_cbor_hex"),
+        &link.zeroed_canonical_cbor_hex,
+        &receipt.to_zeroed_canonical_cbor(),
+    )?;
+    check_embedded_hex(
+        &format!("{context} receipt_hash_hex"),
+        &link.receipt_hash_hex,
+        &receipt.receipt_hash,
+    )?;
+    let signature_preimage = receipt.to_canonical_cbor();
+    check_embedded_hex(
+        &format!("{context} signature_preimage_canonical_cbor_hex"),
+        &link.signature_preimage_canonical_cbor_hex,
+        &signature_preimage,
+    )?;
+    let receipt_signature = signing_key.sign(&signature_preimage).to_bytes();
+    check_embedded_hex(
+        &format!("{context} receipt_signature_hex"),
+        &link.receipt_signature_hex,
+        &receipt_signature,
+    )?;
+    receipt.receipt_signature = receipt_signature;
+    check_embedded_hex(
+        &format!("{context} signed_canonical_cbor_hex"),
+        &link.signed_canonical_cbor_hex,
+        &receipt.to_canonical_cbor(),
+    )?;
+    verify_receipt_signature(&receipt, public_key)
+        .map_err(|error| format!("{context} rebuilt signature did not verify: {error}"))?;
+
+    Ok(receipt.receipt_hash)
+}
+
+fn mirrored_servers_from_structured_inputs(
+    inputs: &[StructuredServerInput],
+    context: &str,
+) -> Result<Vec<MirroredServer>, String> {
+    inputs
+        .iter()
+        .enumerate()
+        .map(|(index, input)| {
+            let server = serde_json::from_str::<Value>(&input.canonical_json).map_err(|error| {
+                format!("{context} server {index} canonical_json parse failed: {error}")
+            })?;
+            let envelope = RegistryServerEnvelope {
+                server,
+                meta: RegistryServerMeta {
+                    official: OfficialRegistryMeta {
+                        status: "active".into(),
+                        status_changed_at: None,
+                        published_at: None,
+                        updated_at: None,
+                        is_latest: true,
+                    },
+                    extra: BTreeMap::new(),
+                },
+            };
+            let mirrored =
+                MirroredServer::from_envelope(&envelope, &NoopSchemaCatalog).map_err(|error| {
+                    format!("{context} server {index} reconstruction failed: {error}")
+                })?;
+            if mirrored.name != input.name
+                || mirrored.version != input.version
+                || mirrored.canonical_json != input.canonical_json
+            {
+                return Err(format!(
+                    "{context} server {index} structured fields do not match canonical_json"
+                ));
+            }
+            Ok(mirrored)
+        })
+        .collect()
+}
+
+fn decode_fixed_hex<const N: usize>(context: &str, encoded: &str) -> Result<[u8; N], String> {
+    let bytes = hex::decode(encoded).map_err(|error| format!("{context}: invalid hex: {error}"))?;
+    if bytes.len() != N {
+        return Err(format!(
+            "{context}: decoded {} bytes, expected {N}",
+            bytes.len()
+        ));
+    }
+    let mut output = [0u8; N];
+    output.copy_from_slice(&bytes);
+    Ok(output)
+}
+
+fn decode_optional_fixed_hex<const N: usize>(
+    context: &str,
+    encoded: Option<&str>,
+) -> Result<Option<[u8; N]>, String> {
+    encoded
+        .map(|value| decode_fixed_hex::<N>(context, value))
+        .transpose()
+}
+
+fn check_embedded_hex(context: &str, expected_hex: &str, actual: &[u8]) -> Result<(), String> {
+    let expected =
+        hex::decode(expected_hex).map_err(|error| format!("{context}: invalid hex: {error}"))?;
+    if expected == actual {
+        Ok(())
+    } else {
+        let first_difference = expected
+            .iter()
+            .zip(actual)
+            .position(|(expected, actual)| expected != actual)
+            .map_or_else(
+                || format!("length {} instead of {}", actual.len(), expected.len()),
+                |offset| format!("first byte difference at offset {offset}"),
+            );
+        Err(format!(
+            "{context}: rebuilt bytes differ ({first_difference})"
+        ))
+    }
+}
+
 fn snapshot_chain(signing_key: &SigningKey, public_key: &[u8; 32]) -> Result<Value, String> {
     let sets = [
         vec![make_server(
@@ -1128,14 +1567,19 @@ fn snapshot_chain(signing_key: &SigningKey, public_key: &[u8; 32]) -> Result<Val
     let mut links = Vec::new();
     for (index, current) in sets.into_iter().enumerate() {
         let link_number = index + 1;
+        let previous = Vec::new();
+        let event_id = [0x20 + link_number as u8; 16];
+        let snapshot_id = [0x30 + link_number as u8; 16];
+        let scraped_at_unix_ms = 1_776_683_200_000 + index as u64 * 60_000;
+        let upstream_snapshot_etag: Option<&str> = None;
         let plan = build_snapshot_plan(
             &current,
-            &[],
-            [0x20 + link_number as u8; 16],
-            [0x30 + link_number as u8; 16],
-            1_776_683_200_000 + index as u64 * 60_000,
+            &previous,
+            event_id,
+            snapshot_id,
+            scraped_at_unix_ms,
             previous_root,
-            None,
+            upstream_snapshot_etag,
             TEST_SIGNER_KID,
         );
         let receipt = plan.snapshot_receipt;
@@ -1159,8 +1603,15 @@ fn snapshot_chain(signing_key: &SigningKey, public_key: &[u8; 32]) -> Result<Val
 
         links.push(json!({
             "link": link_number,
+            "event_id_hex": hex::encode(event_id),
+            "snapshot_id_hex": hex::encode(snapshot_id),
+            "scraped_at_unix_ms": scraped_at_unix_ms,
             "servers": current.iter().map(describe_server).collect::<Vec<_>>(),
+            "previous_servers": previous.iter().map(describe_server).collect::<Vec<_>>(),
             "previous_snapshot_hash_hex": previous_root.map(hex::encode),
+            "upstream_registry_uri": receipt.upstream_registry_uri,
+            "upstream_snapshot_etag": upstream_snapshot_etag,
+            "signer_kid": TEST_SIGNER_KID,
             "snapshot_merkle_root_hex": hex::encode(receipt.snapshot_merkle_root),
             "server_count": receipt.server_count,
             "changes": {
@@ -1234,20 +1685,22 @@ fn enrichment_receipt_chain(
         let raw_declaration = serde_json::to_value(&declaration)
             .map_err(|error| format!("serialize declaration link {link_number}: {error}"))?;
         let (declared_hash, canonical_declaration_json) = declaration_hash(&raw_declaration);
+        let declared_uri = "https://example.org/.rcx/document-proofer.rcx.json";
         let payload = build_publisher_enrichment_payload(
             &declaration,
-            "https://example.org/.rcx/document-proofer.rcx.json",
+            declared_uri,
             &declared_hash,
             "github_oauth",
             Some(3600),
         );
+        let event_id = [0x50 + link_number as u8; 16];
         let mut receipt = build_entry_enriched_receipt(
             "io.github.example-org/document-proofer",
             &declaration,
-            "https://example.org/.rcx/document-proofer.rcx.json",
+            declared_uri,
             declared_hash,
             &payload,
-            [0x50 + link_number as u8; 16],
+            event_id,
             TEST_SIGNER_KID,
             supersedes_prior,
         )
@@ -1262,8 +1715,14 @@ fn enrichment_receipt_chain(
 
         links.push(json!({
             "link": link_number,
+            "event_id_hex": hex::encode(event_id),
+            "server_name": "io.github.example-org/document-proofer",
+            "declaration": declaration,
             "canonical_declaration_json": canonical_declaration_json,
+            "declared_uri": declared_uri,
             "declared_hash_hex": hex::encode(declared_hash),
+            "enrichment_payload": payload,
+            "signer_kid": TEST_SIGNER_KID,
             "supersedes_prior_receipt_hash_hex": supersedes_prior.map(hex::encode),
             "zeroed_canonical_cbor_hex": hex::encode(receipt.to_zeroed_canonical_cbor()),
             "receipt_hash_hex": hex::encode(receipt.receipt_hash),

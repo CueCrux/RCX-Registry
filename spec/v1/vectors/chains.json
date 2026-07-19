@@ -15,6 +15,9 @@
     "links": [
       {
         "link": 1,
+        "event_id_hex": "21212121212121212121212121212121",
+        "snapshot_id_hex": "31313131313131313131313131313131",
+        "scraped_at_unix_ms": 1776683200000,
         "servers": [
           {
             "name": "io.example/alpha",
@@ -22,7 +25,11 @@
             "canonical_json": "{\"$schema\":\"https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json\",\"name\":\"io.example/alpha\",\"payload\":{\"state\":1},\"version\":\"1.0.0\"}"
           }
         ],
+        "previous_servers": [],
         "previous_snapshot_hash_hex": null,
+        "upstream_registry_uri": "https://registry.modelcontextprotocol.io/v0/servers",
+        "upstream_snapshot_etag": null,
+        "signer_kid": "test-only:rcx-spec-v1:ed25519:seed-42",
         "snapshot_merkle_root_hex": "07167e2c683f5ca291b030bec0dd161bf8c4bae31e0dbe47263f7e403e1519c7",
         "server_count": 1,
         "changes": {
@@ -49,6 +56,9 @@
       },
       {
         "link": 2,
+        "event_id_hex": "22222222222222222222222222222222",
+        "snapshot_id_hex": "32323232323232323232323232323232",
+        "scraped_at_unix_ms": 1776683260000,
         "servers": [
           {
             "name": "io.example/alpha",
@@ -61,7 +71,11 @@
             "canonical_json": "{\"$schema\":\"https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json\",\"name\":\"io.example/beta\",\"payload\":{\"state\":1},\"version\":\"1.0.0\"}"
           }
         ],
+        "previous_servers": [],
         "previous_snapshot_hash_hex": "07167e2c683f5ca291b030bec0dd161bf8c4bae31e0dbe47263f7e403e1519c7",
+        "upstream_registry_uri": "https://registry.modelcontextprotocol.io/v0/servers",
+        "upstream_snapshot_etag": null,
+        "signer_kid": "test-only:rcx-spec-v1:ed25519:seed-42",
         "snapshot_merkle_root_hex": "d9e4b30351af8c6c485bd473df895e76a5b88a87ebc33e92037f276d88d127e3",
         "server_count": 2,
         "changes": {
@@ -88,6 +102,9 @@
       },
       {
         "link": 3,
+        "event_id_hex": "23232323232323232323232323232323",
+        "snapshot_id_hex": "33333333333333333333333333333333",
+        "scraped_at_unix_ms": 1776683320000,
         "servers": [
           {
             "name": "io.example/alpha",
@@ -105,7 +122,11 @@
             "canonical_json": "{\"$schema\":\"https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json\",\"name\":\"io.example/gamma\",\"payload\":{\"state\":1},\"version\":\"1.0.0\"}"
           }
         ],
+        "previous_servers": [],
         "previous_snapshot_hash_hex": "d9e4b30351af8c6c485bd473df895e76a5b88a87ebc33e92037f276d88d127e3",
+        "upstream_registry_uri": "https://registry.modelcontextprotocol.io/v0/servers",
+        "upstream_snapshot_etag": null,
+        "signer_kid": "test-only:rcx-spec-v1:ed25519:seed-42",
         "snapshot_merkle_root_hex": "31b5b3863007602e083454111c8f6cbe04b8baff4ec966911025b039966ed568",
         "server_count": 3,
         "changes": {
@@ -140,8 +161,53 @@
     "links": [
       {
         "link": 1,
+        "event_id_hex": "51515151515151515151515151515151",
+        "server_name": "io.github.example-org/document-proofer",
+        "declaration": {
+          "$schema": "https://static.rcxprotocol.org/schemas/2026-04-19/rcx-enrichment.schema.json",
+          "mcp_name": "io.github.example-org/document-proofer",
+          "rcx_version": "1.0",
+          "category": "tier_gated",
+          "min_tier": "starter",
+          "required_affinity": null,
+          "capability_graph": {
+            "version": 1,
+            "nodes": [
+              {
+                "cap": "io.github.example-org.document-proofer/proof_document",
+                "revision": 1
+              }
+            ],
+            "edges": []
+          },
+          "declared_at": "2026-04-19T10:00:00Z",
+          "publisher_passport": "passport:github:example-org"
+        },
         "canonical_declaration_json": "{\"$schema\":\"https://static.rcxprotocol.org/schemas/2026-04-19/rcx-enrichment.schema.json\",\"capability_graph\":{\"edges\":[],\"nodes\":[{\"cap\":\"io.github.example-org.document-proofer/proof_document\",\"revision\":1}],\"version\":1},\"category\":\"tier_gated\",\"declared_at\":\"2026-04-19T10:00:00Z\",\"mcp_name\":\"io.github.example-org/document-proofer\",\"min_tier\":\"starter\",\"publisher_passport\":\"passport:github:example-org\",\"rcx_version\":\"1.0\",\"required_affinity\":null}",
+        "declared_uri": "https://example.org/.rcx/document-proofer.rcx.json",
         "declared_hash_hex": "4ddf782ad1162f11a15bddeb4206a132840d29ee75ecd10c9a96d1a2e2bff75d",
+        "enrichment_payload": {
+          "category": "tier_gated",
+          "min_tier": "starter",
+          "required_affinity": null,
+          "capability_graph": {
+            "version": 1,
+            "nodes": [
+              {
+                "cap": "io.github.example-org.document-proofer/proof_document",
+                "revision": 1
+              }
+            ],
+            "edges": []
+          },
+          "declared_at": "2026-04-19T10:00:00Z",
+          "declared_uri": "https://example.org/.rcx/document-proofer.rcx.json",
+          "declared_hash": "blake3:4ddf782ad1162f11a15bddeb4206a132840d29ee75ecd10c9a96d1a2e2bff75d",
+          "publisher_rights_verified": true,
+          "verification_method": "github_oauth",
+          "refresh_interval_seconds": 3600
+        },
+        "signer_kid": "test-only:rcx-spec-v1:ed25519:seed-42",
         "supersedes_prior_receipt_hash_hex": null,
         "zeroed_canonical_cbor_hex": "aa686576656e745f696450515151515151515151515151515151516a7369676e65725f6b6964f66b7365727665725f6e616d657826696f2e6769746875622e6578616d706c652d6f72672f646f63756d656e742d70726f6f6665726c6465636c617265645f757269783268747470733a2f2f6578616d706c652e6f72672f2e7263782f646f63756d656e742d70726f6f6665722e7263782e6a736f6e6c726563656970745f68617368582000000000000000000000000000000000000000000000000000000000000000006d6465636c617265645f6861736858204ddf782ad1162f11a15bddeb4206a132840d29ee75ecd10c9a96d1a2e2bff75d70656e726963686d656e745f62797465735901bbaa6863617465676f72796a746965725f6761746564686d696e5f7469657267737461727465726b6465636c617265645f617474323032362d30342d31395431303a30303a30305a6c6465636c617265645f757269783268747470733a2f2f6578616d706c652e6f72672f2e7263782f646f63756d656e742d70726f6f6665722e7263782e6a736f6e6d6465636c617265645f686173687847626c616b65333a34646466373832616431313632663131613135626464656234323036613133323834306432396565373565636431306339613936643161326532626666373564706361706162696c6974795f6772617068a365656467657380656e6f64657381a2636361707835696f2e6769746875622e6578616d706c652d6f72672e646f63756d656e742d70726f6f6665722f70726f6f665f646f63756d656e74687265766973696f6e016776657273696f6e017172657175697265645f616666696e697479f673766572696669636174696f6e5f6d6574686f646c6769746875625f6f617574687818726566726573685f696e74657276616c5f7365636f6e6473190e1078197075626c69736865725f7269676874735f7665726966696564f570737570657273656465735f7072696f72f671726563656970745f7369676e6174757265584000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000727075626c69736865725f70617373706f7274781b70617373706f72743a6769746875623a6578616d706c652d6f7267",
         "receipt_hash_hex": "b329a100d2fc26b344a89ef393d0fe9e6339c891260886f00098d23fd0efbcb8",
@@ -152,8 +218,53 @@
       },
       {
         "link": 2,
+        "event_id_hex": "52525252525252525252525252525252",
+        "server_name": "io.github.example-org/document-proofer",
+        "declaration": {
+          "$schema": "https://static.rcxprotocol.org/schemas/2026-04-19/rcx-enrichment.schema.json",
+          "mcp_name": "io.github.example-org/document-proofer",
+          "rcx_version": "1.0",
+          "category": "tier_gated",
+          "min_tier": "starter",
+          "required_affinity": null,
+          "capability_graph": {
+            "version": 1,
+            "nodes": [
+              {
+                "cap": "io.github.example-org.document-proofer/proof_document",
+                "revision": 2
+              }
+            ],
+            "edges": []
+          },
+          "declared_at": "2026-04-19T10:01:00Z",
+          "publisher_passport": "passport:github:example-org"
+        },
         "canonical_declaration_json": "{\"$schema\":\"https://static.rcxprotocol.org/schemas/2026-04-19/rcx-enrichment.schema.json\",\"capability_graph\":{\"edges\":[],\"nodes\":[{\"cap\":\"io.github.example-org.document-proofer/proof_document\",\"revision\":2}],\"version\":1},\"category\":\"tier_gated\",\"declared_at\":\"2026-04-19T10:01:00Z\",\"mcp_name\":\"io.github.example-org/document-proofer\",\"min_tier\":\"starter\",\"publisher_passport\":\"passport:github:example-org\",\"rcx_version\":\"1.0\",\"required_affinity\":null}",
+        "declared_uri": "https://example.org/.rcx/document-proofer.rcx.json",
         "declared_hash_hex": "7792af8bc82985b82454ab665f38c42cd5921d4e67bbbe749686225684738a64",
+        "enrichment_payload": {
+          "category": "tier_gated",
+          "min_tier": "starter",
+          "required_affinity": null,
+          "capability_graph": {
+            "version": 1,
+            "nodes": [
+              {
+                "cap": "io.github.example-org.document-proofer/proof_document",
+                "revision": 2
+              }
+            ],
+            "edges": []
+          },
+          "declared_at": "2026-04-19T10:01:00Z",
+          "declared_uri": "https://example.org/.rcx/document-proofer.rcx.json",
+          "declared_hash": "blake3:7792af8bc82985b82454ab665f38c42cd5921d4e67bbbe749686225684738a64",
+          "publisher_rights_verified": true,
+          "verification_method": "github_oauth",
+          "refresh_interval_seconds": 3600
+        },
+        "signer_kid": "test-only:rcx-spec-v1:ed25519:seed-42",
         "supersedes_prior_receipt_hash_hex": "b329a100d2fc26b344a89ef393d0fe9e6339c891260886f00098d23fd0efbcb8",
         "zeroed_canonical_cbor_hex": "aa686576656e745f696450525252525252525252525252525252526a7369676e65725f6b6964f66b7365727665725f6e616d657826696f2e6769746875622e6578616d706c652d6f72672f646f63756d656e742d70726f6f6665726c6465636c617265645f757269783268747470733a2f2f6578616d706c652e6f72672f2e7263782f646f63756d656e742d70726f6f6665722e7263782e6a736f6e6c726563656970745f68617368582000000000000000000000000000000000000000000000000000000000000000006d6465636c617265645f6861736858207792af8bc82985b82454ab665f38c42cd5921d4e67bbbe749686225684738a6470656e726963686d656e745f62797465735901bbaa6863617465676f72796a746965725f6761746564686d696e5f7469657267737461727465726b6465636c617265645f617474323032362d30342d31395431303a30313a30305a6c6465636c617265645f757269783268747470733a2f2f6578616d706c652e6f72672f2e7263782f646f63756d656e742d70726f6f6665722e7263782e6a736f6e6d6465636c617265645f686173687847626c616b65333a37373932616638626338323938356238323435346162363635663338633432636435393231643465363762626265373439363836323235363834373338613634706361706162696c6974795f6772617068a365656467657380656e6f64657381a2636361707835696f2e6769746875622e6578616d706c652d6f72672e646f63756d656e742d70726f6f6665722f70726f6f665f646f63756d656e74687265766973696f6e026776657273696f6e017172657175697265645f616666696e697479f673766572696669636174696f6e5f6d6574686f646c6769746875625f6f617574687818726566726573685f696e74657276616c5f7365636f6e6473190e1078197075626c69736865725f7269676874735f7665726966696564f570737570657273656465735f7072696f725820b329a100d2fc26b344a89ef393d0fe9e6339c891260886f00098d23fd0efbcb871726563656970745f7369676e6174757265584000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000727075626c69736865725f70617373706f7274781b70617373706f72743a6769746875623a6578616d706c652d6f7267",
         "receipt_hash_hex": "a4e9778f94a057f6d8aac090a5554fda5c9eb14e13b4d2f019122f839023a47c",
@@ -164,8 +275,53 @@
       },
       {
         "link": 3,
+        "event_id_hex": "53535353535353535353535353535353",
+        "server_name": "io.github.example-org/document-proofer",
+        "declaration": {
+          "$schema": "https://static.rcxprotocol.org/schemas/2026-04-19/rcx-enrichment.schema.json",
+          "mcp_name": "io.github.example-org/document-proofer",
+          "rcx_version": "1.0",
+          "category": "tier_gated",
+          "min_tier": "pro",
+          "required_affinity": null,
+          "capability_graph": {
+            "version": 1,
+            "nodes": [
+              {
+                "cap": "io.github.example-org.document-proofer/proof_document",
+                "revision": 3
+              }
+            ],
+            "edges": []
+          },
+          "declared_at": "2026-04-19T10:02:00Z",
+          "publisher_passport": "passport:github:example-org"
+        },
         "canonical_declaration_json": "{\"$schema\":\"https://static.rcxprotocol.org/schemas/2026-04-19/rcx-enrichment.schema.json\",\"capability_graph\":{\"edges\":[],\"nodes\":[{\"cap\":\"io.github.example-org.document-proofer/proof_document\",\"revision\":3}],\"version\":1},\"category\":\"tier_gated\",\"declared_at\":\"2026-04-19T10:02:00Z\",\"mcp_name\":\"io.github.example-org/document-proofer\",\"min_tier\":\"pro\",\"publisher_passport\":\"passport:github:example-org\",\"rcx_version\":\"1.0\",\"required_affinity\":null}",
+        "declared_uri": "https://example.org/.rcx/document-proofer.rcx.json",
         "declared_hash_hex": "4bb112b21d7d9c22beab40455c08c04e19eb0f80c64f87f6a999f7812c496a9f",
+        "enrichment_payload": {
+          "category": "tier_gated",
+          "min_tier": "pro",
+          "required_affinity": null,
+          "capability_graph": {
+            "version": 1,
+            "nodes": [
+              {
+                "cap": "io.github.example-org.document-proofer/proof_document",
+                "revision": 3
+              }
+            ],
+            "edges": []
+          },
+          "declared_at": "2026-04-19T10:02:00Z",
+          "declared_uri": "https://example.org/.rcx/document-proofer.rcx.json",
+          "declared_hash": "blake3:4bb112b21d7d9c22beab40455c08c04e19eb0f80c64f87f6a999f7812c496a9f",
+          "publisher_rights_verified": true,
+          "verification_method": "github_oauth",
+          "refresh_interval_seconds": 3600
+        },
+        "signer_kid": "test-only:rcx-spec-v1:ed25519:seed-42",
         "supersedes_prior_receipt_hash_hex": "a4e9778f94a057f6d8aac090a5554fda5c9eb14e13b4d2f019122f839023a47c",
         "zeroed_canonical_cbor_hex": "aa686576656e745f696450535353535353535353535353535353536a7369676e65725f6b6964f66b7365727665725f6e616d657826696f2e6769746875622e6578616d706c652d6f72672f646f63756d656e742d70726f6f6665726c6465636c617265645f757269783268747470733a2f2f6578616d706c652e6f72672f2e7263782f646f63756d656e742d70726f6f6665722e7263782e6a736f6e6c726563656970745f68617368582000000000000000000000000000000000000000000000000000000000000000006d6465636c617265645f6861736858204bb112b21d7d9c22beab40455c08c04e19eb0f80c64f87f6a999f7812c496a9f70656e726963686d656e745f62797465735901b7aa6863617465676f72796a746965725f6761746564686d696e5f746965726370726f6b6465636c617265645f617474323032362d30342d31395431303a30323a30305a6c6465636c617265645f757269783268747470733a2f2f6578616d706c652e6f72672f2e7263782f646f63756d656e742d70726f6f6665722e7263782e6a736f6e6d6465636c617265645f686173687847626c616b65333a34626231313262323164376439633232626561623430343535633038633034653139656230663830633634663837663661393939663738313263343936613966706361706162696c6974795f6772617068a365656467657380656e6f64657381a2636361707835696f2e6769746875622e6578616d706c652d6f72672e646f63756d656e742d70726f6f6665722f70726f6f665f646f63756d656e74687265766973696f6e036776657273696f6e017172657175697265645f616666696e697479f673766572696669636174696f6e5f6d6574686f646c6769746875625f6f617574687818726566726573685f696e74657276616c5f7365636f6e6473190e1078197075626c69736865725f7269676874735f7665726966696564f570737570657273656465735f7072696f725820a4e9778f94a057f6d8aac090a5554fda5c9eb14e13b4d2f019122f839023a47c71726563656970745f7369676e6174757265584000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000727075626c69736865725f70617373706f7274781b70617373706f72743a6769746875623a6578616d706c652d6f7267",
         "receipt_hash_hex": "bec5e8c81edd19a4a1f2f55219c6232ee67a8930f5c42c325abb13ea2d3dfff4",

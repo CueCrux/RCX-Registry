@@ -22,7 +22,9 @@ production receipt and sync paths.
   negative zero, byte strings, and duplicate map keys cannot be confused by a
   JSON parser. Its decoder-rejection section is checked against the production
   decoder; out-of-order and duplicate map keys are intentionally not rejection
-  cases under OQ-6.
+  cases under OQ-6. The reference encoder retains represented duplicate keys
+  and emits them in canonical sorted position; producers must not introduce new
+  duplicate keys.
 - `hashes.json` contains canonical-JSON declaration hashes and canonical server
   hashes. All digests are BLAKE3-256. The Unicode notes point to authoritative
   UTF-8 hex, and the server case exposes both the exact reconciliation-hash
@@ -39,6 +41,44 @@ Every file has a versioned `format` field. Bytes, hashes, keys, and signatures
 are lowercase hexadecimal. CBOR unsigned integers are decimal strings and
 floats are identified by their exact 64-bit IEEE-754 bit pattern. Nullable
 fields are JSON `null`.
+
+## Structured chain inputs
+
+Each link in `chains.json` exposes the complete logical input needed to invoke
+its production constructor and mint the receipt independently of the embedded
+CBOR. Expected hashes, counts, change totals, signatures, and CBOR remain
+separate comparison outputs.
+
+For `RegistrySnapshot` links:
+
+- `servers` is the current mirrored-server input, with `name`, `version`, and
+  `canonical_json` for every entry.
+- `previous_servers` is the previous mirrored-server input. It is empty in each
+  vector because the production sync path passes an empty set.
+- `event_id_hex` and `snapshot_id_hex` are the 16-byte identifiers.
+- `scraped_at_unix_ms` is the unsigned scrape timestamp in Unix milliseconds.
+- `previous_snapshot_hash_hex` is the prior link's snapshot Merkle root, or
+  `null` for the first link.
+- `upstream_registry_uri` exposes the fixed registry URI populated by the
+  production constructor.
+- `upstream_snapshot_etag` is the ETag constructor choice, including `null`.
+- `signer_kid` is the signer key identifier supplied to the constructor.
+
+For `EntryEnriched` links:
+
+- `server_name` identifies the enriched registry entry.
+- `declaration` is the structured `PublisherDeclaration` fixture. It includes
+  the publisher passport and every declaration field used to build the payload
+  and receipt; `canonical_declaration_json` remains the expected canonical JSON
+  form.
+- `declared_uri` is the declaration source URI.
+- `declared_hash_hex` is the 32-byte hash of the canonical declaration.
+- `enrichment_payload` is the structured `PublisherEnrichmentPayload` fixture
+  whose canonical CBOR becomes `enrichment_bytes`.
+- `event_id_hex` is the 16-byte event identifier.
+- `signer_kid` is the signer key identifier supplied to the constructor.
+- `supersedes_prior_receipt_hash_hex` is the prior link's receipt hash, or
+  `null` for the first link.
 
 ## Regenerate and check
 

@@ -23,7 +23,8 @@ fn main() {
 fn usage_and_exit() -> ! {
     eprintln!(
         "usage: cargo run -p rcx-registry-server --example rcx-spec-v1-vectors -- \
-         (--write|--check)"
+         (--write|--check)\n  --write  emit vectors, including structured chain inputs\n  --check  \
+         compare vector bytes and rebuild chain receipts from those inputs"
     );
     std::process::exit(2);
 }
