@@ -1,6 +1,6 @@
 # 6. Snapshot-Set Digest & Chaining
 
-`rcx-spec/v1` · traces to grounding §4, §6 (`crates/rcx-registry-ingest/src/lib.rs:394-460`, `crates/rcx-registry-server/src/loops/sync.rs`). Vectors: `vectors/merkle/*`.
+`rcx-spec/v1` · traces to grounding §4, §6 (`crates/rcx-registry-ingest/src/lib.rs:394-460`, `crates/rcx-registry-server/src/loops/sync.rs`). Vectors: [`vectors/snapshot-merkle.json`](vectors/snapshot-merkle.json), [`vectors/hashes.json`](vectors/hashes.json).
 
 ## 6.1 Naming caveat (OQ-4 — resolved)
 
@@ -12,6 +12,19 @@ Each mirrored server contributes three byte fields:
 - `name` — UTF-8 bytes of the server name.
 - `version` — UTF-8 bytes of the server version.
 - `canonical_json` — the **canonical JSON** (§3) of the upstream **`server` object** (not the `_meta` envelope), as UTF-8 bytes.
+
+**v1 input-domain constraint — no NUL in `name`/`version`.** The digest frames
+the three fields with literal, unescaped `0x00` separators (§6.3), so the framing
+is injective only if a field cannot itself contain the separator byte. `name` and
+`version` are MCP identifiers and never contain `U+0000` in registry data, and
+`canonical_json` is JSON text whose only `U+0000` would appear as the escape
+`\u0000` (§3.2), never as a raw NUL byte. v1 therefore **requires**, as an
+input-domain constraint (not a wire change), that a server `name` and `version`
+**MUST NOT** contain the code point `U+0000`. Given this constraint the framing of
+§6.3 is injective — distinct `(name, version, canonical_json)` triples produce
+distinct hash-input streams — so the digest is collision-free with respect to
+field-boundary ambiguity. An implementation encountering a raw `U+0000` in a
+`name` or `version` is outside the v1 input domain and its digest is undefined.
 
 ## 6.3 Digest construction — normative
 

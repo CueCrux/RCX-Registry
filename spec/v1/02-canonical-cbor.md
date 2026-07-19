@@ -2,7 +2,7 @@
 
 `rcx-spec/v1` · traces to grounding §1 (`crates/rcx-registry-crown/src/canonical.rs`).
 
-Canonical CBOR is the deterministic byte encoding used for **all receipt hashing and signing** (§5) and for the embedded enrichment payloads (§4). It is a **strict subset** of RFC 8949 with RFC 8949 §4.2.1 "core deterministic" map ordering. Vectors: `vectors/cbor/*`.
+Canonical CBOR is the deterministic byte encoding used for **all receipt hashing and signing** (§5) and for the embedded enrichment payloads (§4). It is a **strict subset** of RFC 8949 with RFC 8949 §4.2.1 "core deterministic" map ordering. Vectors: [`vectors/canonical-cbor.json`](vectors/canonical-cbor.json).
 
 ## 2.1 Value model
 
@@ -54,14 +54,14 @@ Map keys are **always text strings**. Keys **MUST** be sorted by the **bytewise 
 
 > **Shorter keys sort before longer keys. Keys of equal length sort by unsigned bytewise (UTF-8) comparison of their content.**
 
-This is **not** the same as sorting keys by content alone. Example (both keys < 24 bytes so single-byte heads):
+The sort is **stable**: the reference sorts key *indices* by their encoded-key bytes with a stable algorithm (Rust `slice::sort_by`, `canonical.rs:56-71`). Two entries whose encoded keys are **byte-identical** (i.e. a duplicate key) therefore retain their **input order** relative to each other. This is **not** the same as sorting keys by content alone. Example (both keys < 24 bytes so single-byte heads):
 
 | Keys | Encoded key bytes | Canonical CBOR order |
 |---|---|---|
 | `"b"`, `"aa"` | `61 62` vs `62 61 61` | `"b"` (len 1) **before** `"aa"` (len 2) |
 | `"model"`, `"budget"` | `65 6D…` vs `66 62…` | `"model"` (len 5) **before** `"budget"` (len 6) |
 
-A **producer MUST NOT introduce duplicate keys.** Note, however, that the reference value model can *represent* them (its map is an ordered key/value list, with no negative-integer key variant and no key-uniqueness invariant) and the encoder does **not** deduplicate: if a value does contain duplicate keys they are emitted **adjacent, in sorted position**, not rejected. Well-formed receipts never contain duplicates (they are built from fixed-key structs), so encoder conformance is defined by the §2.4 ordering above, not by dedup enforcement (vector `canonical-cbor` `duplicate-map-keys-retained`; grounding Resolutions 2026-07-19; see §2.6 / OQ-6). (grounding §1.4; contrast §3.3 — canonical JSON orders the *same* keys differently.)
+A conformant **producer MUST NOT introduce duplicate keys** — well-formed receipts and embedded payloads are built from fixed-key structs and never contain them. The reference value model can nonetheless *represent* duplicates (its map is an ordered key/value list, with no key-uniqueness invariant and no negative-integer key variant), and the reference **encoder** neither deduplicates nor rejects them: any duplicate present in the input value is emitted **adjacent, in sorted position, and — because the sort is stable (above) — in stable input order**, never dropped. Encoder conformance is therefore defined by the §2.4 ordering (including this stable tie-break for byte-identical keys), **not** by dedup enforcement. So "no duplicate keys" is a **producer-side** rule, not an encoder-side rejection: the reference encoder faithfully re-encodes (retains) whatever duplicates its input contains. (Vector `canonical-cbor` `duplicate-map-keys-retained` emits `0xA2` = map(2) carrying the key `same` twice; grounding §1.4 + Resolutions 2026-07-19, `canonical.rs:56-71`; see §2.6 / OQ-6. Contrast §3.3 — canonical JSON orders the *same* keys differently, and a JSON **parser** instead collapses duplicate members last-wins, §3.1.)
 
 ## 2.5 Floats — deterministic shortest form
 

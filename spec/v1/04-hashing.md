@@ -14,7 +14,7 @@ For each hashable artifact, the hash is taken over **one designated canonical fo
 |---|---|---|
 | `receipt_hash` (every CROWN receipt) | **canonical CBOR** of the receipt in **zeroed-field** encoding | §5.3 |
 | `snapshot_merkle_root` (snapshot-set digest) | **canonical JSON** of each server, framed & concatenated | §6 |
-| per-server reconciliation hash | **canonical JSON** of the server, framed (no trailing separator) | §6.4 |
+| per-server reconciliation hash | **canonical JSON** of the server, framed (no trailing separator) | §6.5 |
 | publisher `declared_hash` | **canonical JSON** of the fetched declaration document | §4.4 |
 | `auto_enrichment_bytes`, `enrichment_bytes` (embedded in a receipt) | **canonical CBOR** of the enrichment payload (opaque byte string, then folded into the receipt's own CBOR hash) | §4.5 |
 | `passport_hash`, `project_hash` (published records) | **canonical CBOR** of the record — **construction defined by the producer, not by v1** | §4.6 |
@@ -44,9 +44,15 @@ Computed over the **entire** fetched declaration document (§3.5). Embedded in t
 
 ## 4.5 Embedded enrichment payloads
 
-`auto_enrichment_bytes` and `enrichment_bytes` are **canonical CBOR** encodings of their payload structs (§5.5 lists the field sets), carried inside the receipt as a CBOR **byte string**. They are not separately hashed: the receipt's own `receipt_hash` (§5.3) is taken over the receipt CBOR, which contains these byte strings verbatim. An implementer reproducing a receipt hash **MUST** first produce the byte-exact canonical CBOR of the payload, embed it as the byte-string value, then hash the whole receipt. (grounding §3 rows 5–6)
+`auto_enrichment_bytes` and `enrichment_bytes` are **canonical CBOR** encodings of their payload structs (§5.7 lists the field sets), carried inside the receipt as a CBOR **byte string**. They are not separately hashed: the receipt's own `receipt_hash` (§5.3) is taken over the receipt CBOR, which contains these byte strings verbatim. An implementer reproducing a receipt hash **MUST** first produce the byte-exact canonical CBOR of the payload, embed it as the byte-string value, then hash the whole receipt. (grounding §3 rows 5–6)
 
-Enrichment-payload CBOR notes (grounding §2 of enrich): numbers in a `capability_graph` are mapped to CBOR as unsigned integers when non-negative, or floats otherwise; **negative numbers MUST NOT appear** (the reference rejects them). Object keys inside the payload are canonically sorted by the CBOR encoder (§2.4) regardless of input order.
+Enrichment-payload CBOR notes. Numbers inside a `capability_graph` value are converted JSON→CBOR by the reference `json_to_cbor` (`crates/rcx-registry-enrich/src/lib.rs:542-558`) with exactly this rule:
+
+- A **non-negative integer** (a value that fits `u64`, i.e. `0 .. 2^64−1`) → CBOR **unsigned integer** (§2.1).
+- A **non-integral** number (has a fractional part or exponent, of **either** sign) → CBOR **float** (§2.5, shortest form). This includes negative non-integral values such as `-1.5`, which are **not** rejected — they encode as a negative CBOR float.
+- A **negative integer** → **rejected**: the reference returns a `NegativeNumber` error (`lib.rs:546-547`) and no receipt is minted. A conformant producer **MUST NOT** place a negative integer in a `capability_graph`.
+
+(The value model has no negative-integer CBOR variant, §2.1, which is why negative *integers* are rejected while negative *non-integers* fall through to the float branch.) Object keys inside the payload are canonically sorted by the CBOR encoder (§2.4) regardless of input order.
 
 ## 4.6 Producer-defined hashes — pinned to algorithm + form only (OQ-3 resolved)
 

@@ -16,6 +16,8 @@ This specification defines the RCX-Registry **wire format**: the byte-exact cano
 
 An implementation is **conformant** if, for every vector in [`vectors/`](vectors/), it reproduces the exact bytes/hashes specified. `vectors/` is the normative test corpus (generated separately). Where this prose and a vector disagree, **the vector is a bug report against the prose** — file it; do not silently follow one.
 
+**Producer vs. encoder — duplicate map keys.** "No duplicate keys" is a **producer-side** rule, not an encoder-side rejection. A conformant *producer* **MUST NOT** emit a canonical-CBOR map (or a canonical-JSON object) containing duplicate keys — the registry's own artifacts, built from fixed-key structs, never do. The reference *encoder*, however, does not enforce this: if it is handed a value that already contains duplicate keys it faithfully **retains** them (canonical CBOR emits them adjacent and in stable input order, [02-canonical-cbor.md §2.4](02-canonical-cbor.md)), while a JSON *parser* collapses duplicate members last-wins before canonicalising ([03-canonical-json.md §3.1](03-canonical-json.md)). The `vectors/` corpus exercises this retained-duplicate encoder behavior (`canonical-cbor` `duplicate-map-keys-retained`) deliberately; it does not contradict the producer rule.
+
 Requirement keywords **MUST**, **MUST NOT**, **SHOULD**, **SHOULD NOT**, **MAY** are per [RFC 2119](https://www.rfc-editor.org/rfc/rfc2119) / [RFC 8174](https://www.rfc-editor.org/rfc/rfc8174), interpreted only when in ALL CAPS.
 
 ## Documents
