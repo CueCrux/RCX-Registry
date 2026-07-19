@@ -49,8 +49,21 @@ pub fn verify_receipt_signature(
         return Err(CrownError::BadSignature);
     }
 
+    let mut signing_value = document.to_cbor_value(false);
+    let CborValue::Map(fields) = &mut signing_value else {
+        return Err(CrownError::BadSignature);
+    };
+    let Some((_, signature_field)) = fields
+        .iter_mut()
+        .find(|(name, _)| name == "receipt_signature")
+    else {
+        return Err(CrownError::BadSignature);
+    };
+    *signature_field = CborValue::Bytes(vec![0u8; SIGNATURE_LEN]);
+    let signing_bytes = signing_value.encode();
+
     verifying_key
-        .verify(&computed, &signature)
+        .verify(&signing_bytes, &signature)
         .map_err(|_| CrownError::BadSignature)
 }
 
