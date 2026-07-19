@@ -24,6 +24,10 @@ pub const MIGRATIONS: &[(&str, &str)] = &[
         include_str!("../../../../migrations/0004_publisher_rights.sql"),
     ),
     ("0005_mcp_servers_envelope.sql", MIGRATION_0005),
+    (
+        "0006_rcx_enrichment_publisher_meta.sql",
+        include_str!("../../../../migrations/0006_rcx_enrichment_publisher_meta.sql"),
+    ),
 ];
 
 const MIGRATION_0005: &str = r#"
@@ -101,6 +105,7 @@ mod tests {
                 "0003_rcx_enrichment.sql",
                 "0004_publisher_rights.sql",
                 "0005_mcp_servers_envelope.sql",
+                "0006_rcx_enrichment_publisher_meta.sql",
             ]
         );
     }
