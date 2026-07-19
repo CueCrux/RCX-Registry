@@ -1,0 +1,406 @@
+/*
+ * cuecrux.com — Aurora Glass component recipes.
+ * All colours resolve to tokens defined in aurora.css (canonical:
+ * PlanCrux/docs/master-plan/surfaces/aurora-tokens-v1.css). Do not add hex here.
+ */
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+a:focus-visible,
+button:focus-visible {
+  outline: 2px solid var(--acc);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ---------- aurora hero (34s drift, scoped) ---------- */
+.aurora-hero {
+  position: relative;
+  overflow: hidden;
+  border-bottom: 1px solid var(--edge);
+}
+.aurora-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(48rem 48rem at 12% -8%, var(--aurora-1), transparent 60%),
+    radial-gradient(42rem 42rem at 96% 4%, var(--aurora-2), transparent 58%),
+    radial-gradient(46rem 46rem at 78% 108%, var(--aurora-3), transparent 60%);
+  animation: aurora-drift 34s ease-in-out infinite alternate;
+}
+@keyframes aurora-drift {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  to {
+    transform: translate3d(-2%, 3%, 0) scale(1.06);
+  }
+}
+
+/* ---------- type ---------- */
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink3);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.eyebrow .led {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--ok);
+  box-shadow: 0 0 7px var(--ok);
+  flex: none;
+}
+
+.display-h1 {
+  font-family: var(--font-display);
+  font-size: clamp(40px, 6.2vw, 64px);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.04;
+  text-wrap: balance;
+}
+.display-h2 {
+  font-family: var(--font-display);
+  font-size: clamp(26px, 3.4vw, 34px);
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  line-height: 1.1;
+  text-wrap: balance;
+}
+
+/* one per page maximum */
+.grad-span {
+  background: linear-gradient(100deg, var(--acc), var(--trust));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+.sec-label {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--acc);
+  margin-bottom: 10px;
+}
+
+/* ---------- buttons ---------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 44px;
+  padding: 0 20px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 600;
+  border: 1px solid transparent;
+  cursor: pointer;
+  text-decoration: none;
+  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+    background-color 0.2s ease;
+}
+/* the approve gradient — reserved for the single primary CTA per view */
+.btn-approve {
+  background: linear-gradient(180deg, var(--approve-a), var(--approve-b));
+  color: var(--approve-ink);
+}
+.btn-approve:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-card);
+}
+.btn-quiet {
+  background: transparent;
+  border-color: var(--edge-strong);
+  color: var(--ink);
+}
+.btn-quiet:hover {
+  background: var(--surface);
+}
+.btn[disabled],
+.btn[aria-disabled='true'] {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+.btn[disabled]:hover,
+.btn[aria-disabled='true']:hover {
+  transform: none;
+  box-shadow: none;
+  background: transparent;
+}
+
+/* ---------- glass cards (lift on hover) ---------- */
+.glass-card {
+  background: var(--surface);
+  border: 1px solid var(--edge);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-card);
+  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.glass-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lift);
+}
+.glass-panel {
+  background: var(--panel-bg);
+  border: 1px solid var(--edge-strong);
+  border-radius: var(--radius);
+  backdrop-filter: blur(var(--blur));
+  -webkit-backdrop-filter: blur(var(--blur));
+  box-shadow: var(--shadow-browser);
+}
+
+/* ---------- topchip ---------- */
+.topchip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 32px;
+  padding: 0 12px;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  letter-spacing: 0.02em;
+  color: var(--ink2);
+  border: 1px solid var(--edge);
+  border-radius: 999px;
+  background: var(--surface2);
+}
+.topchip .led {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--ok);
+  box-shadow: 0 0 7px var(--ok);
+}
+.topchip .led-warn {
+  background: var(--warn);
+  box-shadow: 0 0 7px var(--warn);
+}
+
+/* ---------- receipt ticker ---------- */
+.ticker {
+  border: 1px solid var(--edge);
+  border-radius: var(--radius-sm);
+  background: var(--surface2);
+  overflow: hidden;
+  position: relative;
+}
+.ticker-label {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  padding: 0 14px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  color: var(--ok);
+  background: var(--panel-bg);
+  border-right: 1px solid var(--edge);
+  z-index: 2;
+  white-space: nowrap;
+}
+.tick-row {
+  display: flex;
+  gap: 34px;
+  white-space: nowrap;
+  padding: 9px 0 9px 170px;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: var(--ink2);
+  animation: tick 26s linear infinite;
+  width: max-content;
+}
+@keyframes tick {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+.tick-ok {
+  font-style: normal;
+  color: var(--ok);
+}
+.tick-verb {
+  font-weight: 500;
+  color: var(--ink);
+}
+.tick-cost {
+  color: var(--trust);
+}
+
+/* ---------- mono code blocks (install page) ---------- */
+.mono-block {
+  position: relative;
+  border: 1px solid var(--edge);
+  border-radius: var(--radius-sm);
+  background: var(--surface2);
+  padding: 14px 52px 14px 16px;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  color: var(--ink);
+  overflow-x: auto;
+  white-space: pre;
+}
+.mono-block .copy-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  height: 30px;
+  padding: 0 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid var(--edge-strong);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--ink2);
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+.mono-block .copy-btn:hover {
+  color: var(--ink);
+  background: var(--surface2);
+}
+.mono-block .copy-btn.copied {
+  color: var(--ok);
+  border-color: var(--ok);
+}
+
+/* ---------- legal prose ---------- */
+.legal-prose {
+  color: var(--ink2);
+  font-size: 15px;
+}
+.legal-prose h1,
+.legal-prose h2,
+.legal-prose h3,
+.legal-prose h4 {
+  color: var(--ink);
+  font-family: var(--font-display);
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  margin: 1.6em 0 0.6em;
+}
+.legal-prose h1 {
+  font-size: 30px;
+  margin-top: 0;
+}
+.legal-prose h2 {
+  font-size: 22px;
+}
+.legal-prose h3 {
+  font-size: 17px;
+}
+.legal-prose p,
+.legal-prose li {
+  margin: 0.6em 0;
+}
+.legal-prose ul,
+.legal-prose ol {
+  padding-left: 1.4em;
+  list-style: disc;
+}
+.legal-prose ol {
+  list-style: decimal;
+}
+.legal-prose a {
+  color: var(--acc);
+  text-decoration: underline;
+}
+.legal-prose strong {
+  color: var(--ink);
+}
+.legal-prose code {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  color: var(--acc);
+}
+.legal-prose blockquote {
+  border-left: 2px solid var(--edge-strong);
+  padding-left: 1em;
+  color: var(--ink3);
+}
+.legal-prose table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1em 0;
+  font-size: 13.5px;
+}
+.legal-prose th,
+.legal-prose td {
+  border: 1px solid var(--edge);
+  padding: 8px 10px;
+  text-align: left;
+}
+.legal-prose th {
+  color: var(--ink);
+  background: var(--surface2);
+}
+
+/* ---------- brand mark theme swap ----------
+ * White mark on Dark Glass, navy mark on Light Glass. Global on purpose:
+ * scoped `:global(html.light)` rules in SFCs failed to apply at runtime,
+ * leaving the white mark invisible on light backgrounds. */
+.logo-on-light {
+  display: none;
+}
+html.light .logo-on-dark,
+:root[data-theme='light'] .logo-on-dark {
+  display: none;
+}
+html.light .logo-on-light,
+:root[data-theme='light'] .logo-on-light {
+  display: block;
+}
+
+/* ---------- reduced motion: kill all aurora/ticker/lift animation ---------- */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .aurora-hero::before,
+  .aurora-ambient::before,
+  .tick-row {
+    animation: none !important;
+  }
+  .glass-card,
+  .btn {
+    transition: none;
+  }
+  .glass-card:hover,
+  .btn-approve:hover {
+    transform: none;
+  }
+}

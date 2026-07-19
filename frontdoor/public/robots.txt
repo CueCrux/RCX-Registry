@@ -1,0 +1,24 @@
+# RCX-Registry frontdoor — retrieval/answer-engine crawlers welcome.
+# This is public, Apache-2.0 content: we want it cited and indexed.
+
+# Retrieval + answer-engine bots (explicitly welcomed)
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: Claude-SearchBot
+Allow: /
+
+User-agent: Claude-User
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Googlebot
+Allow: /
+
+# Everything else: allowed, nothing critical is disallowed.
+User-agent: *
+Allow: /
+
+Sitemap: https://rcxprotocol.org/sitemap.xml

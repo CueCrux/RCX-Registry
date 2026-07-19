@@ -1,0 +1,99 @@
+# RCX-Registry — full reference
+
+> A verifiable, MCP-compatible subregistry that mirrors the official Model Context Protocol registry
+> (registry.modelcontextprotocol.io, ~17,439 servers) and layers verifiable trust on top: publisher
+> namespace verification, RCX capability enrichment, and an ed25519-signed, hash-chained CROWN
+> receipt for every state change. The baseline read API is shape-compatible with the upstream `/v0`
+> surface, so existing MCP registry clients work unchanged.
+>
+> Frontdoor: https://rcxprotocol.org · API: https://registry.rcxprotocol.org ·
+> Source (Apache-2.0): https://github.com/CueCrux/RCX-Registry
+> Independent project by CueCrux Limited. Not affiliated with Anthropic or the MCP project.
+
+## Why it exists
+
+MCP registries verify who a publisher is at publish time. Nothing about that makes the registry's
+history tamper-evident, and nothing catches a server that turns malicious after approval. The last
+year of MCP supply-chain incidents is that gap repeating:
+
+- postmark-mcp (Sept 2025): an npm-published MCP server ran clean for 15 versions, then shipped an
+  update that BCC'd every email it handled to the author. ~300 organisations were affected. A
+  rug-pull that per-version receipts and history diffing would surface.
+- CVE-2025-54136 ("MCP rug pull"): a tool definition mutated after a client had already approved it.
+- CVE-2025-6514: command injection in mcp-remote, a connector with ~437,000 downloads.
+- MCPTox: adversarial instructions hidden in tool descriptions reached a 72.8% success rate.
+- Microsoft advisory (June 2026): an estimated ~200,000 vulnerable MCP instances in the wild.
+
+RCX-Registry's job is the part the others skip: a signed, replayable chain of custody over the whole
+registry, so tampering shows up as a broken chain instead of a production surprise.
+
+## How it works
+
+1. Mirror — a sync loop walks every page of the upstream MCP registry on a fixed cadence,
+   canonicalises each server envelope, and mints a signed RegistrySnapshot receipt over the Merkle
+   root of the full set. Upstream deletions are soft-deleted with a 30-day retention window.
+2. Verify — publishers prove namespace rights via DNS TXT challenge (`_rcx-registry.<domain>`) or
+   GitHub OAuth for `io.github.*` namespaces; other cases go through operator-mediated review.
+3. Enrich — verified publishers declare RCX capability metadata. Declarations are schema-validated,
+   hashed, refreshed on a 24-hour cadence, and surfaced under `_meta.org.rcxprotocol.registry/publisher`
+   (auto-derived fields under `.../auto`).
+4. Receipt — every mutation (snapshot, enrichment, rights verification) is an ed25519-signed CROWN
+   receipt minted via HashiCorp Vault Transit. The registry's entire history is independently
+   verifiable.
+
+## API surface
+
+Baseline mirror (shape-compatible with the upstream MCP registry), served from
+https://registry.rcxprotocol.org:
+
+- GET /v0/servers — list servers, cursor pagination, `limit` parameter.
+- GET /v0/servers/{name}/versions — list versions for a server.
+- GET /v0/servers/{name}/versions/{version} — fetch one version.
+- GET /openapi.json — self-contained OpenAPI spec (inline definitions, no external $ref).
+
+Publisher rights + enrichment (RCX extensions):
+
+- GET /publish — publisher onboarding page.
+- POST /v0/publisher-rights/dns-challenge — start a DNS TXT namespace challenge.
+- POST /v0/publisher-rights/dns-verify — verify the TXT record.
+- GET /v0/publisher-rights/github/start and /callback — GitHub OAuth namespace verification.
+- POST /v0/publisher-rights/manual-verify — operator-mediated review.
+- GET /v0/publishers/{publisher_passport} — publisher rights record.
+- POST /v0/publishers/declare — submit an RCX enrichment declaration.
+
+## Verification model
+
+- Canonical form + BLAKE3 hash per server envelope (two parties with the same data compute the same
+  hash).
+- A Merkle root per snapshot commits to every server at once; change one entry and the root changes.
+- The root is signed ed25519 with a key held in Vault Transit; the signature binds receipt id and
+  payload hash together.
+- Receipts chain: each carries the id of the previous one, making history append-only. Forging one
+  record would require re-signing every record after it.
+- Reproducible: the mirror API is public, receipt schemas are published at static.rcxprotocol.org,
+  and the canonicalisation/hashing/verification logic lives in the Apache-2.0 `rcx-registry-crown`
+  crate.
+
+## Subregistry positioning
+
+The MCP registry documents an open subregistry model: implement the read shape and add value through
+custom `_meta` fields, no approval step. RCX-Registry is exactly that. Its entire footprint sits under
+`_meta.org.rcxprotocol.registry`:
+
+- `.../publisher` — publisher-declared: verification state, how the namespace was proven, and the
+  rights-verification receipt id.
+- `.../auto` — registry-derived: the snapshot receipt an entry was last seen in, and its upstream
+  source.
+
+Pointing clients at it: any client with a configurable registry base URL points here by changing the
+URL. VS Code's enterprise policy `McpGalleryServiceUrl` repoints its whole MCP gallery at any
+spec-compliant endpoint — set it to https://registry.rcxprotocol.org.
+
+## Pages
+
+- https://rcxprotocol.org/ — home
+- https://rcxprotocol.org/verify — verification model
+- https://rcxprotocol.org/publish — publisher onboarding
+- https://rcxprotocol.org/subregistry — subregistry positioning
+- https://rcxprotocol.org/badge — README badge
+- https://rcxprotocol.org/legal — terms and privacy

@@ -1,0 +1,4 @@
+# Standalone pnpm root. The parent /home/myles/CueCrux is itself a pnpm
+# workspace; this file stops pnpm from climbing into it so the frontdoor
+# installs in isolation (it is not a member of that workspace).
+packages: []

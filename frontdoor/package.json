@@ -1,0 +1,32 @@
+{
+  "name": "rcx-registry-frontdoor",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "nuxi dev --port 3200",
+    "build": "nuxi build",
+    "generate": "nuxi generate",
+    "preview": "nuxi preview --port 3200",
+    "postinstall": "nuxi prepare",
+    "test": "node --test tests/*.test.mjs"
+  },
+  "dependencies": {
+    "nuxt": "4.4.8",
+    "vue": "3.5.39",
+    "vue-router": "^4.5.1",
+    "better-sqlite3": "^12.5.0"
+  },
+  "devDependencies": {
+    "@nuxtjs/tailwindcss": "^6.13.2",
+    "@nuxtjs/color-mode": "^3.5.2",
+    "@nuxt/content": "^3.5.1",
+    "tailwindcss": "^3.4.19",
+    "autoprefixer": "^10.4.21",
+    "postcss": "^8.5.3",
+    "typescript": "^5.9.3"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": ["better-sqlite3"]
+  }
+}

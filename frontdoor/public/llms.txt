@@ -1,0 +1,26 @@
+# RCX-Registry
+
+> A verifiable, MCP-compatible subregistry. It mirrors the official Model Context Protocol registry (~17,439 servers) and makes its history tamper-evident: publishers prove namespace control (DNS TXT or GitHub OAuth), verified publishers declare RCX capability metadata, and every state change is an ed25519-signed, hash-chained CROWN receipt. The baseline read API is shape-compatible with the upstream `/v0` surface, so existing MCP clients work unchanged.
+
+## What it is
+
+- [Home](https://rcxprotocol.org/): what RCX-Registry is and why tamper-evident history matters (led by real 2025–26 MCP supply-chain incidents).
+- [Verify](https://rcxprotocol.org/verify): the verification model — canonical hashing, a Merkle root per snapshot, ed25519 via Vault Transit, a replayable hash-chain, and how to check it yourself.
+- Independent, open-source (Apache-2.0). Not affiliated with Anthropic or the MCP project.
+
+## API endpoints (registry.rcxprotocol.org)
+
+- `GET /v0/servers` — list servers (cursor pagination, `limit`); shape-compatible with the upstream MCP registry.
+- `GET /v0/servers/{name}/versions` — list versions for a server.
+- `GET /v0/servers/{name}/versions/{version}` — fetch one version.
+- `GET /openapi.json` — self-contained OpenAPI spec.
+
+## Publisher verification
+
+- [Publish](https://rcxprotocol.org/publish): claim a namespace by DNS TXT (`_rcx-registry.<domain>`) or GitHub OAuth (`io.github.*`), then declare RCX capability metadata.
+- Verified metadata is surfaced to clients under `_meta.org.rcxprotocol.registry/publisher` (auto-derived fields under `.../auto`).
+- [Badge](https://rcxprotocol.org/badge): the "verified on RCX-Registry" README badge, linking to a server's signed history.
+
+## Subregistry positioning
+
+- [Subregistry](https://rcxprotocol.org/subregistry): RCX-Registry as a spec-compliant MCP subregistry — shape-compatibility statement, the `_meta.org.rcxprotocol.registry` namespace contract, pointing VS Code at it via the `McpGalleryServiceUrl` enterprise policy, and sync cadence.
