@@ -184,25 +184,27 @@ pub fn schema_date_from_uri(schema_uri: &str) -> Result<String, IngestError> {
     let Some(remainder) = schema_uri.split(marker).nth(1) else {
         return Err(IngestError::InvalidSchemaUri(schema_uri.to_string()));
     };
-    let date = remainder
+    // The date segment is not always first: current upstream URIs look like
+    // `/schemas/2025-12-11/server.schema.json`, but older published rows still
+    // carry `/schemas/server/2025-12-11.json`. Accept the first date-shaped
+    // path segment, ignoring any file extension.
+    remainder
         .split('/')
-        .next()
-        .filter(|segment| !segment.is_empty())
-        .ok_or_else(|| IngestError::InvalidSchemaUri(schema_uri.to_string()))?;
+        .map(|segment| segment.split('.').next().unwrap_or(segment))
+        .find(|candidate| is_schema_date(candidate))
+        .map(str::to_string)
+        .ok_or_else(|| IngestError::InvalidSchemaUri(schema_uri.to_string()))
+}
 
+fn is_schema_date(date: &str) -> bool {
     let bytes = date.as_bytes();
-    let valid = bytes.len() == 10
+    bytes.len() == 10
         && bytes[4] == b'-'
         && bytes[7] == b'-'
         && bytes
             .iter()
             .enumerate()
-            .all(|(index, byte)| matches!(index, 4 | 7) || byte.is_ascii_digit());
-    if !valid {
-        return Err(IngestError::InvalidSchemaUri(schema_uri.to_string()));
-    }
-
-    Ok(date.to_string())
+            .all(|(index, byte)| matches!(index, 4 | 7) || byte.is_ascii_digit())
 }
 
 pub trait ServerSchemaCatalog: Send + Sync {
@@ -666,6 +668,27 @@ mod tests {
             schema_date_from_uri(schema_uri).expect("schema date should parse"),
             "2025-12-11"
         );
+    }
+
+    #[test]
+    fn schema_date_extracts_from_legacy_registry_uri() {
+        // Older published rows on the live upstream still carry this shape;
+        // it poisoned every sync tick on the first deployed boot (2026-07-18).
+        let schema_uri = "https://registry.modelcontextprotocol.io/schemas/server/2025-12-11.json";
+        assert_eq!(
+            schema_date_from_uri(schema_uri).expect("schema date should parse"),
+            "2025-12-11"
+        );
+    }
+
+    #[test]
+    fn schema_date_rejects_uri_without_date_segment() {
+        for uri in [
+            "https://static.modelcontextprotocol.io/schemas/server.schema.json",
+            "https://example.com/no-schemas-marker/2025-12-11/server.schema.json",
+        ] {
+            assert!(schema_date_from_uri(uri).is_err(), "should reject `{uri}`");
+        }
     }
 
     #[test]

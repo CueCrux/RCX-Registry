@@ -134,9 +134,22 @@ fn run_tick_blocking(
 
     let mut current_mirrored = Vec::with_capacity(envelopes.len());
     for envelope in &envelopes {
-        let mirrored =
-            MirroredServer::from_envelope(envelope, &rcx_registry_ingest::NoopSchemaCatalog)?;
-        current_mirrored.push((envelope, mirrored));
+        // One malformed upstream envelope must not poison the whole tick —
+        // skip it, count it, and keep mirroring the rest.
+        match MirroredServer::from_envelope(envelope, &rcx_registry_ingest::NoopSchemaCatalog) {
+            Ok(mirrored) => current_mirrored.push((envelope, mirrored)),
+            Err(error) => {
+                metrics
+                    .mcp_fetch_errors_total
+                    .fetch_add(1, Ordering::Relaxed);
+                let name = envelope
+                    .server
+                    .get("name")
+                    .and_then(Value::as_str)
+                    .unwrap_or("<unknown>");
+                tracing::warn!(server = name, error = %error, "skipping unmirrorable envelope");
+            }
+        }
     }
 
     let prior_snapshot = snapshots.latest()?;
