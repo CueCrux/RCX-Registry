@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="168" height="20" role="img" aria-label="RCX-Registry: verified">
+  <title>RCX-Registry: verified</title>
+  <linearGradient id="s" x2="0" y2="100%">
+    <stop offset="0" stop-color="#fff" stop-opacity=".1"/>
+    <stop offset="1" stop-opacity=".1"/>
+  </linearGradient>
+  <clipPath id="r"><rect width="168" height="20" rx="3" fill="#fff"/></clipPath>
+  <g clip-path="url(#r)">
+    <rect width="90" height="20" fill="#30363d"/>
+    <rect x="90" width="78" height="20" fill="#2bb983"/>
+    <rect width="168" height="20" fill="url(#s)"/>
+  </g>
+  <g fill="#fff" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="110" text-rendering="geometricPrecision">
+    <text x="460" y="150" transform="scale(.1)" textLength="800">RCX-Registry</text>
+    <text x="1280" y="150" transform="scale(.1)" textLength="640">✓ verified</text>
+  </g>
+</svg>

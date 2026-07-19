@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Static sitemap for the frontdoor's own pages. The 17k+ mirrored server
+     detail pages live on the API host (registry.rcxprotocol.org) and are
+     enumerated there, not here. -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://rcxprotocol.org/</loc><lastmod>2026-07-19</lastmod><priority>1.0</priority></url>
+  <url><loc>https://rcxprotocol.org/verify</loc><lastmod>2026-07-19</lastmod><priority>0.9</priority></url>
+  <url><loc>https://rcxprotocol.org/subregistry</loc><lastmod>2026-07-19</lastmod><priority>0.9</priority></url>
+  <url><loc>https://rcxprotocol.org/publish</loc><lastmod>2026-07-19</lastmod><priority>0.8</priority></url>
+  <url><loc>https://rcxprotocol.org/badge</loc><lastmod>2026-07-19</lastmod><priority>0.7</priority></url>
+  <url><loc>https://rcxprotocol.org/legal</loc><lastmod>2026-07-19</lastmod><priority>0.3</priority></url>
+  <url><loc>https://rcxprotocol.org/legal/terms</loc><lastmod>2026-07-19</lastmod><priority>0.3</priority></url>
+  <url><loc>https://rcxprotocol.org/legal/privacy</loc><lastmod>2026-07-19</lastmod><priority>0.3</priority></url>
+</urlset>

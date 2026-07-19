@@ -1,0 +1,113 @@
+/*
+ * @cuecrux/aurora — canonical design tokens v1.0 (2026-07-07)
+ * Source of truth: Crux Daemon v2 console (crates/corecruxd/console/v2/shell.html, glass theme)
+ * plus the Light Glass variant approved in Aurora-Glass-Direction-2026-07-07.html.
+ *
+ * Copy this file verbatim into each site (assets/css/aurora.css). Do not fork values;
+ * change here first, then sync. Sites map Tailwind theme colours onto these variables.
+ */
+
+:root,
+:root[data-theme='glass'] {
+  /* ground + surfaces */
+  --bg: #060a12;
+  --surface: rgba(255, 255, 255, 0.055);
+  --surface2: rgba(255, 255, 255, 0.03);
+  --edge: rgba(255, 255, 255, 0.1);
+  --edge-strong: rgba(255, 255, 255, 0.18);
+  --panel-bg: rgba(6, 10, 18, 0.72);
+
+  /* ink */
+  --ink: #eaf0f7;
+  --ink2: #93a4b8;
+  --ink3: #6e7e96;
+
+  /* accents */
+  --acc: #6ca8ff;
+  --trust: #a78bfa;
+  --ok: #3ddc97;
+  --warn: #f5b94b;
+  --crit: #f0716c;
+
+  /* approve gradient — reserved for primary CTAs only */
+  --approve-a: #43e6a2;
+  --approve-b: #2bb983;
+  --approve-ink: #06251a;
+
+  /* aurora washes */
+  --aurora-1: rgba(108, 168, 255, 0.22);
+  --aurora-2: rgba(167, 139, 250, 0.18);
+  --aurora-3: rgba(61, 220, 151, 0.13);
+
+  /* elevation ("lift") */
+  --shadow-card: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 10px 28px rgba(0, 0, 0, 0.32);
+  --shadow-lift: inset 0 1px 0 rgba(255, 255, 255, 0.07), 0 20px 48px rgba(0, 0, 0, 0.5);
+  --shadow-browser: 0 30px 80px rgba(0, 0, 0, 0.5);
+
+  /* geometry */
+  --radius: 14px;
+  --radius-sm: 10px;
+  --blur: 14px;
+
+  /* type */
+  --font-display: 'Archivo', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-sans: 'Public Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+/* Light Glass — keeps the frost, unlike the console's flat light theme */
+:root[data-theme='light'],
+:root.light {
+  --bg: #eef2f8;
+  --surface: rgba(255, 255, 255, 0.66);
+  --surface2: rgba(255, 255, 255, 0.5);
+  --edge: rgba(27, 39, 51, 0.1);
+  --edge-strong: rgba(27, 39, 51, 0.2);
+  --panel-bg: rgba(255, 255, 255, 0.8);
+
+  --ink: #1b2733;
+  --ink2: #4a5866;
+  --ink3: #5b6b7d;
+
+  --acc: #2456a6;
+  --trust: #6d28d9;
+  --ok: #1a7f4e;
+  --warn: #9a5b00;
+  --crit: #b91c1c;
+
+  --approve-a: #1a7f4e;
+  --approve-b: #14663e;
+  --approve-ink: #ffffff;
+
+  --aurora-1: rgba(36, 86, 166, 0.16);
+  --aurora-2: rgba(109, 40, 217, 0.11);
+  --aurora-3: rgba(26, 127, 78, 0.1);
+
+  --shadow-card: 0 1px 2px rgba(27, 39, 51, 0.05), 0 12px 30px rgba(27, 39, 51, 0.1);
+  --shadow-lift: 0 2px 4px rgba(27, 39, 51, 0.06), 0 24px 52px rgba(27, 39, 51, 0.16);
+  --shadow-browser: 0 24px 64px rgba(27, 39, 51, 0.18);
+}
+
+/* ambient aurora — the thing the glass blurs; slower than any hero animation */
+.aurora-ambient::before {
+  content: '';
+  position: fixed;
+  inset: -22%;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(60rem 40rem at 85% 8%, var(--aurora-2), transparent 60%),
+    radial-gradient(50rem 50rem at -5% 40%, var(--aurora-1), transparent 60%),
+    radial-gradient(55rem 45rem at 70% 100%, var(--aurora-3), transparent 65%);
+  opacity: 0.45;
+  animation: aurora-ambient 70s ease-in-out infinite alternate;
+  will-change: transform, opacity;
+}
+@keyframes aurora-ambient {
+  0% { transform: translate3d(0, 0, 0) rotate(0deg) scale(1); opacity: 0.4; }
+  50% { transform: translate3d(2.5%, -1.5%, 0) rotate(1.2deg) scale(1.05); opacity: 0.52; }
+  100% { transform: translate3d(-2%, 2%, 0) rotate(-1deg) scale(1.03); opacity: 0.45; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .aurora-ambient::before { animation: none; }
+}
