@@ -1,0 +1,10 @@
+001-ce-minimal (local): 924 bytes cbor, hash 0fc1513f55a0c211
+002-ce-full (local): 1863 bytes cbor, hash 41da09dbc5e62ac2
+003-hosted-free (verified): 901 bytes cbor, hash f4aadc7e502d057e
+004-hosted-team (verified): 2231 bytes cbor, hash 4652b7887a92714f
+005-hosted-pro-parent-chain (verified): 2332 bytes cbor, hash fa4dc1284a03285d
+006-edge-large-uints (verified): 907 bytes cbor, hash 521a94808dd59935
+007-empty-affinities (verified): 654 bytes cbor, hash 6f8c5aa6a2b2d4ac
+008-unicode-principal (verified): 2378 bytes cbor, hash 791b80e5dc919b18
+009-audit-mode (audit): 2132 bytes cbor, hash 1f57ac03e7a38a27
+010-intent-shaped (verified): 2243 bytes cbor, hash eca7e9f16002db88

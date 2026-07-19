@@ -1,0 +1,9 @@
+{
+  "name": "005-hosted-pro-parent-chain",
+  "description": "Hosted pro plan with explicit parent chain",
+  "receipt_mode": "verified",
+  "expected_hash_hex": "31e0577ae323b5cea691a00f951a4536edcba712ce726ebf544d235da6421aaf",
+  "expected_cbor_len": 6896,
+  "expected_json_len": 8745,
+  "signer_public_key_hex": "66cd608b928b88e50e0efeaa33faf1c43cefe07294b0b87e9fe0aba6a3cf7633"
+}

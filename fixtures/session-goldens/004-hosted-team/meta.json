@@ -1,0 +1,9 @@
+{
+  "name": "004-hosted-team",
+  "description": "Hosted team plan with broad affinities and verified receipt",
+  "receipt_mode": "verified",
+  "expected_hash_hex": "2d953d7772319b086340a705c46b87175c03fb137438a4be341a67aafa0a69a1",
+  "expected_cbor_len": 7234,
+  "expected_json_len": 9095,
+  "signer_public_key_hex": "66cd608b928b88e50e0efeaa33faf1c43cefe07294b0b87e9fe0aba6a3cf7633"
+}

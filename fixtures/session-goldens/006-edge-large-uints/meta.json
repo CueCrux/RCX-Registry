@@ -1,0 +1,9 @@
+{
+  "name": "006-edge-large-uints",
+  "description": "Hosted verified plan with u64-edge counters and valid_until at max u64",
+  "receipt_mode": "verified",
+  "expected_hash_hex": "4debea584cbcc1cdf94357311e8f8b735d5004237747ae077b4e5eb2425cd35d",
+  "expected_cbor_len": 1706,
+  "expected_json_len": 2300,
+  "signer_public_key_hex": "66cd608b928b88e50e0efeaa33faf1c43cefe07294b0b87e9fe0aba6a3cf7633"
+}

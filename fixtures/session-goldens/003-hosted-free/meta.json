@@ -1,0 +1,9 @@
+{
+  "name": "003-hosted-free",
+  "description": "Hosted free-tier plan with retrieval only and verified receipt",
+  "receipt_mode": "verified",
+  "expected_hash_hex": "697b78d9b07f12e261b53a92bf95b9303e2179aa1a016f95b9bb3fcb2092b65c",
+  "expected_cbor_len": 1704,
+  "expected_json_len": 2277,
+  "signer_public_key_hex": "66cd608b928b88e50e0efeaa33faf1c43cefe07294b0b87e9fe0aba6a3cf7633"
+}

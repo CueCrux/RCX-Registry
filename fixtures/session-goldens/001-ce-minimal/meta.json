@@ -1,0 +1,9 @@
+{
+  "name": "001-ce-minimal",
+  "description": "CE minimal v2 graph with wildcard affinities and local receipt mode",
+  "receipt_mode": "local",
+  "expected_hash_hex": "c89bad4482654a7096b263fe5dcfa65c8a65a393dfb6286e7174db2354b5839a",
+  "expected_cbor_len": 2164,
+  "expected_json_len": 2758,
+  "signer_public_key_hex": null
+}

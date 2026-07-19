@@ -1,0 +1,9 @@
+{
+  "name": "010-intent-shaped",
+  "description": "Hosted verified plan with intent shaping and truncation",
+  "receipt_mode": "verified",
+  "expected_hash_hex": "dee9f08fc73d79dd54448fbfa6862a0eca08af595ac492fb091f336bb50c04b4",
+  "expected_cbor_len": 4165,
+  "expected_json_len": 5173,
+  "signer_public_key_hex": "66cd608b928b88e50e0efeaa33faf1c43cefe07294b0b87e9fe0aba6a3cf7633"
+}
