@@ -1734,6 +1734,7 @@ dependencies = [
  "blake3",
  "chrono",
  "dotenvy",
+ "ed25519-dalek",
  "hex",
  "hickory-resolver",
  "http",

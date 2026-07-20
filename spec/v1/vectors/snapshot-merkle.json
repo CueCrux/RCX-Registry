@@ -1,0 +1,199 @@
+{
+  "format": "rcx-protocol-spec-v1/snapshot-merkle@1",
+  "production_function": "rcx_registry_ingest::snapshot_merkle_root",
+  "observed_rules": {
+    "construction": "one BLAKE3-256 stream, not a pairwise Merkle tree",
+    "entry_frame": "name UTF-8 || 00 || version UTF-8 || 00 || canonical_json UTF-8 || ff",
+    "ordering": "stable lexical sort by name, then version",
+    "version_order": "lexical, not semantic version order",
+    "duplicates": "retained; equal (name, version) ties preserve input order",
+    "empty_set": "BLAKE3-256 of the empty byte string"
+  },
+  "invariants": {
+    "unique_permutation_roots_equal": true,
+    "same_key_different_payload_permutations_differ": true
+  },
+  "cases": [
+    {
+      "id": "empty-set",
+      "input_order": [],
+      "server_count": 0,
+      "root_hex": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+      "equivalence_group": null
+    },
+    {
+      "id": "one-element",
+      "input_order": [
+        {
+          "name": "io.example/alpha",
+          "version": "1.0.0",
+          "canonical_json": "{\"$schema\":\"https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json\",\"name\":\"io.example/alpha\",\"payload\":{\"n\":1},\"version\":\"1.0.0\"}"
+        }
+      ],
+      "server_count": 1,
+      "root_hex": "7c9302c66879de4e87c29591119b7c4be85140154a14c6546d5be1e25e39b924",
+      "equivalence_group": null
+    },
+    {
+      "id": "two-elements-unsorted",
+      "input_order": [
+        {
+          "name": "io.example/beta",
+          "version": "2.0.0",
+          "canonical_json": "{\"$schema\":\"https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json\",\"name\":\"io.example/beta\",\"payload\":{\"n\":2},\"version\":\"2.0.0\"}"
+        },
+        {
+          "name": "io.example/alpha",
+          "version": "1.0.0",
+          "canonical_json": "{\"$schema\":\"https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json\",\"name\":\"io.example/alpha\",\"payload\":{\"n\":1},\"version\":\"1.0.0\"}"
+        }
+      ],
+      "server_count": 2,
+      "root_hex": "19da6b7c27cf53fb89461242b8664cf5efdf41376705f03fdf67eab2464ea0f1",
+      "equivalence_group": "unique-permutation"
+    },
+    {
+      "id": "two-elements-permuted",
+      "input_order": [
+        {
+          "name": "io.example/alpha",
+          "version": "1.0.0",
+          "canonical_json": "{\"$schema\":\"https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json\",\"name\":\"io.example/alpha\",\"payload\":{\"n\":1},\"version\":\"1.0.0\"}"
+        },
+        {
+          "name": "io.example/beta",
+          "version": "2.0.0",
+          "canonical_json": "{\"$schema\":\"https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json\",\"name\":\"io.example/beta\",\"payload\":{\"n\":2},\"version\":\"2.0.0\"}"
+        }
+      ],
+      "server_count": 2,
+      "root_hex": "19da6b7c27cf53fb89461242b8664cf5efdf41376705f03fdf67eab2464ea0f1",
+      "equivalence_group": "unique-permutation"
+    },
+    {
+      "id": "odd-three-elements",
+      "input_order": [
+        {
+          "name": "io.example/gamma",
+          "version": "1.0.0",
+          "canonical_json": "{\"$schema\":\"https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json\",\"name\":\"io.example/gamma\",\"payload\":{\"n\":3},\"version\":\"1.0.0\"}"
+        },
+        {
+          "name": "io.example/alpha",
+          "version": "2.0.0",
+          "canonical_json": "{\"$schema\":\"https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json\",\"name\":\"io.example/alpha\",\"payload\":{\"n\":2},\"version\":\"2.0.0\"}"
+        },
+        {
+          "name": "io.example/alpha",
+          "version": "10.0.0",
+          "canonical_json": "{\"$schema\":\"https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json\",\"name\":\"io.example/alpha\",\"payload\":{\"n\":10},\"version\":\"10.0.0\"}"
+        }
+      ],
+      "server_count": 3,
+      "root_hex": "22cf5da15ae658b3060752fffcced38905c17de012435c16158ca242ca44b269",
+      "equivalence_group": null
+    },
+    {
+      "id": "larger-eight-elements",
+      "input_order": [
+        {
+          "name": "io.example/hotel",
+          "version": "1.0.0",
+          "canonical_json": "{\"$schema\":\"https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json\",\"name\":\"io.example/hotel\",\"payload\":{\"n\":8},\"version\":\"1.0.0\"}"
+        },
+        {
+          "name": "io.example/alpha",
+          "version": "1.0.0",
+          "canonical_json": "{\"$schema\":\"https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json\",\"name\":\"io.example/alpha\",\"payload\":{\"n\":1},\"version\":\"1.0.0\"}"
+        },
+        {
+          "name": "io.example/golf",
+          "version": "1.0.0",
+          "canonical_json": "{\"$schema\":\"https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json\",\"name\":\"io.example/golf\",\"payload\":{\"n\":7},\"version\":\"1.0.0\"}"
+        },
+        {
+          "name": "io.example/charlie",
+          "version": "1.0.0",
+          "canonical_json": "{\"$schema\":\"https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json\",\"name\":\"io.example/charlie\",\"payload\":{\"n\":3},\"version\":\"1.0.0\"}"
+        },
+        {
+          "name": "io.example/foxtrot",
+          "version": "1.0.0",
+          "canonical_json": "{\"$schema\":\"https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json\",\"name\":\"io.example/foxtrot\",\"payload\":{\"n\":6},\"version\":\"1.0.0\"}"
+        },
+        {
+          "name": "io.example/bravo",
+          "version": "1.0.0",
+          "canonical_json": "{\"$schema\":\"https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json\",\"name\":\"io.example/bravo\",\"payload\":{\"n\":2},\"version\":\"1.0.0\"}"
+        },
+        {
+          "name": "io.example/echo",
+          "version": "1.0.0",
+          "canonical_json": "{\"$schema\":\"https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json\",\"name\":\"io.example/echo\",\"payload\":{\"n\":5},\"version\":\"1.0.0\"}"
+        },
+        {
+          "name": "io.example/delta",
+          "version": "1.0.0",
+          "canonical_json": "{\"$schema\":\"https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json\",\"name\":\"io.example/delta\",\"payload\":{\"n\":4},\"version\":\"1.0.0\"}"
+        }
+      ],
+      "server_count": 8,
+      "root_hex": "c5952c7a38e609da70f4880a1028a879eca3e61101382015d6440d84bf8fe312",
+      "equivalence_group": null
+    },
+    {
+      "id": "duplicate-identical-retained",
+      "input_order": [
+        {
+          "name": "io.example/alpha",
+          "version": "1.0.0",
+          "canonical_json": "{\"$schema\":\"https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json\",\"name\":\"io.example/alpha\",\"payload\":{\"n\":1},\"version\":\"1.0.0\"}"
+        },
+        {
+          "name": "io.example/alpha",
+          "version": "1.0.0",
+          "canonical_json": "{\"$schema\":\"https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json\",\"name\":\"io.example/alpha\",\"payload\":{\"n\":1},\"version\":\"1.0.0\"}"
+        }
+      ],
+      "server_count": 2,
+      "root_hex": "d04b9d39c8437294a45c03137ad248668b1ba9e55e7d0ae8a69ff0de8b186a89",
+      "equivalence_group": null
+    },
+    {
+      "id": "duplicate-same-key-order-a",
+      "input_order": [
+        {
+          "name": "io.example/duplicate",
+          "version": "1.0.0",
+          "canonical_json": "{\"$schema\":\"https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json\",\"name\":\"io.example/duplicate\",\"payload\":{\"payload\":\"first\"},\"version\":\"1.0.0\"}"
+        },
+        {
+          "name": "io.example/duplicate",
+          "version": "1.0.0",
+          "canonical_json": "{\"$schema\":\"https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json\",\"name\":\"io.example/duplicate\",\"payload\":{\"payload\":\"second\"},\"version\":\"1.0.0\"}"
+        }
+      ],
+      "server_count": 2,
+      "root_hex": "5507101ad5e8f4d89169603b19119d9396aee13e7a07d24178152ae83a526761",
+      "equivalence_group": "duplicate-tie-order-sensitive"
+    },
+    {
+      "id": "duplicate-same-key-order-b",
+      "input_order": [
+        {
+          "name": "io.example/duplicate",
+          "version": "1.0.0",
+          "canonical_json": "{\"$schema\":\"https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json\",\"name\":\"io.example/duplicate\",\"payload\":{\"payload\":\"second\"},\"version\":\"1.0.0\"}"
+        },
+        {
+          "name": "io.example/duplicate",
+          "version": "1.0.0",
+          "canonical_json": "{\"$schema\":\"https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json\",\"name\":\"io.example/duplicate\",\"payload\":{\"payload\":\"first\"},\"version\":\"1.0.0\"}"
+        }
+      ],
+      "server_count": 2,
+      "root_hex": "5e31f39cdc945cac9acc24f0aa2eab1e29d3a83a62ed89f0880fe29c356aadcd",
+      "equivalence_group": "duplicate-tie-order-sensitive"
+    }
+  ]
+}

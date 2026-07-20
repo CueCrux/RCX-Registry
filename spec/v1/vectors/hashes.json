@@ -1,0 +1,92 @@
+{
+  "format": "rcx-protocol-spec-v1/hashes@1",
+  "algorithm": "BLAKE3-256",
+  "declaration_hash": {
+    "production_function": "rcx_registry_enrich::declaration_hash",
+    "input_rule": "UTF-8 bytes of production canonical JSON",
+    "cases": [
+      {
+        "id": "empty-object",
+        "input_json": "{}",
+        "canonical_json": "{}",
+        "hash_input_utf8_hex": "7b7d",
+        "digest_hex": "6e46dd10defc9b56c29a6ec56b508c21f54c08192194e4df25bf36f0c9c3c279",
+        "equivalence_group": null
+      },
+      {
+        "id": "reordered-object-a",
+        "input_json": "{\"b\":2,\"a\":{\"z\":0,\"m\":1}}",
+        "canonical_json": "{\"a\":{\"m\":1,\"z\":0},\"b\":2}",
+        "hash_input_utf8_hex": "7b2261223a7b226d223a312c227a223a307d2c2262223a327d",
+        "digest_hex": "177235958c8daaedcd0e83d666659e313b833680f70a84cfe1d279e2169f5bdc",
+        "equivalence_group": "reordered-object"
+      },
+      {
+        "id": "reordered-object-b",
+        "input_json": "{\"a\":{\"m\":1,\"z\":0},\"b\":2}",
+        "canonical_json": "{\"a\":{\"m\":1,\"z\":0},\"b\":2}",
+        "hash_input_utf8_hex": "7b2261223a7b226d223a312c227a223a307d2c2262223a327d",
+        "digest_hex": "177235958c8daaedcd0e83d666659e313b833680f70a84cfe1d279e2169f5bdc",
+        "equivalence_group": "reordered-object"
+      },
+      {
+        "id": "unicode-combining",
+        "input_json": "{\"value\":\"e\\u0301\"}",
+        "canonical_json": "{\"value\":\"é\"}",
+        "hash_input_utf8_hex": "7b2276616c7565223a2265cc81227d",
+        "digest_hex": "47cc5023eb1ab5b44f1a308d70577f1769af495b8ef41b260643c50f8ba774bc",
+        "equivalence_group": null,
+        "note": "Visually similar to unicode-precomposed; hash_input_utf8_hex is authoritative (U+0065 U+0301)."
+      },
+      {
+        "id": "unicode-precomposed",
+        "input_json": "{\"value\":\"é\"}",
+        "canonical_json": "{\"value\":\"é\"}",
+        "hash_input_utf8_hex": "7b2276616c7565223a22c3a9227d",
+        "digest_hex": "05585064ad27588e2dc6f90e3239cd198a93d88a68a1b9378fa6f13608f7180e",
+        "equivalence_group": null,
+        "note": "Visually similar to unicode-combining; hash_input_utf8_hex is authoritative (U+00E9)."
+      },
+      {
+        "id": "integer-one",
+        "input_json": "{\"value\":1}",
+        "canonical_json": "{\"value\":1}",
+        "hash_input_utf8_hex": "7b2276616c7565223a317d",
+        "digest_hex": "10b291d392b6999ffe4aa4661fb343fc371fca3bfb5bb4e8d8226fdf85743232",
+        "equivalence_group": null
+      },
+      {
+        "id": "float-one",
+        "input_json": "{\"value\":1.0}",
+        "canonical_json": "{\"value\":1.0}",
+        "hash_input_utf8_hex": "7b2276616c7565223a312e307d",
+        "digest_hex": "1749c24cc182285075730e7ee67eed95d7cba9539b60e2135b24fc9c1e09946c",
+        "equivalence_group": null
+      },
+      {
+        "id": "negative-zero",
+        "input_json": "{\"value\":-0.0}",
+        "canonical_json": "{\"value\":-0.0}",
+        "hash_input_utf8_hex": "7b2276616c7565223a2d302e307d",
+        "digest_hex": "7664d800d83f7c27eda8640db35776d52dd2b1a428604344464ca7768334ddd9",
+        "equivalence_group": null
+      }
+    ]
+  },
+  "canonical_server_hash": {
+    "production_function": "rcx_registry_ingest::canonical_server_hash",
+    "input_rule": "name UTF-8 || 00 || version UTF-8 || 00 || canonical_json UTF-8 (no trailing ff)",
+    "snapshot_entry_frame_rule": "the related snapshot_merkle_root frame appends ff; it is exposed for diagnostics but is not this digest's input",
+    "cases": [
+      {
+        "id": "canonical-server-hash",
+        "name": "io.example/hash-input",
+        "version": "1.0.0",
+        "canonical_json": "{\"$schema\":\"https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json\",\"name\":\"io.example/hash-input\",\"payload\":{\"astral\":\"😀\",\"combining\":\"é\"},\"version\":\"1.0.0\"}",
+        "hash_input_hex": "696f2e6578616d706c652f686173682d696e70757400312e302e30007b2224736368656d61223a2268747470733a2f2f7374617469632e6d6f64656c636f6e7465787470726f746f636f6c2e696f2f736368656d61732f323032352d31322d31312f7365727665722e736368656d612e6a736f6e222c226e616d65223a22696f2e6578616d706c652f686173682d696e707574222c227061796c6f6164223a7b2261737472616c223a22f09f9880222c22636f6d62696e696e67223a2265cc81227d2c2276657273696f6e223a22312e302e30227d",
+        "snapshot_entry_frame_hex": "696f2e6578616d706c652f686173682d696e70757400312e302e30007b2224736368656d61223a2268747470733a2f2f7374617469632e6d6f64656c636f6e7465787470726f746f636f6c2e696f2f736368656d61732f323032352d31322d31312f7365727665722e736368656d612e6a736f6e222c226e616d65223a22696f2e6578616d706c652f686173682d696e707574222c227061796c6f6164223a7b2261737472616c223a22f09f9880222c22636f6d62696e696e67223a2265cc81227d2c2276657273696f6e223a22312e302e30227dff",
+        "digest_hex": "7e3af2567dfdb621012fd0bf37a3094147299c1eab676bc292c536167d5e132f"
+      }
+    ]
+  }
+}

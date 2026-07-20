@@ -137,14 +137,13 @@ fn zeroed_hash_ignores_signing_fields() {
 }
 
 #[test]
-fn verifies_signature_against_zeroed_hash() {
+fn verifies_signature_against_production_preimage() {
     let mut receipt = sample_rights_receipt();
     let signing_key = SigningKey::from_bytes(&[0x13; 32]);
-    let computed_hash = receipt.compute_hash();
-    let signature = signing_key.sign(&computed_hash);
 
-    receipt.receipt_hash = computed_hash;
-    receipt.receipt_signature = signature.to_bytes();
+    receipt.receipt_hash = receipt.compute_hash();
+    let signing_bytes = receipt.to_canonical_cbor();
+    receipt.receipt_signature = signing_key.sign(&signing_bytes).to_bytes();
 
     verify_receipt_signature(&receipt, &signing_key.verifying_key().to_bytes())
         .expect("signature should verify");
@@ -152,6 +151,24 @@ fn verifies_signature_against_zeroed_hash() {
     let mut tampered = receipt.clone();
     tampered.namespace = "io.github.evil-org".to_string();
     assert!(verify_receipt_signature(&tampered, &signing_key.verifying_key().to_bytes()).is_err());
+
+    let mut tampered_signer = receipt.clone();
+    tampered_signer.signer_kid = "vault:transit:attacker-key".to_string();
+    assert!(
+        verify_receipt_signature(&tampered_signer, &signing_key.verifying_key().to_bytes())
+            .is_err()
+    );
+}
+
+#[test]
+fn rejects_signature_over_zeroed_hash() {
+    let mut receipt = sample_rights_receipt();
+    let signing_key = SigningKey::from_bytes(&[0x13; 32]);
+
+    receipt.receipt_hash = receipt.compute_hash();
+    receipt.receipt_signature = signing_key.sign(&receipt.receipt_hash).to_bytes();
+
+    assert!(verify_receipt_signature(&receipt, &signing_key.verifying_key().to_bytes()).is_err());
 }
 
 #[test]

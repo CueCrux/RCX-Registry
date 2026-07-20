@@ -1,0 +1,66 @@
+{
+  "format": "rcx-protocol-spec-v1/canonical-json@1",
+  "production_function": "rcx_registry_ingest::canonicalize_json",
+  "notes": [
+    "Objects are sorted recursively; arrays retain input order.",
+    "Object keys use Rust String ordering, not RFC 8785 UTF-16 ordering.",
+    "Numbers are serde_json::Number values, so integer and floating forms remain distinct.",
+    "Unicode is not normalized; duplicate object keys have already collapsed in serde_json::Value."
+  ],
+  "cases": [
+    {
+      "id": "object-key-ordering",
+      "input_json": "{\"😀\":4,\"\\uE000\":5,\"ä\":3,\"z\":0,\"aa\":2,\"a\":1}",
+      "canonical_json": "{\"a\":1,\"aa\":2,\"z\":0,\"ä\":3,\"\":5,\"😀\":4}",
+      "canonical_utf8_hex": "7b2261223a312c226161223a322c227a223a302c22c3a4223a332c22ee8080223a352c22f09f9880223a347d"
+    },
+    {
+      "id": "string-escaping",
+      "input_json": "{\"text\":\"quote: \\\" backslash: \\\\ slash: / controls: \\b\\f\\n\\r\\t nul:\\u0000\"}",
+      "canonical_json": "{\"text\":\"quote: \\\" backslash: \\\\ slash: / controls: \\b\\f\\n\\r\\t nul:\\u0000\"}",
+      "canonical_utf8_hex": "7b2274657874223a2271756f74653a205c22206261636b736c6173683a205c5c20736c6173683a202f20636f6e74726f6c733a205c625c665c6e5c725c74206e756c3a5c7530303030227d"
+    },
+    {
+      "id": "unicode-astral-and-combining",
+      "input_json": "{\"astral\":\"😀\",\"combining\":\"e\\u0301\",\"precomposed\":\"é\"}",
+      "canonical_json": "{\"astral\":\"😀\",\"combining\":\"é\",\"precomposed\":\"é\"}",
+      "canonical_utf8_hex": "7b2261737472616c223a22f09f9880222c22636f6d62696e696e67223a2265cc81222c22707265636f6d706f736564223a22c3a9227d"
+    },
+    {
+      "id": "integers-versus-floats",
+      "input_json": "{\"integer\":1,\"float\":1.0,\"negative_integer\":-1,\"exponent\":1e3}",
+      "canonical_json": "{\"exponent\":1000.0,\"float\":1.0,\"integer\":1,\"negative_integer\":-1}",
+      "canonical_utf8_hex": "7b226578706f6e656e74223a313030302e302c22666c6f6174223a312e302c22696e7465676572223a312c226e656761746976655f696e7465676572223a2d317d"
+    },
+    {
+      "id": "negative-zero",
+      "input_json": "{\"negative_zero\":-0.0,\"positive_zero\":0.0}",
+      "canonical_json": "{\"negative_zero\":-0.0,\"positive_zero\":0.0}",
+      "canonical_utf8_hex": "7b226e656761746976655f7a65726f223a2d302e302c22706f7369746976655f7a65726f223a302e307d"
+    },
+    {
+      "id": "nested",
+      "input_json": "{\"z\":[{\"y\":2,\"x\":1},[]],\"a\":{\"d\":false,\"c\":null,\"b\":[3,2,1]}}",
+      "canonical_json": "{\"a\":{\"b\":[3,2,1],\"c\":null,\"d\":false},\"z\":[{\"x\":1,\"y\":2},[]]}",
+      "canonical_utf8_hex": "7b2261223a7b2262223a5b332c322c315d2c2263223a6e756c6c2c2264223a66616c73657d2c227a223a5b7b2278223a312c2279223a327d2c5b5d5d7d"
+    },
+    {
+      "id": "empty-containers",
+      "input_json": "{\"object\":{},\"array\":[]}",
+      "canonical_json": "{\"array\":[],\"object\":{}}",
+      "canonical_utf8_hex": "7b226172726179223a5b5d2c226f626a656374223a7b7d7d"
+    },
+    {
+      "id": "integer-boundaries",
+      "input_json": "{\"u64_max\":18446744073709551615,\"i64_min\":-9223372036854775808}",
+      "canonical_json": "{\"i64_min\":-9223372036854775808,\"u64_max\":18446744073709551615}",
+      "canonical_utf8_hex": "7b226936345f6d696e223a2d393232333337323033363835343737353830382c227536345f6d6178223a31383434363734343037333730393535313631357d"
+    },
+    {
+      "id": "duplicate-object-key-last-wins",
+      "input_json": "{\"a\":1,\"a\":2}",
+      "canonical_json": "{\"a\":2}",
+      "canonical_utf8_hex": "7b2261223a327d"
+    }
+  ]
+}

@@ -38,4 +38,5 @@ tracing-subscriber.workspace = true
 url.workspace = true
 
 [dev-dependencies]
+ed25519-dalek.workspace = true
 tokio.workspace = true
