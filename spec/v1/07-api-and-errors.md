@@ -1,6 +1,6 @@
 # 7. Read API, Version Selection & Errors
 
-`rcx-spec/v1` · traces to grounding §6 (`crates/rcx-registry-api/src/lib.rs`). Vectors: `vectors/api/*`.
+`rcx-spec/v1` · traces to grounding §6 (`crates/rcx-registry-api/src/lib.rs`). No conformance vectors cover this section — the read API is a JSON wire-**shape** contract (the upstream MCP `/v0` response shape plus the error model), not a byte-canonicalisation path, so it is asserted by the prose below rather than by the `vectors/` corpus.
 
 The baseline read API is **shape-compatible with the upstream MCP registry `/v0`**; existing MCP clients work unchanged. This section freezes the wire shapes an RCX-aware client depends on.
 
