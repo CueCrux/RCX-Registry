@@ -19,3 +19,32 @@ jobs:
       - name: Test
         run: cargo test --workspace
 
+  frontdoor:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: frontdoor/pnpm-lock.yaml
+      - name: Install frontdoor dependencies
+        working-directory: frontdoor
+        run: pnpm install --frozen-lockfile
+      - name: Install Chromium for client-navigation smoke
+        working-directory: frontdoor
+        run: pnpm exec playwright install --with-deps chromium
+      - name: Test frontdoor source assets
+        working-directory: frontdoor
+        run: pnpm test && pnpm test:spec-freeze
+      - name: Build frontdoor
+        working-directory: frontdoor
+        run: pnpm build
+      - name: Smoke built routes and exact vectors
+        working-directory: frontdoor
+        run: pnpm test:built

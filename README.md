@@ -3,16 +3,16 @@
 [![CI](https://github.com/CueCrux/RCX-Registry/actions/workflows/ci.yml/badge.svg)](https://github.com/CueCrux/RCX-Registry/actions/workflows/ci.yml)
 [![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 
-**A receipted, MCP-compatible subregistry for RCX-aware discovery.**
+**An MCP-compatible subregistry with a reproducible snapshot-evidence format.**
 
-RCX-Registry mirrors the [official MCP registry](https://registry.modelcontextprotocol.io) and layers verifiable trust on top of it: publishers prove control of their namespace, enrich their entries with RCX capability metadata, and every state change is recorded as a signed, hash-chained CROWN receipt. Existing MCP registry clients work unchanged — the baseline read API is shape-compatible with upstream `/v0`.
+RCX-Registry serves a mirror of the [official MCP registry](https://registry.modelcontextprotocol.io) and publishes canonical receipt formats plus byte-exact conformance vectors. The baseline read API preserves the upstream `/v0` response envelope. Production currently has zero snapshots because its Vault Transit signing attempt returns 403, and all publisher verification/declaration writes fail closed while their trust model is hardened.
 
 ## How it works
 
-1. **Mirror** — a sync loop walks every page of the upstream MCP registry on a fixed cadence, canonicalises each server envelope, and mints a signed `RegistrySnapshot` receipt over the Merkle root of the full set. Upstream deletions are soft-deleted with a 30-day retention window.
-2. **Verify** — publishers prove namespace rights via DNS TXT challenge (`_rcx-registry.<domain>`) or GitHub OAuth for `io.github.*` namespaces; manual operator review covers the rest.
-3. **Enrich** — verified publishers declare RCX capability metadata for their servers. Declarations are schema-validated, hashed, refreshed on a 24 h cadence, and surfaced to clients under `_meta.org.rcxprotocol.registry/publisher` (auto-enrichment under `…/auto`).
-4. **Receipt** — every mutation (snapshot, enrichment, rights verification) is an ed25519-signed CROWN receipt minted via Vault Transit, so the registry's entire history is independently verifiable.
+1. **Mirror** — the implementation can walk every upstream page, canonicalise each envelope, and mint a `RegistrySnapshot` receipt over a flat, sorted BLAKE3 set digest (the historical field name is `snapshot_merkle_root`; it is not a Merkle tree). The hosted loop currently fails before snapshot persistence.
+2. **Verify** — DNS and GitHub proof routes are implemented, but every public verification write returns 404. Reopening requires authenticated passport binding, server-owned time, OAuth state/org proof, and production credentials.
+3. **Enrich** — the background implementation can validate, hash, sign, and refresh declarations. Public submission is closed, and complete signed enrichment artifacts are not persisted or returned today.
+4. **Receipt** — the repository freezes Ed25519 signing semantics and test vectors. Production live signing, complete artifact storage, retrieval, and public-key discovery remain M1a work.
 
 ## API surface
 
@@ -29,12 +29,12 @@ Publisher rights + enrichment (RCX extensions):
 | Route | Description |
 |---|---|
 | `GET /publish` | Publisher onboarding page |
-| `POST /v0/publisher-rights/dns-challenge` | Start a DNS TXT namespace challenge |
-| `POST /v0/publisher-rights/dns-verify` | Verify the TXT record |
-| `GET /v0/publisher-rights/github/start` · `/callback` | GitHub OAuth namespace verification |
-| `POST /v0/publisher-rights/manual-verify` | Operator-mediated review |
-| `GET /v0/publishers/{publisher_passport}` | Publisher rights record |
-| `POST /v0/publishers/declare` | Submit an RCX enrichment declaration |
+| `POST /v0/publisher-rights/dns-challenge` | Implemented contract; production edge returns 404 |
+| `POST /v0/publisher-rights/dns-verify` | Implemented contract; production edge returns 404 |
+| `GET /v0/publisher-rights/github/start` · `/callback` | Implemented contract; production edge returns 404 and OAuth credentials are unset |
+| `GET /v0/publishers/{publisher_passport}` | Publisher rights read; production currently has zero rows |
+
+All publisher verification and declaration writes deliberately fail closed at the production edge. `manual-verify` and `publishers/declare` are also absent from the application router.
 
 Published records:
 
@@ -60,7 +60,7 @@ curl -s http://127.0.0.1:3030/healthz | jq
 curl -s 'http://127.0.0.1:3030/v0/servers?limit=5' | jq '.metadata'
 ```
 
-The master feature flag defaults off, so the mirror API serves but the sync loop is dormant. Set `FEATURE_RCX_REGISTRY=true` in `.env` and restart to start mirroring the upstream registry.
+The master feature flag defaults off, so the mirror API serves but the sync loop is dormant. Set `FEATURE_RCX_REGISTRY=true` in `.env` and restart to begin sync attempts; this does not guarantee a successful signed snapshot, so verify logs and persisted state.
 
 Without `VAULT_ADDR` configured the server falls back to an unsigned signer and logs a warning — receipts carry zeroed signatures. Fine for local development; never for a public deployment.
 
@@ -101,7 +101,7 @@ Date-pinned and immutable once published, served from `static.rcxprotocol.org`:
 
 ## Status
 
-Deployed and under active development. The mirror, enrichment, publisher-rights, and published-records surfaces (M0–M4 of the [v1 ExecPlan](.agent/execplans/rcx-registry-v1-implementation-2026-04-19.md)) are implemented and tested; the public host at `registry.rcxprotocol.org` is in pre-launch soak. In progress / planned: attestations (M5), extended query API (M6), RCX-Protocol integration (M7), public launch (M9).
+Deployed and under active development. Mirror reads are live at `registry.rcxprotocol.org`; publisher-rights reads are live but currently empty. The hosted snapshot table is empty and Vault Transit calls return 403. All publisher writes are closed. Passport/project discovery uses an empty in-memory production store. Signing recovery, proof binding, complete receipt persistence/retrieval, and production-key discovery remain open before trust hardening is complete.
 
 Publisher docs: [docs/publishing.md](docs/publishing.md). Deploy/ops runbook: [ops/README.md](ops/README.md).
 

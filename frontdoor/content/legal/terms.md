@@ -1,24 +1,24 @@
 ---
 title: Terms of Use
 description: The terms RCX-Registry is offered under, including disclaimers and the no-warranty basis of the service.
-lastUpdated: 2026-07-19
+lastUpdated: 2026-07-23
 ---
 
 # Terms of Use
 
-Last updated: 19 July 2026
+Last updated: 23 July 2026
 
 RCX-Registry is an open-source project operated by CueCrux Limited and provided under the [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0). These terms govern use of the hosted service at `rcxprotocol.org` and `registry.rcxprotocol.org`. By using the service you agree to them.
 
 ## 1. What the service is
 
-RCX-Registry is a verifiable subregistry that mirrors the official [Model Context Protocol registry](https://registry.modelcontextprotocol.io) and layers verification and signed receipts on top. It is an independent project. It is **not** affiliated with, endorsed by, or an official service of Anthropic or the Model Context Protocol project.
+RCX-Registry is a subregistry that serves mirrored data from the official [Model Context Protocol registry](https://registry.modelcontextprotocol.io) and publishes formats and conformance vectors for signed snapshot and enrichment evidence. Hosted production currently exposes no signed snapshot record, and publisher verification writes are unavailable. It is an independent project. It is **not** affiliated with, endorsed by, or an official service of Anthropic or the Model Context Protocol project.
 
 ## 2. Mirrored content
 
 The registry mirrors third-party server metadata from the upstream MCP registry. That metadata originates with its publishers, not with us. We do not author it, and mirroring it is not an endorsement of any server, publisher, or the safety, security, or fitness of any listed software.
 
-Verification on RCX-Registry attests to **namespace control** — that a publisher proved they own the namespace an entry claims — and provides a tamper-evident history of registry state. It does **not** certify that a server is safe, non-malicious, bug-free, or fit for any purpose. Always evaluate a server before running it.
+If publisher verification reopens, a valid result is intended to attest only to **namespace control**. All public verification routes currently fail closed, and production has zero rights and snapshot rows. A valid signed snapshot, when produced and made retrievable, would provide evidence about registry state. None of these records or formats certifies that a server is safe, non-malicious, bug-free, or fit for any purpose. Always evaluate a server before running it.
 
 ## 3. Acceptable use
 
@@ -31,7 +31,7 @@ Don’t use the service to:
 
 ## 4. Publisher responsibilities
 
-If you claim a namespace and submit enrichment declarations, you are responsible for the accuracy of what you declare and for maintaining control of the namespace you verified. Declarations are recorded as signed receipts; they are attributable to you.
+If you claim a namespace, you are responsible for maintaining control of it and for the accuracy of the proof material you provide. Public enrichment declaration submission is currently unavailable. These terms will be updated before an authenticated declaration surface is opened.
 
 ## 5. No warranty
 

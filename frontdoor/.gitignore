@@ -5,6 +5,7 @@ coverage
 .DS_Store
 .nuxt/
 .output/
+public/spec/v1/vectors/
 .data/
 .env
 *.log

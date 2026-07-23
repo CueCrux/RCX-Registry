@@ -1,10 +1,9 @@
-# Caddy site config for RCX-Registry production.
+# Combined Caddy reference for RCX-Registry production. The live deployment is
+# split: install the registry block on the API host and the apex/static blocks
+# on the frontdoor host. Do not replace either live file with this whole file.
 #
 # Caddy auto-provisions Let's Encrypt certificates for the listed
-# hosts. Drop-in via:
-#
-#   sudo cp Caddyfile /etc/caddy/Caddyfile
-#   sudo systemctl reload caddy
+# hosts. Validate the selected host-specific file before reloading Caddy.
 #
 # Bind your operator email below — required for ACME contact:
 #
@@ -14,54 +13,67 @@
 
 # Primary API host.
 registry.rcxprotocol.org {
-    encode gzip zstd
+	encode gzip zstd
 
-    # Operator-only routes — restrict by Tailscale CGNAT (100.64.0.0/10).
-    @operator path /metrics /healthz /readyz
-    handle @operator {
-        @lan remote_ip 100.64.0.0/10 127.0.0.1/32
-        handle @lan {
-            reverse_proxy localhost:3030
-        }
-        respond 403
-    }
+	# Operator-only routes — restrict by Tailscale CGNAT (100.64.0.0/10).
+	@operator path /metrics /healthz /readyz
+	handle @operator {
+		@lan remote_ip 100.64.0.0/10 127.0.0.1/32
+		handle @lan {
+			reverse_proxy localhost:3030
+		}
+		respond 403
+	}
 
-    # Public API + publisher onboarding.
-    handle {
-        reverse_proxy localhost:3030 {
-            header_up X-Forwarded-Proto {scheme}
-            header_up X-Forwarded-Host {host}
-        }
-    }
+	# Fail closed until caller proof, passport/domain binding, server-owned
+	# audit time, and OAuth state/org proof have passed review. Keep this deny
+	# in place across API binary rollbacks.
+	@disabled_unauthenticated_writes path /v0/publisher-rights/manual-verify /v0/publisher-rights/dns-challenge /v0/publisher-rights/dns-verify /v0/publisher-rights/github/start /v0/publisher-rights/github/callback /v0/publishers/declare
+	handle @disabled_unauthenticated_writes {
+		respond 404
+	}
 
-    log {
-        output file /var/log/caddy/registry.access.log {
-            roll_size 50mb
-            roll_keep 14
-        }
-    }
+	# Public read API + onboarding status page.
+	handle {
+		reverse_proxy localhost:3030 {
+			header_up X-Forwarded-Proto {scheme}
+			header_up X-Forwarded-Host {host}
+		}
+	}
+
+	log {
+		output file /var/log/caddy/registry.access.log {
+			roll_size 50mb
+			roll_keep 14
+		}
+	}
 }
 
 # Schema CDN — date-pinned static JSON Schemas under /schemas/<YYYY-MM-DD>/.
 static.rcxprotocol.org {
-    encode gzip zstd
-    root * /var/www/static.rcxprotocol.org
-    file_server
-    header /schemas/* {
-        Cache-Control "public, max-age=31536000, immutable"
-        Access-Control-Allow-Origin "*"
-    }
-    log {
-        output file /var/log/caddy/static.access.log {
-            roll_size 50mb
-            roll_keep 14
-        }
-    }
+	encode gzip zstd
+	root * /var/www/static.rcxprotocol.org
+	file_server
+	header /schemas/* {
+		Cache-Control "public, max-age=31536000, immutable"
+		Access-Control-Allow-Origin "*"
+	}
+	log {
+		output file /var/log/caddy/static.access.log {
+			roll_size 50mb
+			roll_keep 14
+		}
+	}
 }
 
 # Docs landing — bound to the apex domain.
 rcxprotocol.org, www.rcxprotocol.org {
-    encode gzip zstd
-    root * /var/www/rcxprotocol.org
-    file_server
+	encode gzip zstd
+	reverse_proxy 127.0.0.1:3100
+	log {
+		output file /var/log/caddy/frontdoor.access.log {
+			roll_size 50mb
+			roll_keep 14
+		}
+	}
 }

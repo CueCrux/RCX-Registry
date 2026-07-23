@@ -1,30 +1,33 @@
 {
   "name": "org.rcxprotocol.registry",
-  "description": "Verifiable, MCP-compatible subregistry mirroring the official MCP registry with signed CROWN receipts and publisher verification.",
+  "description": "MCP-compatible registry mirror with a frozen signed-receipt format and conformance vectors. Production signed snapshots and publisher writes are currently unavailable.",
   "version": "0.1.0",
   "homepage": "https://rcxprotocol.org",
   "transport": {
     "type": "http",
-    "url": "https://registry.rcxprotocol.org"
+    "url": "https://registry.rcxprotocol.org/v0/servers"
   },
   "capabilities": {
     "registry": {
-      "servers": "/v0/servers",
-      "versions": "/v0/servers/{name}/versions",
-      "openapi": "/openapi.json"
+      "servers": "https://registry.rcxprotocol.org/v0/servers",
+      "versions": "https://registry.rcxprotocol.org/v0/servers/{name}/versions",
+      "openapi": "https://rcxprotocol.org/openapi.json"
     }
   },
   "auth": {
     "read": "public",
-    "publisher_rights": {
-      "dns_txt": "/v0/publisher-rights/dns-challenge",
-      "github_oauth": "/v0/publisher-rights/github/start"
+    "publisher_writes": {
+      "status": "disabled",
+      "http_status": 404
     }
   },
   "receipts": {
-    "signature": "ed25519",
+    "format_signature": "ed25519",
+    "production_signed_records": false,
+    "publisher_rights_records": 0,
     "hash": "blake3",
-    "chained": true,
+    "links": "type_specific",
+    "public_live_retrieval": false,
     "meta_namespace": "_meta.org.rcxprotocol.registry"
   }
 }

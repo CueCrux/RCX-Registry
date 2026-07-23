@@ -2,15 +2,15 @@
 
 Repository-local documentation lives here.
 
-- [publishing.md](publishing.md) — publisher quickstart: verify namespace rights, host a declaration, submit, and see the enrichment overlay live.
+- [publishing.md](publishing.md) — disabled publisher-proof contracts and the gates required before onboarding reopens.
 
 Current repo-local publisher onboarding surface:
 
 - `GET /publish` for the minimal HTML onboarding page
-- DNS TXT challenge + verify endpoints under `/v0/publisher-rights/*`
-- Manual verification endpoint for operator-mediated review
-- GitHub OAuth start/callback contracts ready for live credential wiring
-- `POST /v0/publishers/declare` for Option B publisher declaration submission
+- DNS TXT and GitHub OAuth contracts exist in code, but the production edge returns 404 for all four routes
+- GitHub OAuth credentials are unset; state binding and organization proof remain open
+- public manual review is absent until an authenticated operator surface ships
+- `POST /v0/publishers/declare` is absent until authenticated publisher proof and signing ship
 
 Current repo-local enrichment surface:
 
