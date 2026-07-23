@@ -1,0 +1,41 @@
+[Unit]
+Description=RCX-Registry frontdoor (Nuxt SSR node-server)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+Environment=NODE_ENV=production
+Environment=NITRO_PORT=3100
+Environment=NITRO_HOST=127.0.0.1
+Environment=NUXT_PUBLIC_SITE_URL=https://rcxprotocol.org
+WorkingDirectory=/srv/rcx-frontdoor
+ExecStart=/usr/bin/node /srv/rcx-frontdoor/server/index.mjs
+Restart=on-failure
+RestartSec=3
+User=rcx-frontdoor
+Group=rcx-frontdoor
+UMask=0027
+LimitNOFILE=65536
+NoNewPrivileges=true
+CapabilityBoundingSet=
+AmbientCapabilities=
+PrivateDevices=true
+PrivateTmp=true
+ProtectClock=true
+ProtectControlGroups=true
+ProtectHome=true
+ProtectHostname=true
+ProtectKernelLogs=true
+ProtectKernelModules=true
+ProtectKernelTunables=true
+ProtectProc=invisible
+ProtectSystem=strict
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+RestrictNamespaces=true
+RestrictRealtime=true
+RestrictSUIDSGID=true
+SystemCallArchitectures=native
+
+[Install]
+WantedBy=multi-user.target

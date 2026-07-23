@@ -1,12 +1,19 @@
 # RCX-Registry
 
-> A verifiable, MCP-compatible subregistry. It mirrors the official Model Context Protocol registry (~17,439 servers) and makes its history tamper-evident: publishers prove namespace control (DNS TXT or GitHub OAuth), verified publishers declare RCX capability metadata, and every state change is an ed25519-signed, hash-chained CROWN receipt. The baseline read API is shape-compatible with the upstream `/v0` surface, so existing MCP clients work unchanged.
+> An MCP-compatible subregistry serving a mirror of more than 17,000 servers from the official Model Context Protocol registry. The repository publishes a frozen Ed25519 receipt format and byte-exact vectors. Hosted production currently has zero snapshots because Vault Transit returns 403, and every public publisher verification/declaration write returns 404. Spec v1 defines type-specific snapshot and enrichment links, not one universal receipt chain.
 
 ## What it is
 
 - [Home](https://rcxprotocol.org/): what RCX-Registry is and why tamper-evident history matters (led by real 2025–26 MCP supply-chain incidents).
-- [Verify](https://rcxprotocol.org/verify): the verification model — canonical hashing, a Merkle root per snapshot, ed25519 via Vault Transit, a replayable hash-chain, and how to check it yourself.
+- [Verify](https://rcxprotocol.org/verify): canonical encodings, the flat BLAKE3 snapshot-set digest, receipt signatures, exact link semantics, conformance checks, and current public-verification limits.
+- [Protocol Spec v1](https://rcxprotocol.org/spec/v1): the normative, versioned wire-format freeze with canonical CBOR/JSON, hashing, receipts, snapshot chaining, API/error rules, and downloadable conformance vectors.
 - Independent, open-source (Apache-2.0). Not affiliated with Anthropic or the MCP project.
+
+## Protocol specification
+
+- `rcx-spec/v1` is published from source commit `310ace858172b6f4acdd982ef25c2441f20d6b7a`.
+- [Normative chapters](https://rcxprotocol.org/spec/v1) — the complete specification and chapter navigation.
+- [Conformance vectors](https://rcxprotocol.org/spec/v1/vectors) — exact JSON fixtures; individual vector URLs return the repository bytes unchanged.
 
 ## API endpoints (registry.rcxprotocol.org)
 
@@ -17,10 +24,10 @@
 
 ## Publisher verification
 
-- [Publish](https://rcxprotocol.org/publish): claim a namespace by DNS TXT (`_rcx-registry.<domain>`) or GitHub OAuth (`io.github.*`), then declare RCX capability metadata.
-- Verified metadata is surfaced to clients under `_meta.org.rcxprotocol.registry/publisher` (auto-derived fields under `.../auto`).
-- [Badge](https://rcxprotocol.org/badge): the "verified on RCX-Registry" README badge, linking to a server's signed history.
+- [Publish](https://rcxprotocol.org/publish): current fail-closed publisher status and the gates required before DNS or GitHub proof can reopen.
+- DNS challenge/verify, GitHub start/callback, manual review, and `POST /v0/publishers/declare` all return 404 at the production edge.
+- [Badge](https://rcxprotocol.org/badge): README badge guidance and the distinction between a visual label and authoritative API verification metadata.
 
 ## Subregistry positioning
 
-- [Subregistry](https://rcxprotocol.org/subregistry): RCX-Registry as a spec-compliant MCP subregistry — shape-compatibility statement, the `_meta.org.rcxprotocol.registry` namespace contract, pointing VS Code at it via the `McpGalleryServiceUrl` enterprise policy, and sync cadence.
+- [Subregistry](https://rcxprotocol.org/subregistry): RCX-Registry as a spec-compliant MCP subregistry — shape compatibility, the `_meta.org.rcxprotocol.registry` contract, client configuration, and the currently degraded sync/signing state.

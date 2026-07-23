@@ -1,10 +1,10 @@
 # RCX-Registry — full reference
 
-> A verifiable, MCP-compatible subregistry that mirrors the official Model Context Protocol registry
-> (registry.modelcontextprotocol.io, ~17,439 servers) and layers verifiable trust on top: publisher
-> namespace verification, RCX capability enrichment, and an ed25519-signed, hash-chained CROWN
-> receipt for every state change. The baseline read API is shape-compatible with the upstream `/v0`
-> surface, so existing MCP registry clients work unchanged.
+> An MCP-compatible subregistry serving a mirror of more than 17,000 servers from the official Model
+> Context Protocol registry. The repository publishes a frozen Ed25519 receipt format and byte-exact
+> conformance vectors. Hosted production has zero snapshots because Vault Transit returns 403, and
+> all public publisher verification/declaration writes return 404. Snapshot and enrichment histories
+> use distinct, spec-defined link targets rather than one universal chain.
 >
 > Frontdoor: https://rcxprotocol.org · API: https://registry.rcxprotocol.org ·
 > Source (Apache-2.0): https://github.com/CueCrux/RCX-Registry
@@ -24,22 +24,23 @@ year of MCP supply-chain incidents is that gap repeating:
 - MCPTox: adversarial instructions hidden in tool descriptions reached a 72.8% success rate.
 - Microsoft advisory (June 2026): an estimated ~200,000 vulnerable MCP instances in the wild.
 
-RCX-Registry's job is the part the others skip: a signed, replayable chain of custody over the whole
-registry, so tampering shows up as a broken chain instead of a production surprise.
+RCX-Registry's goal is the part the others skip: signed snapshot and background-enrichment evidence,
+attributable namespace rights, and byte-exact formats with type-specific history links. Today the
+reproducible deliverables are the format, source, and vectors. Production signing recovery, complete
+artifact persistence, proof binding, retrieval, and key discovery remain open.
 
 ## How it works
 
-1. Mirror — a sync loop walks every page of the upstream MCP registry on a fixed cadence,
-   canonicalises each server envelope, and mints a signed RegistrySnapshot receipt over the Merkle
-   root of the full set. Upstream deletions are soft-deleted with a 30-day retention window.
-2. Verify — publishers prove namespace rights via DNS TXT challenge (`_rcx-registry.<domain>`) or
-   GitHub OAuth for `io.github.*` namespaces; other cases go through operator-mediated review.
-3. Enrich — verified publishers declare RCX capability metadata. Declarations are schema-validated,
-   hashed, refreshed on a 24-hour cadence, and surfaced under `_meta.org.rcxprotocol.registry/publisher`
-   (auto-derived fields under `.../auto`).
-4. Receipt — every mutation (snapshot, enrichment, rights verification) is an ed25519-signed CROWN
-   receipt minted via HashiCorp Vault Transit. The registry's entire history is independently
-   verifiable.
+1. Mirror — the implementation can walk every upstream page and mint a RegistrySnapshot receipt over
+   a flat, sorted BLAKE3 digest. Hosted production serves the mirrored read dataset, but its sync
+   attempt currently fails at Vault signing before snapshot persistence. The historical wire field remains
+   `snapshot_merkle_root`, but v1 defines no Merkle tree or inclusion proof. Upstream deletions are
+   soft-deleted with a 30-day retention window.
+2. Verify — DNS, GitHub, and manual proof routes all return 404 at the production edge pending trust hardening.
+3. Enrich — the background implementation can validate, hash, sign, and refresh declarations, but
+   public declaration submission is disabled and storage retains hash references rather than full artifacts.
+4. Receipt — the format pins Ed25519 preimages and test signatures. Hosted live signing, full artifact
+   persistence, public retrieval, and production-key discovery remain explicit M1a work.
 
 ## API surface
 
@@ -54,25 +55,37 @@ https://registry.rcxprotocol.org:
 Publisher rights + enrichment (RCX extensions):
 
 - GET /publish — publisher onboarding page.
-- POST /v0/publisher-rights/dns-challenge — start a DNS TXT namespace challenge.
-- POST /v0/publisher-rights/dns-verify — verify the TXT record.
-- GET /v0/publisher-rights/github/start and /callback — GitHub OAuth namespace verification.
-- POST /v0/publisher-rights/manual-verify — operator-mediated review.
-- GET /v0/publishers/{publisher_passport} — publisher rights record.
-- POST /v0/publishers/declare — submit an RCX enrichment declaration.
+- DNS challenge/verify, GitHub start/callback, manual review, and publisher declaration routes all
+  return 404 at the production edge.
+- GET /v0/publishers/{publisher_passport} — public rights read; production currently has zero rows.
 
 ## Verification model
 
 - Canonical form + BLAKE3 hash per server envelope (two parties with the same data compute the same
   hash).
-- A Merkle root per snapshot commits to every server at once; change one entry and the root changes.
-- The root is signed ed25519 with a key held in Vault Transit; the signature binds receipt id and
-  payload hash together.
-- Receipts chain: each carries the id of the previous one, making history append-only. Forging one
-  record would require re-signing every record after it.
-- Reproducible: the mirror API is public, receipt schemas are published at static.rcxprotocol.org,
-  and the canonicalisation/hashing/verification logic lives in the Apache-2.0 `rcx-registry-crown`
-  crate.
+- A flat, sorted BLAKE3 stream commits to every server in a snapshot; the historical field name is
+  `snapshot_merkle_root`, but it is not a Merkle tree and provides no inclusion proof.
+- The format signs snapshot and background-enrichment receipts with Ed25519 over full canonical CBOR
+  with only `receipt_signature` zeroed. Production is designed to use a Vault Transit key, but current
+  calls return 403 and no snapshot has been persisted.
+- Rights and enrichment storage paths retain deterministic receipt-hash references rather than
+  complete signed artifacts. Public writes are currently closed.
+- Snapshot history links `previous_snapshot_hash` to the prior snapshot set digest. Enrichment
+  history links `supersedes_prior` to the prior enrichment `receipt_hash`. Other receipt types do
+  not form one generic chain.
+- Reproducible today: exact conformance vectors and the Apache-2.0 implementation. No live hosted
+  signed snapshot exists; the public `/v0` API does not expose full receipts, and `signer_kid` does
+  not discover a production public key.
+
+## Protocol specification
+
+The normative `rcx-spec/v1` wire-format freeze is published at
+https://rcxprotocol.org/spec/v1 from repository commit
+`310ace858172b6f4acdd982ef25c2441f20d6b7a`. It specifies canonical CBOR, canonical JSON, hashing
+inputs, CROWN receipts, the snapshot-set digest and chaining, API version selection, and errors.
+The conformance-vector index is https://rcxprotocol.org/spec/v1/vectors; each JSON fixture beneath
+that URL is served byte-for-byte from `spec/v1/vectors/` so independent implementations can pin and
+reproduce the exact corpus.
 
 ## Subregistry positioning
 
@@ -80,10 +93,10 @@ The MCP registry documents an open subregistry model: implement the read shape a
 custom `_meta` fields, no approval step. RCX-Registry is exactly that. Its entire footprint sits under
 `_meta.org.rcxprotocol.registry`:
 
-- `.../publisher` — publisher-declared: verification state, how the namespace was proven, and the
-  rights-verification receipt id.
-- `.../auto` — registry-derived: the snapshot receipt an entry was last seen in, and its upstream
-  source.
+- `.../publisher` — publisher-derived: publisher metadata, verification state when available, and a
+  deterministic BLAKE3 `enrichment_receipt_hash` reference.
+- `.../auto` — registry-derived: upstream enrichment metadata and a deterministic BLAKE3
+  `auto_enrichment_receipt` reference when the block is produced.
 
 Pointing clients at it: any client with a configurable registry base URL points here by changing the
 URL. VS Code's enterprise policy `McpGalleryServiceUrl` repoints its whole MCP gallery at any
@@ -93,6 +106,7 @@ spec-compliant endpoint — set it to https://registry.rcxprotocol.org.
 
 - https://rcxprotocol.org/ — home
 - https://rcxprotocol.org/verify — verification model
+- https://rcxprotocol.org/spec/v1 — normative Protocol Spec v1 + conformance vectors
 - https://rcxprotocol.org/publish — publisher onboarding
 - https://rcxprotocol.org/subregistry — subregistry positioning
 - https://rcxprotocol.org/badge — README badge

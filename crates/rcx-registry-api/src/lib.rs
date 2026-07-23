@@ -11,15 +11,11 @@ use axum::{Json, Router};
 use http::StatusCode;
 use rcx_registry_admin::{
     build_publisher_rights_verified_receipt, classify_namespace, dns_txt_challenge,
-    publisher_rights_record, verify_dns_txt, verify_github_passport, verify_manual_review,
-    AdminError, NamespaceKind, PublisherRightsRecord, VerificationMethod,
+    publisher_rights_record, verify_dns_txt, verify_github_passport, AdminError, NamespaceKind,
+    PublisherRightsRecord, VerificationMethod,
 };
 use rcx_registry_crown::ULID_LEN;
-use rcx_registry_enrich::{
-    attach_publisher_enrichment, build_entry_enriched_receipt, build_publisher_enrichment_payload,
-    build_publisher_enrichment_record, declaration_hash, validate_publisher_declaration_value,
-    PublisherEnrichmentRecord,
-};
+use rcx_registry_enrich::{attach_publisher_enrichment, PublisherEnrichmentRecord};
 use rcx_registry_ingest::{ListServersRequest, RegistryServerEnvelope, RegistryServerListResponse};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
@@ -269,15 +265,6 @@ pub struct DnsVerifyRequest {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
-pub struct ManualVerifyRequest {
-    pub server_name: String,
-    pub publisher_passport: String,
-    pub reviewer_passport: String,
-    pub review_note: Option<String>,
-    pub verified_at: Option<u64>,
-}
-
-#[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
 pub struct GitHubStartQuery {
     pub server_name: String,
     pub publisher_passport: String,
@@ -292,13 +279,6 @@ pub struct GitHubCallbackQuery {
     pub code: String,
     pub state: String,
     pub verified_at: Option<u64>,
-}
-
-#[derive(Debug, Clone, PartialEq, Deserialize)]
-pub struct PublisherDeclareRequest {
-    pub server_name: String,
-    pub declared_uri: String,
-    pub declaration: Value,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
@@ -322,13 +302,11 @@ pub fn router_with_state(state: ApiState) -> Router {
         .route("/publish", get(publish_onboarding_page))
         .route("/v0/publisher-rights/dns-challenge", post(dns_challenge))
         .route("/v0/publisher-rights/dns-verify", post(dns_verify))
-        .route("/v0/publisher-rights/manual-verify", post(manual_verify))
         .route("/v0/publisher-rights/github/start", get(github_oauth_start))
         .route(
             "/v0/publisher-rights/github/callback",
             get(github_oauth_callback),
         )
-        .route("/v0/publishers/declare", post(declare_publisher_enrichment))
         .route(
             "/v0/publishers/{publisher_passport}",
             get(list_publisher_rights),
@@ -490,18 +468,18 @@ async fn publish_onboarding_page() -> Html<&'static str> {
   </head>
   <body>
     <h1>RCX-Registry Publisher Onboarding</h1>
-    <p>Rights verification supports three paths in v1.0: GitHub OAuth for <code>io.github.&lt;owner&gt;</code>, DNS TXT for <code>io.&lt;domain&gt;</code>, and manual review for edge cases.</p>
+    <p>Publisher onboarding is currently fail-closed. The production edge returns 404 for every verification and declaration write until caller identity, proof binding, server-owned audit time, signing, and receipt retrieval pass review.</p>
     <div class="card">
       <h2>GitHub OAuth</h2>
-      <p>Begin with <code>GET /v0/publisher-rights/github/start</code>. The deployed service must provide GitHub OAuth app credentials before this path can complete against live GitHub.</p>
+      <p>The implementation targets <code>io.github.&lt;owner&gt;/&lt;server&gt;</code>, but production OAuth credentials are unset and the public start/callback routes are disabled. Reopening also requires server-bound state and explicit organization ownership proof.</p>
     </div>
     <div class="card">
       <h2>DNS TXT</h2>
-      <p>Request the challenge via <code>POST /v0/publisher-rights/dns-challenge</code>, publish the TXT record, then complete verification with <code>POST /v0/publisher-rights/dns-verify</code>.</p>
+      <p>The intended contract covers <code>io.&lt;domain&gt;/&lt;server&gt;</code>. Its TXT value is exactly the passport fingerprint supplied as <code>expected_value</code>, with no prefix. <code>POST /v0/publisher-rights/dns-challenge</code> and <code>POST /v0/publisher-rights/dns-verify</code> remain disabled at the production edge until that domain proof is bound to an authenticated passport.</p>
     </div>
     <div class="card">
       <h2>Manual Review</h2>
-      <p>Use <code>POST /v0/publisher-rights/manual-verify</code> for operator-mediated edge cases. Anonymous namespaces remain accepted but unverified in v1.0.</p>
+      <p>Operator-mediated manual review is deliberately unavailable on the public API until an authenticated operator surface ships. Anonymous namespaces remain accepted but unverified in v1.0.</p>
     </div>
   </body>
 </html>"#,
@@ -548,34 +526,6 @@ async fn dns_verify(
             &claim,
             &body.publisher_passport,
             VerificationMethod::DnsTxt,
-            verified_at,
-        );
-        state.publisher_rights_store.upsert(record.clone())?;
-        Ok(record)
-    })
-    .await?;
-    Ok((StatusCode::CREATED, Json(record)))
-}
-
-async fn manual_verify(
-    State(state): State<ApiState>,
-    Json(body): Json<ManualVerifyRequest>,
-) -> Result<(StatusCode, Json<PublisherRightsRecord>), ApiError> {
-    let record = spawn_store(move || {
-        if body.reviewer_passport.trim().is_empty() {
-            return Err(ApiError::BadRequest(
-                "reviewer_passport must not be empty".to_string(),
-            ));
-        }
-
-        let claim = classify_namespace(&body.server_name)?;
-        verify_manual_review(&claim)?;
-
-        let verified_at = body.verified_at.unwrap_or_else(now_ms);
-        let record = build_verified_rights_record(
-            &claim,
-            &body.publisher_passport,
-            VerificationMethod::Manual,
             verified_at,
         );
         state.publisher_rights_store.upsert(record.clone())?;
@@ -644,69 +594,6 @@ async fn github_oauth_callback(
             verified_at,
         );
         state.publisher_rights_store.upsert(record.clone())?;
-        Ok(record)
-    })
-    .await?;
-    Ok((StatusCode::CREATED, Json(record)))
-}
-
-async fn declare_publisher_enrichment(
-    State(state): State<ApiState>,
-    Json(body): Json<PublisherDeclareRequest>,
-) -> Result<(StatusCode, Json<PublisherEnrichmentRecord>), ApiError> {
-    let record = spawn_store(move || {
-        let claim = classify_namespace(&body.server_name)?;
-        let declaration =
-            validate_publisher_declaration_value(&body.declaration, Some(&body.server_name))
-                .map_err(|error| ApiError::BadRequest(error.to_string()))?;
-
-        let rights = state
-            .publisher_rights_store
-            .lookup(&declaration.publisher_passport, &claim.namespace)?
-            .ok_or_else(|| {
-                ApiError::VerificationFailed(format!(
-                    "publisher passport `{}` has no verified rights for namespace `{}`",
-                    declaration.publisher_passport, claim.namespace
-                ))
-            })?;
-
-        let (declared_hash, _canonical_json) = declaration_hash(&body.declaration);
-        let payload = build_publisher_enrichment_payload(
-            &declaration,
-            &body.declared_uri,
-            &declared_hash,
-            &rights.verification_method,
-            None,
-        );
-        let prior = state.publisher_enrichment_store.get(&body.server_name)?;
-        let prior_hash_bytes = prior
-            .as_ref()
-            .and_then(|record| parse_blake3_prefixed_hash(&record.block.enrichment_receipt_hash));
-        let receipt = build_entry_enriched_receipt(
-            &body.server_name,
-            &declaration,
-            &body.declared_uri,
-            declared_hash,
-            &payload,
-            derived_event_id(&format!(
-                "{}:{}:{}:{}",
-                body.server_name,
-                declaration.publisher_passport,
-                body.declared_uri,
-                declaration.declared_at
-            )),
-            DEFAULT_PUBLISHER_SIGNER_KID,
-            prior_hash_bytes,
-        )
-        .map_err(|error| ApiError::BadRequest(error.to_string()))?;
-        let record = build_publisher_enrichment_record(
-            &body.server_name,
-            &declaration,
-            &payload,
-            &receipt.receipt_hash,
-            prior.map(|record| record.block.enrichment_receipt_hash),
-        );
-        state.publisher_enrichment_store.upsert(record.clone())?;
         Ok(record)
     })
     .await?;
@@ -794,17 +681,6 @@ fn build_verified_rights_record(
         verified_at,
         &receipt.receipt_hash,
     )
-}
-
-fn parse_blake3_prefixed_hash(value: &str) -> Option<[u8; 32]> {
-    let hex_value = value.strip_prefix("blake3:").unwrap_or(value);
-    let bytes = hex::decode(hex_value).ok()?;
-    if bytes.len() != 32 {
-        return None;
-    }
-    let mut out = [0u8; 32];
-    out.copy_from_slice(&bytes);
-    Some(out)
 }
 
 fn derived_event_id(seed: &str) -> [u8; ULID_LEN] {
@@ -1485,6 +1361,7 @@ mod tests {
             .expect("body should read");
         let html = String::from_utf8(body.to_vec()).expect("html should decode");
         assert!(html.contains("RCX-Registry Publisher Onboarding"));
+        assert!(html.contains("currently fail-closed"));
         assert!(html.contains("/v0/publisher-rights/dns-challenge"));
     }
 
@@ -1567,8 +1444,10 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn manual_verify_route_records_non_anonymous_namespace() {
-        let app = router_with_state(publisher_state());
+    async fn manual_verify_route_is_not_publicly_mounted() {
+        let state = publisher_state();
+        let rights_store = state.publisher_rights_store.clone();
+        let app = router_with_state(state);
 
         let response = app
             .oneshot(
@@ -1591,12 +1470,11 @@ mod tests {
             .await
             .expect("request should succeed");
 
-        assert_eq!(response.status(), StatusCode::CREATED);
-        let body = to_bytes(response.into_body(), usize::MAX)
-            .await
-            .expect("body should read");
-        let json: serde_json::Value = serde_json::from_slice(&body).expect("body should be json");
-        assert_eq!(json["verification_method"], "manual");
+        assert_eq!(response.status(), StatusCode::NOT_FOUND);
+        assert!(rights_store
+            .list_by_publisher("passport:github:example-org")
+            .expect("rights lookup should succeed")
+            .is_empty());
     }
 
     #[tokio::test]
@@ -1647,8 +1525,10 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn declare_route_requires_verified_namespace_rights() {
-        let app = router_with_state(publisher_state());
+    async fn declare_route_is_not_publicly_mounted_and_cannot_write_enrichment() {
+        let state = publisher_state_with_verified_rights();
+        let enrichment_store = state.publisher_enrichment_store.clone();
+        let app = router_with_state(state);
         let declaration = serde_json::from_str::<serde_json::Value>(include_str!(
             "../../../fixtures/examples/rcx-enrichment.valid.json"
         ))
@@ -1673,107 +1553,11 @@ mod tests {
             .await
             .expect("request should succeed");
 
-        assert_eq!(response.status(), StatusCode::UNPROCESSABLE_ENTITY);
-    }
-
-    #[tokio::test]
-    async fn declare_route_persists_and_surfaces_publisher_enrichment() {
-        let app = router_with_state(publisher_state_with_verified_rights());
-        let declaration = serde_json::from_str::<serde_json::Value>(include_str!(
-            "../../../fixtures/examples/rcx-enrichment.valid.json"
-        ))
-        .expect("fixture should parse");
-
-        let first_response = app
-            .clone()
-            .oneshot(
-                Request::builder()
-                    .method("POST")
-                    .uri("/v0/publishers/declare")
-                    .header("content-type", "application/json")
-                    .body(Body::from(
-                        serde_json::to_vec(&json!({
-                            "server_name": "io.github.example-org/document-proofer",
-                            "declared_uri": "https://example.org/.rcx/document-proofer.rcx.json",
-                            "declaration": declaration
-                        }))
-                        .expect("json body should serialize"),
-                    ))
-                    .expect("request should build"),
-            )
-            .await
-            .expect("request should succeed");
-
-        assert_eq!(first_response.status(), StatusCode::CREATED);
-        let first_body = to_bytes(first_response.into_body(), usize::MAX)
-            .await
-            .expect("body should read");
-        let first_json: serde_json::Value =
-            serde_json::from_slice(&first_body).expect("body should be json");
-        assert_eq!(first_json["block"]["category"], "tier_gated");
-        assert_eq!(first_json["block"]["verification_method"], "github_oauth");
-
-        let list_response = app
-            .clone()
-            .oneshot(
-                Request::builder()
-                    .uri("/v0/servers")
-                    .body(Body::empty())
-                    .expect("request should build"),
-            )
-            .await
-            .expect("request should succeed");
-        assert_eq!(list_response.status(), StatusCode::OK);
-        let list_body = to_bytes(list_response.into_body(), usize::MAX)
-            .await
-            .expect("body should read");
-        let list_json: serde_json::Value =
-            serde_json::from_slice(&list_body).expect("body should be json");
-        assert_eq!(
-            list_json["servers"][0]["_meta"]["org.rcxprotocol.registry/publisher"]["declared_uri"],
-            "https://example.org/.rcx/document-proofer.rcx.json"
-        );
-        assert_eq!(
-            list_json["servers"][0]["_meta"]["org.rcxprotocol.registry/publisher"]
-                ["verification_method"],
-            "github_oauth"
-        );
-
-        let mut updated_declaration = serde_json::from_str::<serde_json::Value>(include_str!(
-            "../../../fixtures/examples/rcx-enrichment.valid.json"
-        ))
-        .expect("fixture should parse");
-        updated_declaration["declared_at"] = json!("2026-04-20T11:00:00Z");
-
-        let second_response = app
-            .oneshot(
-                Request::builder()
-                    .method("POST")
-                    .uri("/v0/publishers/declare")
-                    .header("content-type", "application/json")
-                    .body(Body::from(
-                        serde_json::to_vec(&json!({
-                            "server_name": "io.github.example-org/document-proofer",
-                            "declared_uri": "https://example.org/.rcx/document-proofer.rcx.json",
-                            "declaration": updated_declaration
-                        }))
-                        .expect("json body should serialize"),
-                    ))
-                    .expect("request should build"),
-            )
-            .await
-            .expect("request should succeed");
-
-        assert_eq!(second_response.status(), StatusCode::CREATED);
-        let second_body = to_bytes(second_response.into_body(), usize::MAX)
-            .await
-            .expect("body should read");
-        let second_json: serde_json::Value =
-            serde_json::from_slice(&second_body).expect("body should be json");
-        assert_eq!(
-            second_json["supersedes_prior_receipt_hash"],
-            first_json["block"]["enrichment_receipt_hash"]
-        );
+        assert_eq!(response.status(), StatusCode::METHOD_NOT_ALLOWED);
+        assert!(enrichment_store
+            .get("io.github.example-org/document-proofer")
+            .expect("enrichment lookup should succeed")
+            .is_none());
     }
 
     #[test]
