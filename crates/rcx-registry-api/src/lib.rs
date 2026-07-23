@@ -468,14 +468,14 @@ async fn publish_onboarding_page() -> Html<&'static str> {
   </head>
   <body>
     <h1>RCX-Registry Publisher Onboarding</h1>
-    <p>Rights verification supports three paths in v1.0: GitHub OAuth for <code>io.github.&lt;owner&gt;</code>, DNS TXT for <code>io.&lt;domain&gt;</code>, and manual review for edge cases.</p>
+    <p>Publisher onboarding is currently fail-closed. The production edge returns 404 for every verification and declaration write until caller identity, proof binding, server-owned audit time, signing, and receipt retrieval pass review.</p>
     <div class="card">
       <h2>GitHub OAuth</h2>
-      <p>Begin with <code>GET /v0/publisher-rights/github/start</code>. The deployed service must provide GitHub OAuth app credentials before this path can complete against live GitHub.</p>
+      <p>The implementation targets <code>io.github.&lt;owner&gt;/&lt;server&gt;</code>, but production OAuth credentials are unset and the public start/callback routes are disabled. Reopening also requires server-bound state and explicit organization ownership proof.</p>
     </div>
     <div class="card">
       <h2>DNS TXT</h2>
-      <p>Request the challenge via <code>POST /v0/publisher-rights/dns-challenge</code>, publish the TXT record, then complete verification with <code>POST /v0/publisher-rights/dns-verify</code>.</p>
+      <p>The intended contract covers <code>io.&lt;domain&gt;/&lt;server&gt;</code>. Its TXT value is exactly the passport fingerprint supplied as <code>expected_value</code>, with no prefix. <code>POST /v0/publisher-rights/dns-challenge</code> and <code>POST /v0/publisher-rights/dns-verify</code> remain disabled at the production edge until that domain proof is bound to an authenticated passport.</p>
     </div>
     <div class="card">
       <h2>Manual Review</h2>
@@ -1361,6 +1361,7 @@ mod tests {
             .expect("body should read");
         let html = String::from_utf8(body.to_vec()).expect("html should decode");
         assert!(html.contains("RCX-Registry Publisher Onboarding"));
+        assert!(html.contains("currently fail-closed"));
         assert!(html.contains("/v0/publisher-rights/dns-challenge"));
     }
 

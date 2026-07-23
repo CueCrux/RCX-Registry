@@ -1,12 +1,12 @@
 ---
 title: Privacy Notice
 description: What RCX-Registry collects, why, and how little of it is personal.
-lastUpdated: 2026-07-19
+lastUpdated: 2026-07-23
 ---
 
 # Privacy Notice
 
-Last updated: 19 July 2026
+Last updated: 23 July 2026
 
 RCX-Registry is operated by CueCrux Limited. This notice explains what the service processes. The short version: the registry is about **public server metadata and cryptographic proofs**, not about profiling people.
 
@@ -14,9 +14,9 @@ RCX-Registry is operated by CueCrux Limited. This notice explains what the servi
 
 **Mirrored server metadata.** Public metadata about MCP servers, mirrored from the upstream registry. This is public, third-party data, not personal data about you.
 
-**Publisher verification data.** When you claim a namespace we process what’s needed to verify it: for DNS, the domain and a one-time challenge token resolved from your TXT record; for GitHub, your GitHub account identity via OAuth (login/id and the org or user the namespace maps to). We store the verification outcome and a receipt, not your GitHub credentials.
+**Publisher verification data.** Public verification is currently disabled and production has no publisher-rights rows. If a reviewed flow opens in future, the notice will be updated to describe the proof data it processes before onboarding begins. GitHub OAuth is not currently configured in production.
 
-**Enrichment declarations.** Capability metadata you submit for your servers. You author it; it is published under the `_meta.org.rcxprotocol.registry` namespace and recorded as a signed receipt attributable to your publisher identity.
+**Enrichment declarations.** Public declaration submission is currently disabled. The implementation may process operator-seeded or already-discovered declarations, but its storage path currently retains receipt-hash references rather than complete signed artifacts.
 
 **Operational logs.** Standard request logs (IP address, timestamp, path, user agent) kept transiently for security, abuse prevention, and reliability. These are minimised and time-boxed.
 
@@ -25,22 +25,22 @@ We do **not** run advertising trackers, third-party analytics, fingerprinting, o
 ## 2. Why we process it
 
 - To operate the mirror and serve the read API.
-- To verify namespace control and maintain a tamper-evident registry history.
+- To develop and, once accepted, operate namespace verification and tamper-evident history capabilities.
 - To secure the service and prevent abuse.
 
 Lawful bases (UK/EU GDPR): performance of the service you request (verification, publishing) and legitimate interests (security, integrity, reliability).
 
-## 3. Receipts are permanent by design
+## 3. Evidence retention
 
-Verification and enrichment events are recorded as append-only, signed CROWN receipts. Their integrity is the entire point of the service, so **receipts are not deleted** — deleting one would break the verifiable history. Receipts reference a publisher identity and namespace, not sensitive personal data. Where a receipt references an account identifier and you exercise a deletion right, we restrict rather than erase, and tell you why.
+If complete signed snapshot or enrichment records are produced, later records may link to them and require an append-only history. None currently exists in hosted production. If a future record contains an account identifier and you exercise a data-protection right, we will assess the request against applicable retention and legal obligations and explain the outcome; this notice does not create a blanket exception to deletion rights.
 
 ## 4. Sharing
 
-Mirrored metadata, verification state, and enrichment declarations are **public** — that is what a registry is for. We do not sell data. We share nothing else except where legally required, or with infrastructure providers strictly to run the service (e.g. hosting, and HashiCorp Vault for signing-key custody).
+Mirrored metadata is **public** — that is what a registry is for. Verification state would also be public if the reviewed flow reopens and produces records; none exists today. Enrichment metadata is public only when present in a mirrored response. We do not sell data. We share nothing else except where legally required, or with infrastructure providers strictly to run the service (e.g. hosting, and HashiCorp Vault for signing-key custody).
 
 ## 5. Your rights
 
-Under UK/EU GDPR and comparable laws you may request access to, correction of, or (subject to the receipts exception above) deletion of personal data we hold about you, and you may object to certain processing. Contact us to exercise these rights.
+Under UK/EU GDPR and comparable laws you may request access to, correction of, or (subject to applicable legal retention obligations) deletion of personal data we hold about you, and you may object to certain processing. Contact us to exercise these rights.
 
 ## 6. Contact
 

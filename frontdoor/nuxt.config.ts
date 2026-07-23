@@ -1,4 +1,22 @@
 import { defineNuxtConfig } from 'nuxt/config'
+import { readdirSync } from 'node:fs'
+import { fileURLToPath } from 'node:url'
+
+const specVectorsDir = fileURLToPath(new URL('../spec/v1/vectors', import.meta.url))
+const specVectorRouteRules = Object.fromEntries(
+  readdirSync(specVectorsDir)
+    .filter((name) => name.endsWith('.json'))
+    .map((name) => [
+      `/spec/v1/vectors/${name}`,
+      {
+        headers: {
+          'access-control-allow-origin': '*',
+          'cache-control': 'public, max-age=31536000, immutable',
+          'x-content-type-options': 'nosniff',
+        },
+      },
+    ])
+)
 
 // RCX-Registry frontdoor (rcxprotocol.org). Pure marketing/docs SSR site:
 // no BFF, no auth, no payments. The registry API + publisher onboarding live
@@ -48,7 +66,7 @@ export default defineNuxtConfig({
         {
           name: 'description',
           content:
-            'A verifiable subregistry that mirrors the official MCP registry and makes its history tamper-evident: signed CROWN receipts, verified publishers, drop-in shape-compatible with existing MCP clients.',
+            'An MCP-compatible registry mirror with a frozen signed-receipt format and conformance vectors. Production snapshot signing is degraded and publisher writes are currently fail-closed.',
         },
       ],
       link: [
@@ -65,6 +83,7 @@ export default defineNuxtConfig({
 
   nitro: {
     preset: 'node-server',
+    routeRules: specVectorRouteRules,
   },
 
   typescript: {

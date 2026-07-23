@@ -5,6 +5,7 @@ const api = useRuntimeConfig().public.registryApiUrl
 
 const links = [
   { to: '/verify', label: 'Verify' },
+  { to: '/spec/v1', label: 'Spec v1' },
   { to: '/publish', label: 'Publish' },
   { to: '/subregistry', label: 'Subregistry' },
   { to: '/badge', label: 'Badge' },

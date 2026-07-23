@@ -13,23 +13,25 @@ useHead({
 })
 
 const metaExample = `{
-  "name": "com.example/my-mcp-server",
-  "version": "1.4.0",
+  "server": {
+    "name": "io.example.com/my-mcp-server",
+    "version": "1.4.0"
+  },
   "_meta": {
-    "org.rcxprotocol.registry/publisher": {
-      "verified": true,
-      "namespace_proof": "dns-txt",
-      "rights_receipt": "crown:8802…6f11"
+    "io.modelcontextprotocol.registry/official": {
+      "status": "active",
+      "isLatest": true
     },
-    "org.rcxprotocol.registry/auto": {
-      "last_snapshot": "crown:e6b1…88f2",
-      "mirrored_from": "registry.modelcontextprotocol.io"
+    "org.rcxprotocol.registry/publisher": {
+      "publisher_rights_verified": true,
+      "verification_method": "dns_txt",
+      "enrichment_receipt_hash": "blake3:8802…6f11"
     }
   }
 }`
 
 const vscodePolicy = `// VS Code enterprise policy (device management)
-// Repoints the whole MCP gallery at a verified registry.
+// Repoints the whole MCP gallery at a compatible registry read API.
 {
   "McpGalleryServiceUrl": "${api}"
 }`
@@ -53,8 +55,10 @@ const routes = [
         <p class="text-lg text-ink2 max-w-[64ch] mb-9">
           The MCP registry documents an open subregistry model: implement the read shape, add value
           through custom <span class="font-mono text-acc">_meta</span> fields, no approval step.
-          RCX-Registry is exactly that — the same servers, the same request shape, plus verification
-          and a signed history. Switching a client is a URL change.
+          RCX-Registry preserves that envelope and reserves an RCX metadata namespace. The live
+          mirror read dataset works today. Snapshot/signing sync is degraded, and publisher
+          extensions remain gated until authenticated proof, signed-artifact persistence, and
+          public receipt verification ship.
         </p>
         <div class="flex flex-wrap gap-3">
           <a :href="`${api}/v0/servers?limit=5`" class="btn btn-quiet">Try /v0/servers ↗</a>
@@ -70,7 +74,8 @@ const routes = [
       <p class="text-ink2 max-w-[70ch] mb-7">
         The baseline read API mirrors the upstream <span class="font-mono text-acc">/v0</span>
         surface field-for-field. Anything that already speaks to the official MCP registry speaks to
-        this one — you get verification and receipts for free, without touching client code.
+        this one. Optional RCX metadata appears inside the existing envelope only when its producing
+        pipeline has supplied it.
       </p>
       <div class="glass-card overflow-hidden">
         <table class="w-full text-sm">
@@ -92,24 +97,25 @@ const routes = [
         Subregistries extend server entries through <span class="font-mono text-acc">_meta</span>, and
         RCX keeps its entire footprint inside
         <span class="font-mono text-acc">org.rcxprotocol.registry</span>. A client that ignores it
-        sees a plain upstream entry; a client that reads it sees the proof.
+        sees a plain upstream entry; a client that reads it can consume extensions when present.
       </p>
       <div class="max-w-2xl mb-6">
-        <MonoBlock :code="metaExample" label="server entry with RCX _meta" />
+        <MonoBlock :code="metaExample" label="extension shape (when present)" />
       </div>
       <div class="grid gap-4 sm:grid-cols-2">
         <article class="glass-card p-6">
           <p class="font-mono text-[12px] text-trust mb-2">…/publisher</p>
           <p class="text-sm text-ink2">
-            Publisher-declared: verification state, how the namespace was proven, and the receipt id
-            for the rights verification. Attributable to a verified owner.
+            Publisher-declared capability metadata plus verification method and enrichment receipt
+            hash. Public writes to this block are disabled until caller authentication and signing
+            are complete.
           </p>
         </article>
         <article class="glass-card p-6">
           <p class="font-mono text-[12px] text-trust mb-2">…/auto</p>
           <p class="text-sm text-ink2">
-            Registry-derived: the snapshot receipt this entry was last seen in, and the upstream
-            source it was mirrored from. Filled automatically, no publisher action needed.
+            Registry-derived enrichment fields and their receipt hash. This is additive metadata;
+            a mirrored entry need not carry the block.
           </p>
         </article>
       </div>
@@ -123,7 +129,7 @@ const routes = [
         VS Code exposes an enterprise policy,
         <span class="font-mono text-acc">McpGalleryServiceUrl</span>, that repoints its entire MCP
         gallery at any spec-compliant endpoint. Because our <span class="font-mono">/v0</span> matches
-        the shape, this works today — one policy value moves a whole fleet onto a verified registry.
+        the shape, this works today — one policy value moves a whole fleet onto a compatible read API.
       </p>
       <div class="max-w-2xl mb-4">
         <MonoBlock :code="vscodePolicy" label="VS Code policy" />
@@ -136,16 +142,21 @@ const routes = [
       </p>
     </section>
 
-    <!-- sync cadence -->
+    <!-- configured sync model -->
     <section class="mx-auto max-w-6xl px-5 mt-24" aria-labelledby="sync-h">
       <p class="sec-label">Freshness</p>
-      <h2 id="sync-h" class="display-h2 text-ink mb-7">Sync cadence</h2>
+      <h2 id="sync-h" class="display-h2 text-ink mb-3">Configured sync model</h2>
+      <p class="mb-7 max-w-[72ch] text-ink2">
+        Production serves the mirrored dataset, but its sync attempt currently fails when Vault
+        Transit returns 403. The snapshot table is empty, so there is no live signed snapshot evidence.
+      </p>
       <div class="grid gap-4 sm:grid-cols-3">
         <article class="glass-card p-6">
           <h3 class="font-display font-bold text-ink mb-2">Mirror</h3>
           <p class="text-sm text-ink2">
-            A sync loop walks every upstream page on a fixed cadence and mints a signed snapshot over
-            the Merkle root of the full set.
+            The configured loop is designed to walk every upstream page and mint a signed snapshot
+            over the flat, sorted BLAKE3 set digest named
+            <span class="font-mono">snapshot_merkle_root</span>. It is not completing in production.
           </p>
         </article>
         <article class="glass-card p-6">
@@ -158,8 +169,9 @@ const routes = [
         <article class="glass-card p-6">
           <h3 class="font-display font-bold text-ink mb-2">Enrichment</h3>
           <p class="text-sm text-ink2">
-            Publisher declarations refresh on a 24-hour cadence, each refresh hashed and receipted so
-            capability metadata stays current and attributable.
+            The implementation can refresh already-seeded declarations on a 24-hour cadence, but
+            no public declaration route is available and complete signed artifacts are not persisted
+            or returned by the public API.
           </p>
         </article>
       </div>
@@ -168,13 +180,13 @@ const routes = [
     <!-- closing -->
     <section class="mx-auto max-w-6xl px-5 mt-24 mb-24">
       <div class="glass-panel px-8 py-12 sm:px-12 text-center">
-        <h2 class="display-h2 text-ink mb-4">Same servers. Same shape. Now with proof.</h2>
+        <h2 class="display-h2 text-ink mb-4">Same servers. Same shape. Now with attributable metadata.</h2>
         <p class="text-ink2 max-w-[56ch] mx-auto mb-8">
-          Repoint a client, or claim your namespace so your own entries carry the verified badge.
+          Repoint a client for mirror reads. Publisher verification remains closed pending trust hardening.
         </p>
         <div class="flex flex-wrap justify-center gap-3">
           <a :href="`${api}/v0/servers?limit=5`" class="btn btn-approve">Browse the API ↗</a>
-          <NuxtLink to="/publish" class="btn btn-quiet">Claim your namespace</NuxtLink>
+          <NuxtLink to="/publish" class="btn btn-quiet">Publisher status</NuxtLink>
         </div>
       </div>
     </section>
