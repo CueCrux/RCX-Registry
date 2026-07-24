@@ -31,7 +31,7 @@ useHead({
         '@type': 'DataCatalog',
         name: 'RCX-Registry',
         description:
-          'A mirror of the official Model Context Protocol server registry. The baseline read API preserves the upstream response envelope; signed-evidence formats and test vectors are public, while hosted snapshot signing is degraded.',
+          'A mirror of the official Model Context Protocol server registry. The baseline read API preserves the upstream response envelope; signed-evidence formats and test vectors are public, and hosted production signs a snapshot receipt on each sync tick.',
         url: api,
         isBasedOn: 'https://registry.modelcontextprotocol.io',
         provider: { '@type': 'Organization', name: 'RCX-Registry', url: site },
@@ -62,7 +62,7 @@ const pillars = [
     title: 'Receipt',
     chip: 'crown:… · ed25519',
     body:
-      'The repository freezes canonical receipt formats, signing semantics, and byte-exact test vectors. Production has zero snapshots today; live signing, artifact retrieval, and public-key discovery remain explicit follow-up work.',
+      'The repository freezes canonical receipt formats, signing semantics, and byte-exact test vectors. Production signs each snapshot with Vault Transit ed25519 and persists the receipt. Artifact retrieval and a normative public-key discovery endpoint remain explicit follow-up work.',
   },
 ]
 
@@ -145,7 +145,7 @@ const incidents = [
                 example signature · flat set digest linked
               </p>
             </div>
-            <p class="mt-2 text-[11px] text-warn font-mono">illustrative only — production snapshot table is empty</p>
+            <p class="mt-2 text-[11px] text-warn font-mono">illustrative values — production receipts are not yet served over /v0</p>
           </div>
         </div>
       </div>

@@ -2,8 +2,9 @@
 
 > An MCP-compatible subregistry serving a mirror of more than 17,000 servers from the official Model
 > Context Protocol registry. The repository publishes a frozen Ed25519 receipt format and byte-exact
-> conformance vectors. Hosted production has zero snapshots because Vault Transit returns 403, and
-> all public publisher verification/declaration writes return 404. Snapshot and enrichment histories
+> conformance vectors. Hosted production mints and persists a Vault Transit ed25519 snapshot receipt
+> on each sync tick; receipt bodies are not yet served over the public /v0 API. All public publisher
+> verification/declaration writes return 404 by design. Snapshot and enrichment histories
 > use distinct, spec-defined link targets rather than one universal chain.
 >
 > Frontdoor: https://rcxprotocol.org · API: https://registry.rcxprotocol.org ·
@@ -66,8 +67,8 @@ Publisher rights + enrichment (RCX extensions):
 - A flat, sorted BLAKE3 stream commits to every server in a snapshot; the historical field name is
   `snapshot_merkle_root`, but it is not a Merkle tree and provides no inclusion proof.
 - The format signs snapshot and background-enrichment receipts with Ed25519 over full canonical CBOR
-  with only `receipt_signature` zeroed. Production is designed to use a Vault Transit key, but current
-  calls return 403 and no snapshot has been persisted.
+  with only `receipt_signature` zeroed. Production signs with the Vault Transit ed25519 key
+  `rcx-registry-signing-key-1` and persists a snapshot receipt on each completed sync tick.
 - Rights and enrichment storage paths retain deterministic receipt-hash references rather than
   complete signed artifacts. Public writes are currently closed.
 - Snapshot history links `previous_snapshot_hash` to the prior snapshot set digest. Enrichment

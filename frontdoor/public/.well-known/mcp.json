@@ -1,6 +1,6 @@
 {
   "name": "org.rcxprotocol.registry",
-  "description": "MCP-compatible registry mirror with a frozen signed-receipt format and conformance vectors. Production signed snapshots and publisher writes are currently unavailable.",
+  "description": "MCP-compatible registry mirror with a frozen signed-receipt format and conformance vectors. Production mints a signed snapshot receipt on each sync tick; publisher verification and declaration writes remain closed pending authenticated caller proof.",
   "version": "0.1.0",
   "homepage": "https://rcxprotocol.org",
   "transport": {

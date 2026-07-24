@@ -1,6 +1,6 @@
 # RCX-Registry
 
-> An MCP-compatible subregistry serving a mirror of more than 17,000 servers from the official Model Context Protocol registry. The repository publishes a frozen Ed25519 receipt format and byte-exact vectors. Hosted production currently has zero snapshots because Vault Transit returns 403, and every public publisher verification/declaration write returns 404. Spec v1 defines type-specific snapshot and enrichment links, not one universal receipt chain.
+> An MCP-compatible subregistry serving a mirror of more than 17,000 servers from the official Model Context Protocol registry. The repository publishes a frozen Ed25519 receipt format and byte-exact vectors. Hosted production signs and persists a snapshot receipt on each sync tick with Vault Transit ed25519. Every public publisher verification/declaration write still returns 404 by design, pending authenticated caller proof. Spec v1 defines type-specific snapshot and enrichment links, not one universal receipt chain.
 
 ## What it is
 
@@ -30,4 +30,4 @@
 
 ## Subregistry positioning
 
-- [Subregistry](https://rcxprotocol.org/subregistry): RCX-Registry as a spec-compliant MCP subregistry — shape compatibility, the `_meta.org.rcxprotocol.registry` contract, client configuration, and the currently degraded sync/signing state.
+- [Subregistry](https://rcxprotocol.org/subregistry): RCX-Registry as a spec-compliant MCP subregistry — shape compatibility, the `_meta.org.rcxprotocol.registry` contract, client configuration, and the live sync/signing state.

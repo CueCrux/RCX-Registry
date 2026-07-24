@@ -4,7 +4,7 @@
     "title": "RCX-Registry API",
     "version": "0.1.0",
     "summary": "MCP-compatible registry mirror with a frozen signed-evidence format.",
-    "description": "The baseline read API preserves the upstream MCP registry response envelope. All public publisher verification and declaration writes currently return 404 while caller identity, proof binding, server-owned audit time, signing, and retrieval are hardened. Production has zero publisher-rights and snapshot rows; Vault Transit signing attempts return 403. This document is self-contained (no external $ref).",
+    "description": "The baseline read API preserves the upstream MCP registry response envelope. All public publisher verification and declaration writes currently return 404 while caller identity, proof binding, server-owned audit time, signing, and retrieval are hardened. Production has zero publisher-rights rows; snapshot receipts are minted and signed with Vault Transit ed25519 on each sync tick. This document is self-contained (no external $ref).",
     "license": { "name": "Apache-2.0", "url": "https://www.apache.org/licenses/LICENSE-2.0" },
     "contact": { "name": "RCX-Registry", "url": "https://rcxprotocol.org" }
   },
