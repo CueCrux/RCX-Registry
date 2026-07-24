@@ -56,7 +56,7 @@ const routes = [
           The MCP registry documents an open subregistry model: implement the read shape, add value
           through custom <span class="font-mono text-acc">_meta</span> fields, no approval step.
           RCX-Registry preserves that envelope and reserves an RCX metadata namespace. The live
-          mirror read dataset works today. Snapshot/signing sync is degraded, and publisher
+          mirror read dataset works today, and each sync tick mints a signed snapshot. Publisher
           extensions remain gated until authenticated proof, signed-artifact persistence, and
           public receipt verification ship.
         </p>
@@ -147,8 +147,8 @@ const routes = [
       <p class="sec-label">Freshness</p>
       <h2 id="sync-h" class="display-h2 text-ink mb-3">Configured sync model</h2>
       <p class="mb-7 max-w-[72ch] text-ink2">
-        Production serves the mirrored dataset, but its sync attempt currently fails when Vault
-        Transit returns 403. The snapshot table is empty, so there is no live signed snapshot evidence.
+        Production serves the mirrored dataset and, on each completed sync tick, mints and persists a
+        snapshot receipt signed with Vault Transit ed25519 over the flat, sorted BLAKE3 set digest.
       </p>
       <div class="grid gap-4 sm:grid-cols-3">
         <article class="glass-card p-6">

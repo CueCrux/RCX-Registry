@@ -118,8 +118,10 @@ useHead({
           <p class="font-mono text-[11px] uppercase tracking-[0.14em] text-warn">Hosted runtime status</p>
           <p class="mt-2 text-sm leading-6 text-ink2">
             This frozen specification defines formats and code paths, not evidence that the hosted
-            service has produced them. Production currently has zero snapshots, and snapshot signing
-            is degraded because Vault Transit returns 403. The conformance vectors remain reproducible.
+            service has produced them. Production now mints and persists a Vault Transit ed25519
+            snapshot receipt on each sync tick, but the public <span class="font-mono">/v0</span> API
+            does not yet serve receipt bodies, so those signatures are not independently retrievable.
+            The conformance vectors remain reproducible.
           </p>
         </section>
 

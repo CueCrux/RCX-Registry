@@ -76,8 +76,8 @@ const steps = [
         </h1>
         <p class="text-lg text-ink2 max-w-[62ch] mb-9">
           RCX-Registry publishes a byte-exact wire specification and conformance vectors for signed
-          receipts and snapshot history. Those formats and test signatures are reproducible today;
-          production currently has zero snapshots and its Vault signing attempt returns 403.
+          receipts and snapshot history. Those formats and test signatures are reproducible today,
+          and production signs a snapshot receipt with Vault Transit ed25519 on each sync tick.
         </p>
         <div class="flex flex-wrap gap-3">
           <a href="https://github.com/CueCrux/RCX-Registry" class="btn btn-quiet">Read the source ↗</a>
@@ -159,13 +159,32 @@ const steps = [
       <div class="mt-6 max-w-3xl rounded-card border border-edge-strong bg-surface2 p-5">
         <p class="font-mono text-[11px] uppercase tracking-[0.14em] text-crit">Current v1 boundary</p>
         <p class="mt-2 text-sm leading-6 text-ink2">
-          Production currently has no snapshot rows, and the configured sync attempt fails when
-          Vault Transit returns 403. Public publisher writes are closed. The rights and enrichment
-          storage paths retain deterministic BLAKE3 receipt-hash references rather than complete
-          signed artifacts. The public <span class="font-mono">/v0</span> API does not expose full
-          receipt bodies, and <span class="font-mono">signer_kid</span> does not resolve a production
-          public key. Signing recovery, complete artifact persistence, retrieval, and authoritative
-          key discovery remain M1a work.
+          Production signs and persists a snapshot receipt on each sync tick. Public publisher writes
+          remain closed. The rights and enrichment storage paths retain deterministic BLAKE3
+          receipt-hash references rather than complete signed artifacts. The public
+          <span class="font-mono">/v0</span> API does not yet expose full receipt bodies, and
+          <span class="font-mono">signer_kid</span> does not resolve a production public key through
+          any normative endpoint — the key below is published informatively until that endpoint is
+          specified. Complete artifact persistence, retrieval, and authoritative key discovery remain
+          M1a work.
+        </p>
+      </div>
+      <div class="mt-6 max-w-3xl rounded-card border border-edge-strong bg-surface2 p-5">
+        <p class="font-mono text-[11px] uppercase tracking-[0.14em] text-ink3">
+          Signing key (informative)
+        </p>
+        <p class="mt-2 text-sm leading-6 text-ink2">
+          Snapshot receipts carry
+          <span class="font-mono">signer_kid = vault:transit:rcx-registry-signing-key-1</span>.
+          That identifier resolves to this ed25519 public key, version 1, created 2026-07-18:
+        </p>
+        <p class="mt-3 break-all rounded bg-surface p-3 font-mono text-xs text-ink">
+          wP5P2LnvRCUQVpylgyMtopZ9C0dqB1SuZAbbvkdtcOg=
+        </p>
+        <p class="mt-3 text-sm leading-6 text-ink3">
+          Published here so signatures can be checked today. This is documentation, not a normative
+          protocol surface: Spec v1 defines no key-discovery endpoint, and a versioned, signed key
+          document is M1a work. Treat a key learned from this page as trust-on-first-use.
         </p>
       </div>
     </section>
