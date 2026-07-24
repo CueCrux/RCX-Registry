@@ -29,7 +29,12 @@ Files:
 2. `apt install caddy postgresql-client` (or replace Postgres host with the docker-compose Postgres if you prefer the Chainguard image).
 3. Copy `ops/docker/.env.example` → `ops/docker/.env` and fill in:
    - `POSTGRES_PASSWORD`
-   - `VAULT_ADDR` / `VAULT_TOKEN` (once the Vault Transit key is provisioned)
+   - `VAULT_ADDR` (once the Vault Transit key is provisioned). For the token, prefer a
+     `vault-agent` sink over a literal: set `VAULT_AGENT_SINK_DIR` and bring the stack up with
+     `-f docker-compose.yml -f docker-compose.vault-agent.yml`, which sets `VAULT_TOKEN_FILE`.
+     A static `VAULT_TOKEN` still works and is the documented fallback, but it must then be a
+     *periodic* token with a `renew-self` cron — a merely renewable token silently hits the
+     token mount's `max_lease_ttl` ceiling and dies (see `incident:2026-07-24`).
    - `GITHUB_OAUTH_CLIENT_ID` / `_SECRET` (once the GitHub OAuth app exists)
 4. `cd ops/docker && docker compose up -d --build` — server boots with `FEATURE_RCX_REGISTRY=false`, serving the MCP-mirror baseline only.
 5. Point `registry.rcxprotocol.org` DNS at the API host and install only its global/options and registry blocks. Keep the exact fail-closed matcher for manual review, DNS challenge/verify, GitHub start/callback, and publisher declaration.

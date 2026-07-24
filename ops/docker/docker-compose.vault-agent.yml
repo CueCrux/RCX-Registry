@@ -1,0 +1,18 @@
+# Production overlay: take the Vault token from a vault-agent sink instead of a
+# literal in the environment.
+#
+#   docker compose -f docker-compose.yml -f docker-compose.vault-agent.yml up -d
+#
+# Expects a vault-agent on the host with an `auto_auth` AppRole method and a
+# file sink. Point VAULT_AGENT_SINK_DIR at the directory holding that sink; the
+# server re-reads the token on every sign, so the agent rotates it in place and
+# this container never needs recreating.
+#
+# Leave VAULT_TOKEN unset when using this overlay — VAULT_TOKEN_FILE wins anyway,
+# but an unused literal in the environment is exactly the pattern being retired.
+services:
+  rcx-registry-server:
+    environment:
+      VAULT_TOKEN_FILE: /run/vault/token
+    volumes:
+      - ${VAULT_AGENT_SINK_DIR:?set VAULT_AGENT_SINK_DIR to the vault-agent sink directory}:/run/vault:ro

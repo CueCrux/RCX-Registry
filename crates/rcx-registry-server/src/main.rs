@@ -77,13 +77,24 @@ async fn run() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
         };
 
     let signer: Arc<dyn Signer> = match &config.signer.vault {
-        Some(vault) => Arc::new(VaultTransitSigner::new(
-            vault.addr.clone(),
-            vault.token.clone(),
-            vault.namespace.clone(),
-            vault.key_name.clone(),
-            config.signer.signer_kid.clone(),
-        )?),
+        Some(vault) => {
+            // Warn rather than abort: with a vault-agent sink the container and the
+            // agent have no guaranteed start order, so an unreadable path at boot is
+            // often a transient race. Aborting would turn it into a crash loop.
+            if let Err(err) = vault.token.resolve() {
+                tracing::warn!(
+                    error = %err,
+                    "vault token source is not readable at startup — signing will fail until it is"
+                );
+            }
+            Arc::new(VaultTransitSigner::new(
+                vault.addr.clone(),
+                vault.token.clone(),
+                vault.namespace.clone(),
+                vault.key_name.clone(),
+                config.signer.signer_kid.clone(),
+            )?)
+        }
         None => {
             tracing::warn!(
                 "VAULT_ADDR is not set — receipts will be minted with zeroed signatures. \

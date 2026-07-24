@@ -54,6 +54,12 @@ services:
       FEATURE_RCX_REGISTRY_SIGNED_CURSORS: ${FEATURE_RCX_REGISTRY_SIGNED_CURSORS:-false}
       RCX_REGISTRY_SIGNER_KID: ${RCX_REGISTRY_SIGNER_KID:-vault:transit:rcx-registry-signing-key-1}
       VAULT_ADDR: ${VAULT_ADDR:-}
+      # Preferred in production: a path (inside the container) to a vault-agent
+      # sink, mounted read-only below. Re-read on every sign, so the agent can
+      # rotate the token in place without recreating this container.
+      VAULT_TOKEN_FILE: ${VAULT_TOKEN_FILE:-}
+      # Fallback for local dev and the periodic-token pattern. Ignored when
+      # VAULT_TOKEN_FILE is set.
       VAULT_TOKEN: ${VAULT_TOKEN:-}
       VAULT_TRANSIT_KEY_NAME: ${VAULT_TRANSIT_KEY_NAME:-rcx-registry-signing-key-1}
       VAULT_NAMESPACE: ${VAULT_NAMESPACE:-}
