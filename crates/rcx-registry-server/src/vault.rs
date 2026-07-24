@@ -7,6 +7,8 @@
 //! Vault returns signatures prefixed with `vault:v1:`; we strip the
 //! prefix, base64-decode the rest, and verify the byte length.
 
+use std::fs;
+use std::path::{Path, PathBuf};
 use std::time::Duration;
 
 use base64::engine::general_purpose::STANDARD as BASE64_STANDARD;
@@ -23,6 +25,14 @@ pub enum VaultError {
     Http(#[from] reqwest::Error),
     #[error("vault returned status {0}")]
     Status(u16),
+    #[error("reading vault token file `{path}`: {source}")]
+    TokenFile {
+        path: String,
+        #[source]
+        source: std::io::Error,
+    },
+    #[error("vault token file `{0}` is empty")]
+    EmptyTokenFile(String),
     #[error("vault response missing expected `data.signature` field")]
     MissingSignature,
     #[error("signature lacked `vault:v1:` prefix: `{0}`")]
@@ -36,6 +46,42 @@ pub enum VaultError {
 pub trait Signer: Send + Sync {
     fn sign(&self, message: &[u8]) -> Result<[u8; SIGNATURE_LEN], VaultError>;
     fn signer_kid(&self) -> &str;
+}
+
+/// Where the Vault token comes from.
+///
+/// `File` is the production shape: a `vault-agent` sink writes a short-TTL token
+/// to a root-only file and rotates it in place. The value is therefore read fresh
+/// on every sign rather than captured at boot, so rotation needs no restart.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum TokenSource {
+    /// Literal token from `VAULT_TOKEN`. Rotating it requires recreating the process.
+    Static(String),
+    /// Path to a token file, typically a `vault-agent` sink.
+    File(PathBuf),
+}
+
+impl TokenSource {
+    /// Read the current token. Called once per sign.
+    pub fn resolve(&self) -> Result<String, VaultError> {
+        match self {
+            TokenSource::Static(token) => Ok(token.clone()),
+            TokenSource::File(path) => Self::read_file(path),
+        }
+    }
+
+    fn read_file(path: &Path) -> Result<String, VaultError> {
+        let raw = fs::read_to_string(path).map_err(|source| VaultError::TokenFile {
+            path: path.display().to_string(),
+            source,
+        })?;
+        // Sinks and hand-written files both tend to carry a trailing newline.
+        let token = raw.trim().to_string();
+        if token.is_empty() {
+            return Err(VaultError::EmptyTokenFile(path.display().to_string()));
+        }
+        Ok(token)
+    }
 }
 
 /// Logs the message and returns a zeroed signature. Use ONLY when no
@@ -66,7 +112,7 @@ impl Signer for UnsignedSigner {
 pub struct VaultTransitSigner {
     client: Client,
     addr: String,
-    token: String,
+    token: TokenSource,
     namespace: Option<String>,
     key_name: String,
     signer_kid: String,
@@ -75,7 +121,7 @@ pub struct VaultTransitSigner {
 impl VaultTransitSigner {
     pub fn new(
         addr: impl Into<String>,
-        token: impl Into<String>,
+        token: TokenSource,
         namespace: Option<String>,
         key_name: impl Into<String>,
         signer_kid: impl Into<String>,
@@ -84,7 +130,7 @@ impl VaultTransitSigner {
         Ok(Self {
             client,
             addr: addr.into().trim_end_matches('/').to_string(),
-            token: token.into(),
+            token,
             namespace,
             key_name: key_name.into(),
             signer_kid: signer_kid.into(),
@@ -105,10 +151,12 @@ struct VaultSignData {
 impl Signer for VaultTransitSigner {
     fn sign(&self, message: &[u8]) -> Result<[u8; SIGNATURE_LEN], VaultError> {
         let url = format!("{}/v1/transit/sign/{}", self.addr, self.key_name);
+        // Resolved per call so a rotating `vault-agent` sink is picked up in place.
+        let token = self.token.resolve()?;
         let mut request = self
             .client
             .post(&url)
-            .header("X-Vault-Token", &self.token)
+            .header("X-Vault-Token", &token)
             .json(&json!({
                 "input": BASE64_STANDARD.encode(message),
                 "signature_algorithm": "ed25519",
@@ -143,8 +191,17 @@ impl Signer for VaultTransitSigner {
 
 #[cfg(test)]
 mod tests {
-    use super::{Signer, UnsignedSigner};
+    use super::{Signer, TokenSource, UnsignedSigner, VaultError};
     use rcx_registry_crown::SIGNATURE_LEN;
+    use std::fs;
+    use std::path::PathBuf;
+
+    /// Unique scratch path — no `tempfile` dev-dependency in this crate.
+    fn scratch(name: &str) -> PathBuf {
+        let path = std::env::temp_dir().join(format!("rcx-token-{}-{}", std::process::id(), name));
+        let _ = fs::remove_file(&path);
+        path
+    }
 
     #[test]
     fn unsigned_signer_returns_zero_signature() {
@@ -152,5 +209,57 @@ mod tests {
         let signature = signer.sign(b"any-bytes").expect("noop sign should succeed");
         assert_eq!(signature, [0u8; SIGNATURE_LEN]);
         assert_eq!(signer.signer_kid(), "vault:transit:test-key");
+    }
+
+    #[test]
+    fn static_token_source_resolves_to_its_literal() {
+        let source = TokenSource::Static("hvs.example".to_string());
+        assert_eq!(source.resolve().expect("static resolves"), "hvs.example");
+    }
+
+    #[test]
+    fn file_token_source_reads_and_trims() {
+        let path = scratch("trims");
+        // vault-agent sinks and hand-written files both carry a trailing newline.
+        fs::write(&path, "  hvs.from-sink\n").expect("write scratch token");
+        let source = TokenSource::File(path.clone());
+        assert_eq!(source.resolve().expect("file resolves"), "hvs.from-sink");
+        let _ = fs::remove_file(&path);
+    }
+
+    #[test]
+    fn file_token_source_picks_up_rotation_without_reconstruction() {
+        let path = scratch("rotates");
+        fs::write(&path, "hvs.first\n").expect("write scratch token");
+        let source = TokenSource::File(path.clone());
+        assert_eq!(source.resolve().expect("first resolve"), "hvs.first");
+        // Simulate the sink rotating the token in place.
+        fs::write(&path, "hvs.second\n").expect("rotate scratch token");
+        assert_eq!(source.resolve().expect("second resolve"), "hvs.second");
+        let _ = fs::remove_file(&path);
+    }
+
+    #[test]
+    fn empty_token_file_is_rejected() {
+        let path = scratch("empty");
+        fs::write(&path, "\n   \n").expect("write scratch token");
+        let source = TokenSource::File(path.clone());
+        assert!(matches!(
+            source.resolve(),
+            Err(VaultError::EmptyTokenFile(_))
+        ));
+        let _ = fs::remove_file(&path);
+    }
+
+    #[test]
+    fn missing_token_file_reports_its_path() {
+        let path = scratch("absent");
+        let source = TokenSource::File(path.clone());
+        match source.resolve() {
+            Err(VaultError::TokenFile { path: reported, .. }) => {
+                assert_eq!(reported, path.display().to_string());
+            }
+            other => panic!("expected TokenFile error, got {other:?}"),
+        }
     }
 }

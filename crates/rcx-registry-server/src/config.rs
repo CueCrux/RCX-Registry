@@ -2,9 +2,12 @@
 
 use std::env;
 use std::net::{IpAddr, Ipv4Addr, SocketAddr};
+use std::path::PathBuf;
 use std::time::Duration;
 
 use thiserror::Error;
+
+use crate::vault::TokenSource;
 
 /// Where the binary listens for HTTP requests.
 pub const DEFAULT_BIND: &str = "0.0.0.0:3030";
@@ -21,6 +24,11 @@ pub enum ConfigError {
     Missing(&'static str),
     #[error("invalid env var `{name}`: {message}")]
     Invalid { name: &'static str, message: String },
+    #[error(
+        "`VAULT_ADDR` is set but no token source is configured — set `VAULT_TOKEN_FILE` \
+         (a vault-agent sink, preferred) or `VAULT_TOKEN`"
+    )]
+    MissingVaultToken,
 }
 
 /// Top-level server configuration. Built from environment variables.
@@ -67,7 +75,7 @@ pub struct SignerConfig {
 #[derive(Debug, Clone)]
 pub struct VaultConfig {
     pub addr: String,
-    pub token: String,
+    pub token: TokenSource,
     pub key_name: String,
     pub namespace: Option<String>,
 }
@@ -104,7 +112,8 @@ impl Config {
     /// | `FEATURE_RCX_REGISTRY_SIGNED_CURSORS` | `false` | |
     /// | `RCX_REGISTRY_SIGNER_KID` | `vault:transit:rcx-registry-signing-key-1` | |
     /// | `VAULT_ADDR` | unset | enables Vault Transit signer when set |
-    /// | `VAULT_TOKEN` | required if `VAULT_ADDR` set | |
+    /// | `VAULT_TOKEN_FILE` | unset | path to a token file (`vault-agent` sink); preferred, re-read per sign |
+    /// | `VAULT_TOKEN` | required if `VAULT_ADDR` set and `VAULT_TOKEN_FILE` unset | literal token |
     /// | `VAULT_TRANSIT_KEY_NAME` | `rcx-registry-signing-key-1` | |
     /// | `VAULT_NAMESPACE` | unset | optional |
     /// | `GITHUB_OAUTH_CLIENT_ID` | unset | enables real GitHub OAuth when both set |
@@ -148,7 +157,7 @@ impl Config {
             {
                 Some(addr) => Some(VaultConfig {
                     addr,
-                    token: require_env("VAULT_TOKEN")?,
+                    token: vault_token_source_from_env()?,
                     key_name: env::var("VAULT_TRANSIT_KEY_NAME")
                         .unwrap_or_else(|_| "rcx-registry-signing-key-1".to_string()),
                     namespace: env::var("VAULT_NAMESPACE")
@@ -213,6 +222,25 @@ impl Config {
     }
 }
 
+/// Resolve the Vault token source.
+///
+/// `VAULT_TOKEN_FILE` wins when both are set: where an agent sink is configured it
+/// is the authoritative rotating source, and a stale literal left in the process
+/// env must not silently take precedence over it.
+fn vault_token_source_from_env() -> Result<TokenSource, ConfigError> {
+    if let Some(path) = env::var("VAULT_TOKEN_FILE")
+        .ok()
+        .filter(|value| !value.is_empty())
+    {
+        return Ok(TokenSource::File(PathBuf::from(path)));
+    }
+    env::var("VAULT_TOKEN")
+        .ok()
+        .filter(|value| !value.is_empty())
+        .map(TokenSource::Static)
+        .ok_or(ConfigError::MissingVaultToken)
+}
+
 fn require_env(name: &'static str) -> Result<String, ConfigError> {
     env::var(name)
         .ok()
@@ -255,8 +283,10 @@ fn parse_bool_env(name: &'static str, default: bool) -> Result<bool, ConfigError
 
 #[cfg(test)]
 mod tests {
-    use super::{parse_bool_env, parse_u64_env};
+    use super::{parse_bool_env, parse_u64_env, vault_token_source_from_env, ConfigError};
+    use crate::vault::TokenSource;
     use std::env;
+    use std::path::PathBuf;
 
     fn with_env<R>(name: &'static str, value: Option<&str>, run: impl FnOnce() -> R) -> R {
         let prior = env::var(name).ok();
@@ -288,6 +318,50 @@ mod tests {
             parse_bool_env("RCX_TEST_BOOL_DEFAULT", true)
         });
         assert!(result.expect("env should parse"));
+    }
+
+    /// Single test rather than three: these vars are process-global and the
+    /// harness runs tests in parallel, so splitting them would race.
+    #[test]
+    fn vault_token_source_prefers_the_file_over_the_literal() {
+        // File wins when both are set — a stale literal must not shadow the sink.
+        let source = with_env("VAULT_TOKEN_FILE", Some("/run/vault/token"), || {
+            with_env("VAULT_TOKEN", Some("hvs.stale-literal"), || {
+                vault_token_source_from_env()
+            })
+        });
+        assert_eq!(
+            source.expect("file source resolves"),
+            TokenSource::File(PathBuf::from("/run/vault/token"))
+        );
+
+        // Literal is still honoured on its own.
+        let source = with_env("VAULT_TOKEN_FILE", None, || {
+            with_env("VAULT_TOKEN", Some("hvs.literal"), || {
+                vault_token_source_from_env()
+            })
+        });
+        assert_eq!(
+            source.expect("static source resolves"),
+            TokenSource::Static("hvs.literal".to_string())
+        );
+
+        // An empty file path falls through rather than yielding an empty path.
+        let source = with_env("VAULT_TOKEN_FILE", Some(""), || {
+            with_env("VAULT_TOKEN", Some("hvs.literal"), || {
+                vault_token_source_from_env()
+            })
+        });
+        assert_eq!(
+            source.expect("empty path falls through"),
+            TokenSource::Static("hvs.literal".to_string())
+        );
+
+        // Neither set is a configuration error naming both options.
+        let source = with_env("VAULT_TOKEN_FILE", None, || {
+            with_env("VAULT_TOKEN", None, || vault_token_source_from_env())
+        });
+        assert!(matches!(source, Err(ConfigError::MissingVaultToken)));
     }
 
     #[test]
