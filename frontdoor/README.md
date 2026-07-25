@@ -34,3 +34,25 @@ is injected on the home page via `useHead`.
 
 `NUXT_PUBLIC_SITE_URL` (default `https://rcxprotocol.org`),
 `NUXT_PUBLIC_REGISTRY_API_URL` (default `https://registry.rcxprotocol.org`).
+
+## Deploying
+
+The host runs `.output` under `rcx-frontdoor.service` from `/srv/rcx-frontdoor`, owned by `root`
+while the unit runs as the unprivileged `rcx-frontdoor` user.
+
+**Warm the Nuxt Content database before shipping.** `pnpm build` does *not* emit
+`.output/server/contents.sqlite` — the server writes it on first request from the
+`__nuxt_content/*/sql_dump.txt` payloads. Because the deploy directory is root-owned, the service
+user cannot create it, so a cold `.output` serves every `/spec/v1*` route as
+`404 Protocol specification chapter not found` while the rest of the site looks fine.
+
+Run the built server once locally and hit any spec route before you copy `.output` to the host:
+
+```bash
+pnpm build
+node .output/server/index.mjs &        # then: curl -s localhost:3000/spec/v1 >/dev/null
+ls .output/server/contents.sqlite      # must exist before deploying
+```
+
+Keep the previous directory alongside the new one — swapping it back and restarting the unit is
+the whole rollback.
