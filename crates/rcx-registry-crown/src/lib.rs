@@ -6,10 +6,14 @@
 
 mod canonical;
 mod error;
+pub mod hashing;
 mod receipt;
 
 pub use canonical::{decode, to_canonical_json, CborValue};
 pub use error::CrownError;
+pub use hashing::{
+    canonical_server_hash, canonicalize_json, declaration_hash, snapshot_merkle_root, SnapshotEntry,
+};
 pub use receipt::{
     verify_receipt_signature, AttestationAcceptedReceipt, AttestationRevokedReceipt,
     EntryAutoEnrichedReceipt, EntryEnrichedReceipt, PublisherRightsVerifiedReceipt,
