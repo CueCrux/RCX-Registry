@@ -7,6 +7,7 @@ members = [
   "crates/rcx-registry-enrich",
   "crates/rcx-registry-ingest",
   "crates/rcx-registry-server",
+  "crates/rcx-verify",
 ]
 resolver = "2"
 

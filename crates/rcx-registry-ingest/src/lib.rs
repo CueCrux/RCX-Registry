@@ -3,7 +3,6 @@
 use std::collections::{BTreeMap, BTreeSet};
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
-use blake3::Hasher;
 use jsonschema::{validator_for, Validator};
 use rcx_registry_crown::{
     ReceiptDocument, RegistrySnapshotReceipt, SnapshotChanges, HASH_LEN, SIGNATURE_LEN, ULID_LEN,
@@ -147,37 +146,27 @@ impl MirroredServer {
     }
 }
 
-pub fn canonicalize_json(value: &Value) -> String {
-    match value {
-        Value::Null => "null".to_string(),
-        Value::Bool(boolean) => boolean.to_string(),
-        Value::Number(number) => number.to_string(),
-        Value::String(text) => serde_json::to_string(text).expect("strings should serialize"),
-        Value::Array(items) => {
-            let rendered = items
-                .iter()
-                .map(canonicalize_json)
-                .collect::<Vec<_>>()
-                .join(",");
-            format!("[{rendered}]")
-        }
-        Value::Object(map) => {
-            let mut keys = map.keys().cloned().collect::<Vec<_>>();
-            keys.sort();
-            let rendered = keys
-                .into_iter()
-                .map(|key| {
-                    let encoded_key =
-                        serde_json::to_string(&key).expect("object key should serialize");
-                    let encoded_value = canonicalize_json(map.get(&key).expect("key should exist"));
-                    format!("{encoded_key}:{encoded_value}")
-                })
-                .collect::<Vec<_>>()
-                .join(",");
-            format!("{{{rendered}}}")
-        }
+/// Lets the crown digest functions read a `MirroredServer` in place. Only the
+/// three hashed fields are exposed — `schema_uri`, `schema_date`, `status`,
+/// `updated_at` and `is_latest` never enter a digest (spec v1 §6).
+impl rcx_registry_crown::hashing::SnapshotDigestEntry for MirroredServer {
+    fn name(&self) -> &str {
+        &self.name
+    }
+    fn version(&self) -> &str {
+        &self.version
+    }
+    fn canonical_json(&self) -> &str {
+        &self.canonical_json
     }
 }
+
+// canonicalize_json, snapshot_merkle_root and canonical_server_hash now live in
+// rcx-registry-crown::hashing so that offline verifiers (the M1 SDKs) can reach
+// them without inheriting this crate's reqwest/jsonschema dependencies. Behaviour
+// is unchanged and pinned by the spec-v1 conformance vectors; these re-exports
+// keep every existing call site working.
+pub use rcx_registry_crown::{canonical_server_hash, canonicalize_json, snapshot_merkle_root};
 
 pub fn schema_date_from_uri(schema_uri: &str) -> Result<String, IngestError> {
     // Live upstream rows carry three URI shapes so far:
@@ -390,27 +379,6 @@ impl SnapshotDiff {
     }
 }
 
-/// Compute a deterministic BLAKE3 root over lex-sorted mirrored entries.
-pub fn snapshot_merkle_root(entries: &[MirroredServer]) -> [u8; 32] {
-    let mut ordered: Vec<&MirroredServer> = entries.iter().collect();
-    ordered.sort_by(|left, right| {
-        left.name
-            .cmp(&right.name)
-            .then(left.version.cmp(&right.version))
-    });
-
-    let mut hasher = Hasher::new();
-    for entry in ordered {
-        hasher.update(entry.name.as_bytes());
-        hasher.update(&[0]);
-        hasher.update(entry.version.as_bytes());
-        hasher.update(&[0]);
-        hasher.update(entry.canonical_json.as_bytes());
-        hasher.update(&[0xff]);
-    }
-    *hasher.finalize().as_bytes()
-}
-
 /// Compare two mirrored snapshots by server name and canonical content hash.
 pub fn reconcile_snapshots(
     previous: &[MirroredServer],
@@ -446,17 +414,6 @@ pub fn reconcile_snapshots(
     }
 
     diff
-}
-
-/// Compute the per-entry upstream hash used by reconciliation.
-pub fn canonical_server_hash(entry: &MirroredServer) -> [u8; 32] {
-    let mut hasher = Hasher::new();
-    hasher.update(entry.name.as_bytes());
-    hasher.update(&[0]);
-    hasher.update(entry.version.as_bytes());
-    hasher.update(&[0]);
-    hasher.update(entry.canonical_json.as_bytes());
-    *hasher.finalize().as_bytes()
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

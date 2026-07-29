@@ -3,12 +3,11 @@
 use std::collections::BTreeSet;
 use std::time::Duration;
 
-use blake3::Hasher;
 use jsonschema::validator_for;
 use rcx_registry_crown::{
     CborValue, EntryAutoEnrichedReceipt, EntryEnrichedReceipt, ReceiptDocument, HASH_LEN, ULID_LEN,
 };
-use rcx_registry_ingest::{canonicalize_json, RegistryServerEnvelope};
+use rcx_registry_ingest::RegistryServerEnvelope;
 use reqwest::blocking::Client;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
@@ -343,12 +342,9 @@ pub fn declaration_discovery_from_envelope(
     Ok(None)
 }
 
-pub fn declaration_hash(value: &Value) -> ([u8; HASH_LEN], String) {
-    let canonical_json = canonicalize_json(value);
-    let mut hasher = Hasher::new();
-    hasher.update(canonical_json.as_bytes());
-    (*hasher.finalize().as_bytes(), canonical_json)
-}
+// Moved to rcx-registry-crown::hashing so offline verifiers can compute a
+// declaration hash without this crate's reqwest/jsonschema dependencies.
+pub use rcx_registry_crown::declaration_hash;
 
 pub fn validate_publisher_declaration_value(
     raw_value: &Value,
