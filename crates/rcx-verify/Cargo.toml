@@ -1,0 +1,23 @@
+[package]
+name = "rcx-verify"
+description = "Offline verification for the RCX protocol (rcx-spec/v1) — receipts, snapshots, publisher declarations, namespaces, chains."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+
+# Deliberately minimal. This crate is what third parties depend on to verify
+# published bytes, so the tree must contain no HTTP client, TLS stack, async
+# runtime or JSON-schema validator — asserted by tests/dependency_budget.rs,
+# not by good intentions. See CONTRACT.md §8.
+[dependencies]
+blake3.workspace = true
+ed25519-dalek.workspace = true
+hex.workspace = true
+rcx-registry-crown = { path = "../rcx-registry-crown" }
+serde_json.workspace = true
+thiserror.workspace = true
+
+[[bin]]
+name = "rcx-verify-adapter"
+path = "src/bin/adapter.rs"
