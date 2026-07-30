@@ -39,6 +39,14 @@ jobs:
         run: ./scripts/conformance-harness.py --adapter "./target/debug/rcx-verify-adapter"
       - name: Conformance — Python SDK
         run: ./scripts/conformance-harness.py --adapter "python3 sdks/python/adapter.py"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install TypeScript SDK dependencies
+        run: npm ci --no-audit --no-fund
+        working-directory: sdks/typescript
+      - name: Conformance — TypeScript SDK
+        run: ./scripts/conformance-harness.py --adapter "node sdks/typescript/adapter.mjs"
 
   frontdoor:
     runs-on: ubuntu-latest

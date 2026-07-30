@@ -92,10 +92,13 @@ fn do_verify_snapshot(request: &Value) -> Value {
 
 fn do_verify_publisher(request: &Value) -> Value {
     let (Some(declaration), Some(expected)) = (
-        request.get("declaration"),
+        request.get("declarationJson").and_then(Value::as_str),
         hash_field(request, "expectedDeclaredHashHex"),
     ) else {
-        return invalid("decode_error", Some("missing declaration or hash".into()));
+        return invalid(
+            "decode_error",
+            Some("missing declarationJson or hash".into()),
+        );
     };
     match verify_publisher(declaration, &expected) {
         Ok(()) => json!({"valid": true}),
@@ -105,7 +108,7 @@ fn do_verify_publisher(request: &Value) -> Value {
 
 fn do_verify_namespace(request: &Value) -> Value {
     let (Some(declaration), Some(expected), Some(namespace)) = (
-        request.get("declaration"),
+        request.get("declarationJson").and_then(Value::as_str),
         hash_field(request, "expectedDeclaredHashHex"),
         request.get("claimedNamespace").and_then(Value::as_str),
     ) else {

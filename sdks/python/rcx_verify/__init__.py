@@ -9,6 +9,8 @@ Every verb is offline: no socket, no DNS, no clock.
 
 from __future__ import annotations
 
+import json
+
 import blake3
 from cryptography.exceptions import InvalidSignature
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
@@ -202,13 +204,31 @@ def verify_snapshot(entries, expected_root: bytes) -> None:
 # ---------------------------------------------------------------------------
 
 
-def declaration_hash(declaration):
-    canonical = canonicalize_json(declaration)
+def declaration_hash(declaration_json: str):
+    """Hash a declaration from its raw document text (§3, §4.4)."""
+    canonical = canonicalize_json(_parse_declaration(declaration_json))
     return _blake3(canonical.encode("utf-8")), canonical
 
 
-def verify_publisher(declaration, expected_declared_hash: bytes) -> None:
-    computed, _ = declaration_hash(declaration)
+def _parse_declaration(declaration_json: str):
+    if not isinstance(declaration_json, str):
+        raise VerifyError("decode_error", "declaration must be raw JSON text")
+    try:
+        return json.loads(declaration_json)
+    except json.JSONDecodeError as exc:
+        raise VerifyError("decode_error", f"declaration is not JSON: {exc}") from exc
+
+
+def verify_publisher(declaration_json: str, expected_declared_hash: bytes) -> None:
+    """Verify a declaration hash from raw text.
+
+    Text, not a parsed value, and the contract requires it of every SDK:
+    ``{"value":1.0}`` and ``{"value":1}`` have distinct canonical forms and
+    distinct hashes, and JavaScript's ``JSON.parse`` collapses both to ``1``.
+    Python's ``json`` preserves the distinction — taking text anyway is what keeps
+    the four SDKs honest about the same input.
+    """
+    computed, _ = declaration_hash(declaration_json)
     if computed != expected_declared_hash:
         raise VerifyError("declaration_hash_mismatch")
 
@@ -218,14 +238,17 @@ def verify_publisher(declaration, expected_declared_hash: bytes) -> None:
 # ---------------------------------------------------------------------------
 
 
-def verify_namespace(declaration, expected_declared_hash: bytes, claimed_namespace: str) -> None:
+def verify_namespace(
+    declaration_json: str, expected_declared_hash: bytes, claimed_namespace: str
+) -> None:
     """Verify a namespace claim's internal consistency.
 
     Read CONTRACT.md §4's scope limit: with no published signer_kid -> public-key
     mapping (OQ-2) and no live publisher-rights records, this does NOT prove
     operator-independent ownership.
     """
-    verify_publisher(declaration, expected_declared_hash)
+    verify_publisher(declaration_json, expected_declared_hash)
+    declaration = _parse_declaration(declaration_json)
     if not isinstance(declaration, dict) or "mcp_name" not in declaration:
         raise VerifyError("missing_field", "mcp_name")
     if declaration["mcp_name"] != claimed_namespace:

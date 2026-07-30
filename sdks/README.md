@@ -8,7 +8,7 @@ is decided by one harness running one set of vectors against all of them.
 |---|---|---|
 | Rust (reference) | [`crates/rcx-verify`](../crates/rcx-verify) | conformant — 52/52 |
 | Python | [`python/`](python) | conformant — 52/52 |
-| TypeScript | — | not started |
+| TypeScript | [`typescript/`](typescript) | conformant — 52/52 |
 | Go | — | not started |
 
 ## Running the harness
@@ -17,13 +17,14 @@ is decided by one harness running one set of vectors against all of them.
 cargo build -p rcx-verify --bin rcx-verify-adapter
 ./scripts/conformance-harness.py --adapter "./target/debug/rcx-verify-adapter"
 ./scripts/conformance-harness.py --adapter "python3 sdks/python/adapter.py"
+./scripts/conformance-harness.py --adapter "node sdks/typescript/adapter.mjs"
 ```
 
 Exit 0 conformant, 1 not conformant, 2 the harness could not run the check —
 that third case is deliberately distinct, because "we could not look" must never
 be reported as "we looked and it was fine".
 
-CI runs both on every change (`conformance` job). Cross-language reproducibility
+CI runs all three on every change (`conformance` job). Cross-language reproducibility
 is only a property if it is checked continuously; checked at release, it is a
 coincidence.
 

@@ -101,14 +101,17 @@ def build_checks() -> list[Check]:
     # --- verifyPublisher ----------------------------------------------------
     hashes = load("hashes.json")
     for case in hashes["declaration_hash"]["cases"]:
-        declaration = json.loads(case["input_json"])
+        # Send the raw document text. The vector's input_json IS the bytes a
+        # verifier would hold, and round-tripping it through a parser is exactly
+        # the lossy step CONTRACT.md §3 forbids.
+        declaration = case["input_json"]
         checks.append(
             Check(
                 "verifyPublisher",
                 case["id"],
                 {
                     "verb": "verifyPublisher",
-                    "declaration": declaration,
+                    "declarationJson": declaration,
                     "expectedDeclaredHashHex": case["digest_hex"],
                 },
                 True,
@@ -120,7 +123,7 @@ def build_checks() -> list[Check]:
                 case["id"] + "/tampered-digest",
                 {
                     "verb": "verifyPublisher",
-                    "declaration": declaration,
+                    "declarationJson": declaration,
                     "expectedDeclaredHashHex": flip_first_nibble(case["digest_hex"]),
                 },
                 False,

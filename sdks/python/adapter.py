@@ -90,10 +90,11 @@ def do_verify_snapshot(request: dict) -> dict:
 
 def do_verify_publisher(request: dict) -> dict:
     expected = unhex(request, "expectedDeclaredHashHex", 32)
-    if expected is None or "declaration" not in request:
-        return invalid("decode_error", "missing declaration or hash")
+    declaration = request.get("declarationJson")
+    if expected is None or not isinstance(declaration, str):
+        return invalid("decode_error", "missing declarationJson or hash")
     try:
-        verify_publisher(request["declaration"], expected)
+        verify_publisher(declaration, expected)
     except VerifyError as exc:
         return {"valid": False, "error": exc.code, "detail": exc.detail}
     return {"valid": True}
@@ -102,10 +103,11 @@ def do_verify_publisher(request: dict) -> dict:
 def do_verify_namespace(request: dict) -> dict:
     expected = unhex(request, "expectedDeclaredHashHex", 32)
     namespace = request.get("claimedNamespace")
-    if expected is None or "declaration" not in request or not isinstance(namespace, str):
+    declaration = request.get("declarationJson")
+    if expected is None or not isinstance(declaration, str) or not isinstance(namespace, str):
         return invalid("decode_error", "missing namespace inputs")
     try:
-        verify_namespace(request["declaration"], expected, namespace)
+        verify_namespace(declaration, expected, namespace)
     except VerifyError as exc:
         return {"valid": False, "error": exc.code, "detail": exc.detail}
     return {"valid": True}

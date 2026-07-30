@@ -218,17 +218,32 @@ pub fn verify_snapshot<E: SnapshotDigestEntry>(
 // 3. verifyPublisher
 // ---------------------------------------------------------------------------
 
-/// Recompute a publisher declaration's hash and compare (§3).
+/// Recompute a publisher declaration's hash from its **raw document text** and
+/// compare (§3).
+///
+/// Takes text, not a parsed value, and the contract requires that of every SDK:
+/// `{"value":1.0}` and `{"value":1}` have different canonical forms and different
+/// hashes, and a JavaScript caller's `JSON.parse` collapses both to the number
+/// `1`. Accepting a parsed value across the boundary would make the verb
+/// unimplementable in JS and silently wrong wherever parsers disagree. Rust's
+/// `serde_json` happens to preserve the distinction — taking text anyway is what
+/// keeps the four SDKs honest about the same input.
 pub fn verify_publisher(
-    declaration: &Value,
+    declaration_json: &str,
     expected_declared_hash: &[u8; HASH_LEN],
 ) -> Result<(), VerifyError> {
-    let (computed, _canonical) = rcx_registry_crown::declaration_hash(declaration);
+    let value = parse_declaration(declaration_json)?;
+    let (computed, _canonical) = rcx_registry_crown::declaration_hash(&value);
     if computed == *expected_declared_hash {
         Ok(())
     } else {
         Err(VerifyError::DeclarationHashMismatch)
     }
+}
+
+fn parse_declaration(declaration_json: &str) -> Result<Value, VerifyError> {
+    serde_json::from_str(declaration_json)
+        .map_err(|error| VerifyError::DecodeError(format!("declaration is not JSON: {error}")))
 }
 
 // ---------------------------------------------------------------------------
@@ -243,11 +258,12 @@ pub fn verify_publisher(
 /// publisher-rights records, so this establishes internal consistency of a claim,
 /// **not** operator-independent proof of ownership.
 pub fn verify_namespace(
-    declaration: &Value,
+    declaration_json: &str,
     expected_declared_hash: &[u8; HASH_LEN],
     claimed_namespace: &str,
 ) -> Result<(), VerifyError> {
-    verify_publisher(declaration, expected_declared_hash)?;
+    verify_publisher(declaration_json, expected_declared_hash)?;
+    let declaration = parse_declaration(declaration_json)?;
     match declaration.get("mcp_name").and_then(Value::as_str) {
         Some(name) if name == claimed_namespace => Ok(()),
         Some(_) => Err(VerifyError::NamespaceMismatch),
@@ -387,8 +403,11 @@ pub fn entry(
 
 #[cfg(test)]
 mod tests {
+    // The crate denies expect_used because a verification library must not panic
+    // on caller input. Fixtures in tests are not caller input.
+    #![allow(clippy::expect_used)]
+
     use super::*;
-    use serde_json::json;
 
     #[test]
     fn snapshot_root_mismatch_is_reported_not_panicked() {
@@ -403,18 +422,48 @@ mod tests {
 
     #[test]
     fn namespace_requires_the_declaration_to_name_it() {
-        let declaration = json!({"mcp_name": "example.com/mcp", "rcx_version": "1"});
-        let (hash, _) = rcx_registry_crown::declaration_hash(&declaration);
+        // Raw document text, as a verifier holds it (CONTRACT.md §3).
+        let declaration = r#"{"mcp_name":"example.com/mcp","rcx_version":"1"}"#;
+        let (hash, _) = rcx_registry_crown::declaration_hash(
+            &serde_json::from_str::<Value>(declaration).expect("fixture parses"),
+        );
 
         assert_eq!(
-            verify_namespace(&declaration, &hash, "example.com/mcp"),
+            verify_namespace(declaration, &hash, "example.com/mcp"),
             Ok(())
         );
         // Right hash, wrong namespace — a claim must not verify for a name it
         // does not carry.
         assert_eq!(
-            verify_namespace(&declaration, &hash, "attacker.com/mcp"),
+            verify_namespace(declaration, &hash, "attacker.com/mcp"),
             Err(VerifyError::NamespaceMismatch)
+        );
+    }
+
+    #[test]
+    fn integral_floats_and_integers_hash_differently() {
+        // The reason the API takes text: these are distinct vectors with distinct
+        // canonical forms, and a JS caller's JSON.parse renders both as `1`. If
+        // this ever starts passing with a parsed value across the boundary, the
+        // JS SDK has silently become wrong.
+        let float_form = r#"{"value":1.0}"#;
+        let int_form = r#"{"value":1}"#;
+
+        let (float_hash, float_canonical) = rcx_registry_crown::declaration_hash(
+            &serde_json::from_str::<Value>(float_form).expect("parses"),
+        );
+        let (int_hash, int_canonical) = rcx_registry_crown::declaration_hash(
+            &serde_json::from_str::<Value>(int_form).expect("parses"),
+        );
+
+        assert_eq!(float_canonical, r#"{"value":1.0}"#);
+        assert_eq!(int_canonical, r#"{"value":1}"#);
+        assert_ne!(float_hash, int_hash);
+
+        assert_eq!(verify_publisher(float_form, &float_hash), Ok(()));
+        assert_eq!(
+            verify_publisher(int_form, &float_hash),
+            Err(VerifyError::DeclarationHashMismatch)
         );
     }
 
