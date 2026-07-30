@@ -19,6 +19,35 @@ jobs:
       - name: Test
         run: cargo test --workspace
 
+  conformance:
+    # Every SDK runs the same vectors through the same harness. This is the
+    # cross-implementation reproducibility acceptance — the thing that makes
+    # "identical bytes across languages" a test rather than a hope — so it must
+    # run on every change, not on release.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@1.93.0
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+      - name: Install Python SDK dependencies
+        run: python -m pip install --disable-pip-version-check blake3 cryptography
+      - name: Build the Rust adapter
+        run: cargo build -p rcx-verify --bin rcx-verify-adapter
+      - name: Conformance — Rust reference SDK
+        run: ./scripts/conformance-harness.py --adapter "./target/debug/rcx-verify-adapter"
+      - name: Conformance — Python SDK
+        run: ./scripts/conformance-harness.py --adapter "python3 sdks/python/adapter.py"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install TypeScript SDK dependencies
+        run: npm ci --no-audit --no-fund
+        working-directory: sdks/typescript
+      - name: Conformance — TypeScript SDK
+        run: ./scripts/conformance-harness.py --adapter "node sdks/typescript/adapter.mjs"
+
   frontdoor:
     runs-on: ubuntu-latest
     steps:

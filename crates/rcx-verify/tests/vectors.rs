@@ -101,12 +101,13 @@ fn verify_publisher_reproduces_every_declaration_hash_vector() {
 
     for case in cases {
         let id = case["id"].as_str().unwrap_or("<unnamed>");
-        let input: Value = serde_json::from_str(case["input_json"].as_str().expect("input_json"))
-            .expect("input_json should parse");
+        // The raw document text, exactly as a verifier would hold it — not a
+        // parsed value. See CONTRACT.md §3.
+        let input = case["input_json"].as_str().expect("input_json");
         let expected = hex32(case["digest_hex"].as_str().expect("digest_hex"));
 
         assert_eq!(
-            verify_publisher(&input, &expected),
+            verify_publisher(input, &expected),
             Ok(()),
             "declaration case {id} should verify"
         );
@@ -114,7 +115,7 @@ fn verify_publisher_reproduces_every_declaration_hash_vector() {
         let mut tampered = expected;
         tampered[31] ^= 0x01;
         assert_eq!(
-            verify_publisher(&input, &tampered),
+            verify_publisher(input, &tampered),
             Err(VerifyError::DeclarationHashMismatch),
             "declaration case {id} verified against a tampered digest"
         );

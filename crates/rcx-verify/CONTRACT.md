@@ -63,21 +63,39 @@ the digest and MUST NOT be required of a caller.
 > a sorted set, **not** a Merkle tree — no inclusion proof is derivable from it
 > (OQ-4). Inclusion and consistency proofs are spec v2.
 
-## 3. `verifyPublisher(declaration, expectedDeclaredHash) -> ()`
+## 3. `verifyPublisher(declarationJson, expectedDeclaredHash) -> ()`
 
-Canonicalise `declaration` as canonical JSON (spec §3) and BLAKE3-256 it
+Canonicalise `declarationJson` as canonical JSON (spec §3) and BLAKE3-256 it
 (spec §4.4). Compare to `expectedDeclaredHash`; mismatch →
 `declaration_hash_mismatch`.
+
+**`declarationJson` is the raw document text, not a parsed object.** This is
+normative, and it is not a stylistic preference:
+
+- A verifier holds the bytes it fetched. The hash is over canonical JSON derived
+  from those bytes, so the bytes are the honest input.
+- Taking a parsed value would require every language to share JSON parse
+  semantics, and they do not. `{"value":1.0}` and `{"value":1}` are **distinct
+  vectors** with distinct canonical forms and distinct hashes, but
+  `JSON.parse` renders both as the number `1` — the int/float distinction that
+  Rust's `serde_json` and Python's `json` preserve is destroyed. An SDK handed a
+  parsed value cannot canonicalise correctly in JavaScript at all.
+
+An implementation MAY parse internally in whatever way preserves number literals
+exactly (Rust and Python parsers do; JavaScript needs `JSON.parse` source access
+or its own tokeniser). What it MUST NOT do is accept an already-parsed value
+across the API boundary and hope the caller's parser agreed with everyone else's.
 
 Canonical JSON sorts object keys by UTF-8 code-unit order, which differs from
 RFC 8785's UTF-16 order for astral-plane keys. That divergence is observed and
 frozen — an SDK that "corrects" it fails the `canonical-json.json` vectors.
 
-## 4. `verifyNamespace(binding) -> ()`
+## 4. `verifyNamespace(declarationJson, expectedDeclaredHash, claimedNamespace) -> ()`
 
 Verify that a server namespace is bound to the publisher passport that claims it:
-recompute the binding's declaration hash per §3 and confirm the declaration's
-`mcp_name` equals the namespace being claimed. Mismatch → `namespace_mismatch`.
+recompute the declaration hash per §3 (same raw-text rule) and confirm the
+declaration's `mcp_name` equals the namespace being claimed. Mismatch →
+`namespace_mismatch`.
 
 **Scope limit, stated plainly:** in spec v1 this is the *whole* of what a namespace
 claim can be verified against offline. There is no published mapping from
@@ -125,7 +143,14 @@ harness knows about a language.
 
 → {"verb":"verifySnapshot","entries":[{"name":"a/mcp","version":"1.0.0","canonicalJson":"{}"}],"expectedRootHex":"ab..."}
 ← {"valid":false,"error":"root_mismatch"}
+
+→ {"verb":"verifyPublisher","declarationJson":"{\"value\":1.0}","expectedDeclaredHashHex":"76..."}
+← {"valid":true}
 ```
+
+`declarationJson` is a **JSON string containing the raw document text** (§3), not a
+nested JSON object. The escaping is the point: `{"value":1.0}` and `{"value":1}`
+must reach the SDK distinguishable, and as nested objects they would not.
 
 Contract: hex is lowercase and unpadded; a malformed request is a response with
 `valid:false` and `error:"decode_error"`, never a crash or a non-zero exit. The

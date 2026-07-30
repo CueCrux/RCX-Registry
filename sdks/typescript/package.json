@@ -1,0 +1,14 @@
+{
+  "name": "@rcxprotocol/verify",
+  "version": "0.1.0",
+  "description": "Offline verification for the RCX protocol (rcx-spec/v1).",
+  "type": "module",
+  "license": "Apache-2.0",
+  "exports": { ".": { "types": "./index.d.ts", "default": "./index.mjs" } },
+  "files": ["index.mjs", "index.d.ts", "canonical.mjs", "README.md"],
+  "engines": { "node": ">=20" },
+  "dependencies": {
+    "@noble/hashes": "^2.2.0",
+    "@noble/curves": "^2.0.0"
+  }
+}
