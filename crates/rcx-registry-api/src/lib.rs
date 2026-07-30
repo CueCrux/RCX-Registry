@@ -15,11 +15,15 @@ use rcx_registry_admin::pop::{
 };
 use rcx_registry_admin::{
     build_publisher_rights_verified_receipt, classify_namespace, dns_txt_challenge,
-    publisher_rights_record, verify_dns_txt, verify_github_passport, AdminError, NamespaceKind,
-    PublisherRightsRecord, VerificationMethod,
+    publisher_rights_record, verify_dns_txt, verify_github_passport, verify_manual_review,
+    AdminError, NamespaceKind, PublisherRightsRecord, VerificationMethod,
 };
 use rcx_registry_crown::ULID_LEN;
-use rcx_registry_enrich::{attach_publisher_enrichment, PublisherEnrichmentRecord};
+use rcx_registry_enrich::{
+    attach_publisher_enrichment, build_entry_enriched_receipt, build_publisher_enrichment_payload,
+    build_publisher_enrichment_record, declaration_hash, validate_publisher_declaration_value,
+    PublisherEnrichmentRecord,
+};
 use rcx_registry_ingest::{ListServersRequest, RegistryServerEnvelope, RegistryServerListResponse};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
@@ -110,6 +114,10 @@ pub enum ApiError {
     VerificationFailed(String),
     #[error("feature unavailable: {0}")]
     Unavailable(&'static str),
+    #[error("unauthorized")]
+    Unauthorized,
+    #[error("too many requests")]
+    TooManyRequests,
     #[error("internal store error: {0}")]
     Store(String),
 }
@@ -121,6 +129,8 @@ impl ApiError {
             Self::InvalidCursor | Self::BadRequest(_) => StatusCode::BAD_REQUEST,
             Self::VerificationFailed(_) => StatusCode::UNPROCESSABLE_ENTITY,
             Self::Unavailable(_) => StatusCode::NOT_IMPLEMENTED,
+            Self::Unauthorized => StatusCode::UNAUTHORIZED,
+            Self::TooManyRequests => StatusCode::TOO_MANY_REQUESTS,
             Self::Store(_) => StatusCode::INTERNAL_SERVER_ERROR,
         }
     }
@@ -132,6 +142,8 @@ impl ApiError {
             Self::BadRequest(_) => "bad_request",
             Self::VerificationFailed(_) => "verification_failed",
             Self::Unavailable(_) => "unavailable",
+            Self::Unauthorized => "unauthorized",
+            Self::TooManyRequests => "too_many_requests",
             Self::Store(_) => "store_error",
         }
     }
@@ -183,6 +195,9 @@ pub struct ApiState {
     published_record_store: SharedPublishedRecordStore,
     pop_nonces: Arc<NonceStore>,
     oauth_states: Arc<OAuthStateStore>,
+    /// Operator bearer for `manual-verify`. `None` leaves the route unmounted.
+    operator_token: Option<Arc<String>>,
+    mutation_limiter: Arc<RateLimiter>,
 }
 
 impl ApiState {
@@ -196,6 +211,47 @@ impl ApiState {
             published_record_store: Arc::new(InMemoryPublishedRecordStore::default()),
             pop_nonces: Arc::new(NonceStore::new(DEFAULT_NONCE_TTL_MS)),
             oauth_states: Arc::new(OAuthStateStore::new(DEFAULT_NONCE_TTL_MS)),
+            operator_token: None,
+            mutation_limiter: Arc::new(RateLimiter::new(
+                DEFAULT_MUTATION_RATE_WINDOW_MS,
+                DEFAULT_MUTATION_RATE_MAX,
+            )),
+        }
+    }
+
+    pub fn with_operator_token(mut self, token: Option<String>) -> Self {
+        self.operator_token = token.filter(|t| !t.is_empty()).map(Arc::new);
+        self
+    }
+
+    pub fn operator_token_configured(&self) -> bool {
+        self.operator_token.is_some()
+    }
+
+    /// Constant-time bearer check. Absent config means the route is unmounted, so
+    /// reaching here without a token configured is a programming error, not a 401.
+    fn require_operator(&self, headers: &axum::http::HeaderMap) -> Result<(), ApiError> {
+        let expected = self
+            .operator_token
+            .as_ref()
+            .ok_or(ApiError::Unavailable("operator_token_not_configured"))?;
+        let presented = headers
+            .get(axum::http::header::AUTHORIZATION)
+            .and_then(|v| v.to_str().ok())
+            .and_then(|v| v.strip_prefix("Bearer "))
+            .unwrap_or("");
+        let a = presented.as_bytes();
+        let b = expected.as_bytes();
+        // Length is not secret; the comparison over content is constant-time.
+        let equal = a.len() == b.len()
+            && a.iter()
+                .zip(b.iter())
+                .fold(0u8, |acc, (x, y)| acc | (x ^ y))
+                == 0;
+        if equal {
+            Ok(())
+        } else {
+            Err(ApiError::Unauthorized)
         }
     }
 
@@ -297,6 +353,30 @@ pub struct DnsVerifyRequest {
     pub signature: String,
 }
 
+/// Restored under proof-of-possession (PR #8 removed the unauthenticated form).
+///
+/// The declaration's `publisher_passport` must equal the fingerprint proven here,
+/// so a caller can only declare for an identity they hold the key to.
+#[derive(Debug, Clone, PartialEq, Deserialize)]
+pub struct PublisherDeclareRequest {
+    pub server_name: String,
+    pub declared_uri: String,
+    pub declaration: Value,
+    pub passport_fingerprint: String,
+    pub public_key_hex: String,
+    pub nonce: String,
+    pub signature: String,
+}
+
+/// Restored as an operator-only route (PR #8 removed the unauthenticated form).
+#[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
+pub struct ManualVerifyRequest {
+    pub server_name: String,
+    pub publisher_passport: String,
+    pub reviewer_passport: String,
+    pub review_note: Option<String>,
+}
+
 #[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
 pub struct GitHubStartQuery {
     pub server_name: String,
@@ -325,7 +405,15 @@ pub fn router(store: SharedMirrorStore) -> Router {
 }
 
 pub fn router_with_state(state: ApiState) -> Router {
-    Router::new()
+    // manual-verify exists only when an operator bearer is configured. Unmounted is
+    // a stronger default than mounted-and-401: there is no route to probe.
+    let operator_routes = if state.operator_token_configured() {
+        Router::new().route("/v0/publisher-rights/manual-verify", post(manual_verify))
+    } else {
+        Router::new()
+    };
+    operator_routes
+        .merge(Router::new())
         .route("/v0/servers", get(list_servers))
         .route("/v0/servers/{server_name}/versions", get(list_versions))
         .route(
@@ -333,6 +421,7 @@ pub fn router_with_state(state: ApiState) -> Router {
             get(get_version),
         )
         .route("/publish", get(publish_onboarding_page))
+        .route("/v0/publishers/declare", post(declare_publisher_enrichment))
         .route("/v0/publisher-rights/dns-challenge", post(dns_challenge))
         .route("/v0/publisher-rights/dns-verify", post(dns_verify))
         .route("/v0/publisher-rights/github/start", get(github_oauth_start))
@@ -521,8 +610,12 @@ async fn publish_onboarding_page() -> Html<&'static str> {
 
 async fn dns_challenge(
     State(state): State<ApiState>,
+    headers: axum::http::HeaderMap,
     Json(body): Json<DnsChallengeRequest>,
 ) -> Result<Json<DnsChallengeResponse>, ApiError> {
+    state
+        .mutation_limiter
+        .check(now_ms(), &client_key(&headers))?;
     let claim = classify_namespace(&body.server_name)?;
     let NamespaceKind::ReverseDns { domain } = &claim.kind else {
         return Err(ApiError::BadRequest(
@@ -559,8 +652,12 @@ async fn dns_challenge(
 
 async fn dns_verify(
     State(state): State<ApiState>,
+    headers: axum::http::HeaderMap,
     Json(body): Json<DnsVerifyRequest>,
 ) -> Result<(StatusCode, Json<PublisherRightsRecord>), ApiError> {
+    state
+        .mutation_limiter
+        .check(now_ms(), &client_key(&headers))?;
     let record = spawn_store(move || {
         let claim = classify_namespace(&body.server_name)?;
         let NamespaceKind::ReverseDns { domain } = &claim.kind else {
@@ -568,6 +665,19 @@ async fn dns_verify(
                 "dns txt verification only applies to reverse-dns namespaces".to_string(),
             ));
         };
+        // The label must be a deterministic function of the proven namespace, not a
+        // free string. Otherwise a caller who legitimately controls evil.com could
+        // file a rights row under `passport:dns:victim.com`. This mirrors what
+        // `verify_github_passport` already enforces for GitHub namespaces, and keeps
+        // the identity inside the published `passport:<kind>:<id>` schema pattern.
+        let expected_label = format!("passport:dns:{domain}");
+        if body.publisher_passport != expected_label {
+            return Err(ApiError::VerificationFailed(format!(
+                "publisher_passport must be `{expected_label}` for namespace `{}`",
+                claim.namespace
+            )));
+        }
+
         // Fact (2): spend the nonce first, so a failed attempt cannot be retried
         // against the same live challenge.
         state.pop_nonces.consume(
@@ -697,6 +807,146 @@ async fn github_oauth_callback(
     Ok((StatusCode::CREATED, Json(record)))
 }
 
+/// Operator-only. Mounted only when `RCX_REGISTRY_OPERATOR_TOKEN` is configured,
+/// and additionally restricted to the tailnet at the edge — the same treatment as
+/// `/metrics` and `/readyz`. The bearer comparison is constant-time.
+async fn manual_verify(
+    State(state): State<ApiState>,
+    headers: axum::http::HeaderMap,
+    Json(body): Json<ManualVerifyRequest>,
+) -> Result<(StatusCode, Json<PublisherRightsRecord>), ApiError> {
+    state.require_operator(&headers)?;
+    let record = spawn_store(move || {
+        if body.reviewer_passport.trim().is_empty() {
+            return Err(ApiError::BadRequest(
+                "reviewer_passport must not be empty".to_string(),
+            ));
+        }
+        let claim = classify_namespace(&body.server_name)?;
+        verify_manual_review(&claim)?;
+        // Server-owned, as everywhere else.
+        let record = build_verified_rights_record(
+            &claim,
+            &body.publisher_passport,
+            VerificationMethod::Manual,
+            now_ms(),
+        );
+        state.publisher_rights_store.upsert(record.clone())?;
+        Ok(record)
+    })
+    .await?;
+    Ok((StatusCode::CREATED, Json(record)))
+}
+
+async fn declare_publisher_enrichment(
+    State(state): State<ApiState>,
+    headers: axum::http::HeaderMap,
+    Json(body): Json<PublisherDeclareRequest>,
+) -> Result<(StatusCode, Json<PublisherEnrichmentRecord>), ApiError> {
+    state
+        .mutation_limiter
+        .check(now_ms(), &client_key(&headers))?;
+    let record = spawn_store(move || {
+        let claim = classify_namespace(&body.server_name)?;
+
+        // Authenticate the caller as the holder of `passport_fingerprint` before
+        // reading anything from the declaration body.
+        state.pop_nonces.consume(
+            now_ms(),
+            &body.nonce,
+            &NonceBinding {
+                server_name: claim.server_name.clone(),
+                passport_fpr: body.passport_fingerprint.clone(),
+                public_key_hex: body.public_key_hex.clone(),
+            },
+        )?;
+        verify_pop(
+            &body.nonce,
+            &claim.server_name,
+            &body.passport_fingerprint,
+            &body.public_key_hex,
+            &body.signature,
+        )?;
+
+        let declaration =
+            validate_publisher_declaration_value(&body.declaration, Some(&body.server_name))
+                .map_err(|error| ApiError::BadRequest(error.to_string()))?;
+
+        // PoP alone proves only that the caller holds *some* key. Re-verify domain
+        // control, or any keyholder could declare against an existing rights row.
+        let NamespaceKind::ReverseDns { domain } = &claim.kind else {
+            return Err(ApiError::BadRequest(
+                "declarations currently require a reverse-dns namespace".to_string(),
+            ));
+        };
+        let dns_challenge_record = dns_txt_challenge(domain, &body.passport_fingerprint);
+        let observed = state
+            .dns_resolver
+            .lookup_txt(&dns_challenge_record.record_name)?;
+        verify_dns_txt(&claim, &body.passport_fingerprint, &observed)?;
+
+        // The declaration cannot speak for an identity the caller has not proven.
+        let expected_label = format!("passport:dns:{domain}");
+        if declaration.publisher_passport != expected_label {
+            return Err(ApiError::VerificationFailed(format!(
+                "declaration names publisher `{}` but this namespace requires `{expected_label}`",
+                declaration.publisher_passport
+            )));
+        }
+
+        let rights = state
+            .publisher_rights_store
+            .lookup(&declaration.publisher_passport, &claim.namespace)?
+            .ok_or_else(|| {
+                ApiError::VerificationFailed(format!(
+                    "publisher passport `{}` has no verified rights for namespace `{}`",
+                    declaration.publisher_passport, claim.namespace
+                ))
+            })?;
+
+        let (declared_hash, _canonical_json) = declaration_hash(&body.declaration);
+        let payload = build_publisher_enrichment_payload(
+            &declaration,
+            &body.declared_uri,
+            &declared_hash,
+            &rights.verification_method,
+            None,
+        );
+        let prior = state.publisher_enrichment_store.get(&body.server_name)?;
+        let prior_hash_bytes = prior
+            .as_ref()
+            .and_then(|record| parse_blake3_prefixed_hash(&record.block.enrichment_receipt_hash));
+        let receipt = build_entry_enriched_receipt(
+            &body.server_name,
+            &declaration,
+            &body.declared_uri,
+            declared_hash,
+            &payload,
+            derived_event_id(&format!(
+                "{}:{}:{}:{}",
+                body.server_name,
+                declaration.publisher_passport,
+                body.declared_uri,
+                declaration.declared_at
+            )),
+            DEFAULT_PUBLISHER_SIGNER_KID,
+            prior_hash_bytes,
+        )
+        .map_err(|error| ApiError::BadRequest(error.to_string()))?;
+        let record = build_publisher_enrichment_record(
+            &body.server_name,
+            &declaration,
+            &payload,
+            &receipt.receipt_hash,
+            prior.map(|record| record.block.enrichment_receipt_hash),
+        );
+        state.publisher_enrichment_store.upsert(record.clone())?;
+        Ok(record)
+    })
+    .await?;
+    Ok((StatusCode::CREATED, Json(record)))
+}
+
 async fn list_publisher_rights(
     State(state): State<ApiState>,
     Path(publisher_passport): Path<String>,
@@ -792,6 +1042,83 @@ fn now_ms() -> u64 {
         .duration_since(UNIX_EPOCH)
         .unwrap_or_default()
         .as_millis() as u64
+}
+
+fn parse_blake3_prefixed_hash(value: &str) -> Option<[u8; 32]> {
+    let hex_value = value.strip_prefix("blake3:").unwrap_or(value);
+    let bytes = hex::decode(hex_value).ok()?;
+    if bytes.len() != 32 {
+        return None;
+    }
+    let mut out = [0u8; 32];
+    out.copy_from_slice(&bytes);
+    Some(out)
+}
+
+/// Fixed-window per-client limits for publisher mutations.
+///
+/// The edge cannot do this: Caddy 2.11.4 on the API host is the stock binary with
+/// no `rate_limit` module, so opening public write routes without an app-tier limit
+/// would leave them unbounded. Fixed-window is deliberately simple — it is a flood
+/// brake, not a fairness mechanism.
+pub const DEFAULT_MUTATION_RATE_WINDOW_MS: u64 = 60_000;
+pub const DEFAULT_MUTATION_RATE_MAX: u32 = 20;
+
+struct RateWindow {
+    started_at_ms: u64,
+    count: u32,
+}
+
+pub struct RateLimiter {
+    window_ms: u64,
+    max: u32,
+    windows: Mutex<BTreeMap<String, RateWindow>>,
+}
+
+impl RateLimiter {
+    pub fn new(window_ms: u64, max: u32) -> Self {
+        Self {
+            window_ms,
+            max,
+            windows: Mutex::new(BTreeMap::new()),
+        }
+    }
+
+    /// Count one request from `client`. `Err(TooManyRequests)` once over budget.
+    pub fn check(&self, now_ms: u64, client: &str) -> Result<(), ApiError> {
+        let mut guard = self
+            .windows
+            .lock()
+            .map_err(|_| ApiError::Store("rate limiter mutex poisoned".to_string()))?;
+        // Bound memory: drop windows that have fully elapsed.
+        guard.retain(|_, w| now_ms.saturating_sub(w.started_at_ms) < self.window_ms);
+        let entry = guard.entry(client.to_string()).or_insert(RateWindow {
+            started_at_ms: now_ms,
+            count: 0,
+        });
+        if now_ms.saturating_sub(entry.started_at_ms) >= self.window_ms {
+            entry.started_at_ms = now_ms;
+            entry.count = 0;
+        }
+        entry.count = entry.count.saturating_add(1);
+        if entry.count > self.max {
+            return Err(ApiError::TooManyRequests);
+        }
+        Ok(())
+    }
+}
+
+/// Client identity for rate limiting: the edge sets `X-Forwarded-For`, and the
+/// left-most entry is the original client. Falls back to a single shared bucket
+/// rather than to no limit at all.
+fn client_key(headers: &axum::http::HeaderMap) -> String {
+    headers
+        .get("x-forwarded-for")
+        .and_then(|v| v.to_str().ok())
+        .and_then(|v| v.split(',').next())
+        .map(|v| v.trim().to_string())
+        .filter(|v| !v.is_empty())
+        .unwrap_or_else(|| "unknown".to_string())
 }
 
 /// 32 bytes of OS entropy, hex-encoded, for challenge nonces and OAuth state.
@@ -2016,27 +2343,201 @@ mod tests {
         assert_eq!(response.status(), StatusCode::UNPROCESSABLE_ENTITY);
     }
 
-    #[tokio::test]
-    async fn declare_route_is_not_publicly_mounted_and_cannot_write_enrichment() {
-        let state = publisher_state_with_verified_rights();
-        let enrichment_store = state.publisher_enrichment_store.clone();
-        let app = router_with_state(state);
-        let declaration = serde_json::from_str::<serde_json::Value>(include_str!(
+    /// State whose rights row is keyed by the PoP-authenticated fingerprint, which
+    /// is what `declare` now requires.
+    fn declare_state(label: &str) -> ApiState {
+        let rights_store = Arc::new(InMemoryPublisherRightsStore::default());
+        rights_store
+            .upsert(PublisherRightsRecord {
+                publisher_passport: label.to_string(),
+                namespace: "io.example.com".to_string(),
+                server_name: "io.example.com/document-proofer".to_string(),
+                verification_method: "dns_txt".to_string(),
+                verified_at: 1_776_683_200_000,
+                receipt_hash: format!("blake3:{}", "11".repeat(32)),
+            })
+            .expect("seed rights");
+        let (_, fixture_fpr, _) = publisher_keypair(11);
+        let mut dns_records = BTreeMap::new();
+        dns_records.insert("_rcx-registry.example.com".to_string(), vec![fixture_fpr]);
+        ApiState::new(store())
+            .with_publisher_rights_store(rights_store)
+            .with_publisher_enrichment_store(Arc::new(InMemoryPublisherEnrichmentStore::default()))
+            .with_dns_resolver(Arc::new(InMemoryDnsTxtResolver::new(dns_records)))
+    }
+
+    /// A declaration naming `fpr` as its publisher, for `io.example.com`.
+    fn declaration_for(label: &str) -> serde_json::Value {
+        let mut declaration = serde_json::from_str::<serde_json::Value>(include_str!(
             "../../../fixtures/examples/rcx-enrichment.valid.json"
         ))
         .expect("fixture should parse");
+        declaration["mcp_name"] = json!("io.example.com/document-proofer");
+        declaration["publisher_passport"] = json!(label);
+        declaration
+    }
 
-        let response = app
+    async fn post_declare(app: &axum::Router, body: serde_json::Value) -> StatusCode {
+        app.clone()
             .oneshot(
                 Request::builder()
                     .method("POST")
                     .uri("/v0/publishers/declare")
                     .header("content-type", "application/json")
                     .body(Body::from(
+                        serde_json::to_vec(&body).expect("json body should serialize"),
+                    ))
+                    .expect("request should build"),
+            )
+            .await
+            .expect("request should succeed")
+            .status()
+    }
+
+    #[tokio::test]
+    async fn declare_requires_proof_of_possession_and_then_succeeds() {
+        let (key, fpr, pk) = publisher_keypair(11);
+        let app = router_with_state(declare_state("passport:dns:example.com"));
+        let nonce = issue_dns_nonce(&app, &fpr, &pk).await;
+        let sig = sign_challenge(&key, &nonce, "io.example.com/document-proofer", &fpr);
+
+        assert_eq!(
+            post_declare(
+                &app,
+                json!({
+                    "server_name": "io.example.com/document-proofer",
+                    "declared_uri": "https://example.com/.rcx/document-proofer.rcx.json",
+                    "declaration": declaration_for("passport:dns:example.com"),
+                    "passport_fingerprint": fpr,
+                    "public_key_hex": pk,
+                    "nonce": nonce,
+                    "signature": sig
+                })
+            )
+            .await,
+            StatusCode::CREATED
+        );
+    }
+
+    /// The identity gap this route depends on being closed: a caller who genuinely
+    /// holds key B must not be able to declare on behalf of publisher A.
+    #[tokio::test]
+    async fn declare_rejects_a_declaration_naming_another_publisher() {
+        let (key, fpr, pk) = publisher_keypair(11);
+        let app = router_with_state(declare_state("passport:dns:example.com"));
+        let nonce = issue_dns_nonce(&app, &fpr, &pk).await;
+        let sig = sign_challenge(&key, &nonce, "io.example.com/document-proofer", &fpr);
+
+        assert_eq!(
+            post_declare(
+                &app,
+                json!({
+                    "server_name": "io.example.com/document-proofer",
+                    "declared_uri": "https://example.com/.rcx/document-proofer.rcx.json",
+                    // Domain-verified for example.com, but naming another publisher.
+                    "declaration": declaration_for("passport:dns:victim.com"),
+                    "passport_fingerprint": fpr,
+                    "public_key_hex": pk,
+                    "nonce": nonce,
+                    "signature": sig
+                })
+            )
+            .await,
+            StatusCode::UNPROCESSABLE_ENTITY
+        );
+    }
+
+    #[tokio::test]
+    async fn declare_rejects_a_forged_nonce() {
+        let (key, fpr, pk) = publisher_keypair(11);
+        let app = router_with_state(declare_state("passport:dns:example.com"));
+        let forged = "ab".repeat(32);
+        let sig = sign_challenge(&key, &forged, "io.example.com/document-proofer", &fpr);
+
+        assert_eq!(
+            post_declare(
+                &app,
+                json!({
+                    "server_name": "io.example.com/document-proofer",
+                    "declared_uri": "https://example.com/.rcx/document-proofer.rcx.json",
+                    "declaration": declaration_for("passport:dns:example.com"),
+                    "passport_fingerprint": fpr,
+                    "public_key_hex": pk,
+                    "nonce": forged,
+                    "signature": sig
+                })
+            )
+            .await,
+            StatusCode::UNPROCESSABLE_ENTITY
+        );
+    }
+
+    #[tokio::test]
+    async fn declare_rejects_a_publisher_with_no_verified_rights() {
+        // Authenticated fine, but holds no rights over the namespace.
+        let (key, fpr, pk) = publisher_keypair(11);
+        let app = router_with_state(declare_state("passport:dns:someone-else.com"));
+        let nonce = issue_dns_nonce(&app, &fpr, &pk).await;
+        let sig = sign_challenge(&key, &nonce, "io.example.com/document-proofer", &fpr);
+
+        assert_eq!(
+            post_declare(
+                &app,
+                json!({
+                    "server_name": "io.example.com/document-proofer",
+                    "declared_uri": "https://example.com/.rcx/document-proofer.rcx.json",
+                    "declaration": declaration_for("passport:dns:example.com"),
+                    "passport_fingerprint": fpr,
+                    "public_key_hex": pk,
+                    "nonce": nonce,
+                    "signature": sig
+                })
+            )
+            .await,
+            StatusCode::UNPROCESSABLE_ENTITY
+        );
+    }
+
+    /// A caller who genuinely controls example.com must not be able to file the
+    /// rights row under someone else's passport label.
+    #[tokio::test]
+    async fn dns_verify_rejects_a_publisher_label_that_does_not_match_the_domain() {
+        let app = router_with_state(publisher_state());
+        let (key, fpr, pk) = publisher_keypair(11);
+        let nonce = issue_dns_nonce(&app, &fpr, &pk).await;
+        let sig = sign_challenge(&key, &nonce, "io.example.com/document-proofer", &fpr);
+
+        assert_eq!(
+            dns_verify_status(
+                &app,
+                json!({
+                    "server_name": "io.example.com/document-proofer",
+                    "publisher_passport": "passport:dns:victim.com",
+                    "passport_fingerprint": fpr,
+                    "public_key_hex": pk,
+                    "nonce": nonce,
+                    "signature": sig
+                })
+            )
+            .await,
+            StatusCode::UNPROCESSABLE_ENTITY
+        );
+    }
+
+    #[tokio::test]
+    async fn manual_verify_is_unmounted_without_an_operator_token() {
+        let app = router_with_state(publisher_state());
+        let response = app
+            .oneshot(
+                Request::builder()
+                    .method("POST")
+                    .uri("/v0/publisher-rights/manual-verify")
+                    .header("content-type", "application/json")
+                    .body(Body::from(
                         serde_json::to_vec(&json!({
                             "server_name": "io.github.example-org/document-proofer",
-                            "declared_uri": "https://example.org/.rcx/document-proofer.rcx.json",
-                            "declaration": declaration
+                            "publisher_passport": "passport:github:example-org",
+                            "reviewer_passport": "passport:operator:me"
                         }))
                         .expect("json body should serialize"),
                     ))
@@ -2044,12 +2545,89 @@ mod tests {
             )
             .await
             .expect("request should succeed");
+        // Unmounted, not 401 — there is no route to probe.
+        assert_eq!(response.status(), StatusCode::NOT_FOUND);
+    }
 
-        assert_eq!(response.status(), StatusCode::METHOD_NOT_ALLOWED);
-        assert!(enrichment_store
-            .get("io.github.example-org/document-proofer")
-            .expect("enrichment lookup should succeed")
-            .is_none());
+    async fn post_manual_verify(app: &axum::Router, bearer: Option<&str>) -> StatusCode {
+        let mut builder = Request::builder()
+            .method("POST")
+            .uri("/v0/publisher-rights/manual-verify")
+            .header("content-type", "application/json");
+        if let Some(token) = bearer {
+            builder = builder.header("authorization", format!("Bearer {token}"));
+        }
+        app.clone()
+            .oneshot(
+                builder
+                    .body(Body::from(
+                        serde_json::to_vec(&json!({
+                            "server_name": "io.github.example-org/document-proofer",
+                            "publisher_passport": "passport:github:example-org",
+                            "reviewer_passport": "passport:operator:me"
+                        }))
+                        .expect("json body should serialize"),
+                    ))
+                    .expect("request should build"),
+            )
+            .await
+            .expect("request should succeed")
+            .status()
+    }
+
+    #[tokio::test]
+    async fn manual_verify_requires_the_operator_bearer() {
+        let app = router_with_state(
+            publisher_state().with_operator_token(Some("operator-secret".to_string())),
+        );
+        assert_eq!(
+            post_manual_verify(&app, None).await,
+            StatusCode::UNAUTHORIZED
+        );
+        assert_eq!(
+            post_manual_verify(&app, Some("wrong")).await,
+            StatusCode::UNAUTHORIZED
+        );
+        assert_eq!(
+            post_manual_verify(&app, Some("operator-secret")).await,
+            StatusCode::CREATED
+        );
+    }
+
+    #[tokio::test]
+    async fn mutations_are_rate_limited_per_client() {
+        let (_, fpr, pk) = publisher_keypair(11);
+        let app = router_with_state(publisher_state());
+        let mut saw_429 = false;
+        for _ in 0..(super::DEFAULT_MUTATION_RATE_MAX + 2) {
+            let status = app
+                .clone()
+                .oneshot(
+                    Request::builder()
+                        .method("POST")
+                        .uri("/v0/publisher-rights/dns-challenge")
+                        .header("content-type", "application/json")
+                        .header("x-forwarded-for", "203.0.113.9")
+                        .body(Body::from(
+                            serde_json::to_vec(&json!({
+                                "server_name": "io.example.com/document-proofer",
+                                "publisher_passport": "passport:dns:example.com",
+                                "passport_fingerprint": fpr,
+                                "public_key_hex": pk
+                            }))
+                            .expect("json body should serialize"),
+                        ))
+                        .expect("request should build"),
+                )
+                .await
+                .expect("request should succeed")
+                .status();
+            if status == StatusCode::TOO_MANY_REQUESTS {
+                saw_429 = true;
+                break;
+            }
+        }
+        assert!(saw_429, "limiter should reject once over budget");
     }
 
     #[test]
