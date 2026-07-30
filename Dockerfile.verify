@@ -1,0 +1,41 @@
+# The `rcx` verification image.
+#
+# Runtime carries the binary and nothing else — no shell, no package manager, no
+# interpreter. A verification tool is a thing people run against untrusted input
+# in CI, so the smaller the runtime surface the better, and there is nothing in
+# here to pivot into.
+#
+# Base-image note (workspace policy prefers Chainguard): the runtime is
+# Chainguard's glibc-dynamic, rebuilt daily with zero known CVEs. The *builder*
+# stays on the official Rust image because Chainguard's Rust builder is not in the
+# free Developer tier, and the toolchain must match rust-toolchain.toml (1.93.0)
+# exactly or the build diverges from CI. Builder contents never reach the runtime.
+
+FROM rust:1.93.0-bookworm AS builder
+
+WORKDIR /build
+
+# Copy the manifests and vendored spec first so dependency resolution caches
+# independently of source edits.
+COPY Cargo.toml Cargo.lock rust-toolchain.toml ./
+COPY crates ./crates
+
+# Only the CLI and its dependency closure — the registry server, its Postgres
+# driver and its HTTP stack are not part of a verifier.
+RUN cargo build --release --locked -p rcx-cli
+
+FROM cgr.dev/chainguard/glibc-dynamic:latest
+
+# OCI labels so `docker inspect` answers "what is this and where did it come
+# from" without a README.
+LABEL org.opencontainers.image.title="rcx verify"
+LABEL org.opencontainers.image.description="Offline verification for the RCX protocol (rcx-spec/v1)."
+LABEL org.opencontainers.image.source="https://github.com/CueCrux/RCX-Registry"
+LABEL org.opencontainers.image.licenses="Apache-2.0"
+
+COPY --from=builder /build/target/release/rcx /usr/bin/rcx
+
+# Runs as the base image's non-root user (65532). Verification never needs to
+# write anywhere, so there is no reason to hand it more.
+ENTRYPOINT ["/usr/bin/rcx"]
+CMD ["--help"]

@@ -1,0 +1,7 @@
+[
+  {
+    "name": "io.example/alpha",
+    "version": "1.0.0",
+    "canonical_json": "{\"$schema\":\"https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json\",\"name\":\"io.example/alpha\",\"payload\":{\"n\":1},\"version\":\"1.0.0\"}"
+  }
+]

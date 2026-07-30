@@ -1,0 +1,71 @@
+name: 'RCX Verify'
+description: 'Verify RCX protocol artifacts — receipts, snapshots, publisher declarations, namespaces, chains — offline.'
+author: 'CueCrux'
+
+branding:
+  icon: 'check-circle'
+  color: 'blue'
+
+inputs:
+  subject:
+    description: 'What to verify: receipt | snapshot | declaration | namespace | chain'
+    required: true
+  file:
+    description: 'Path to the artifact, relative to the workspace.'
+    required: true
+  key:
+    description: 'ed25519 public key as hex, or @path to read it from a file. Required for receipt and chain.'
+    required: false
+    default: ''
+  root:
+    description: 'Expected 32-byte snapshot root, hex. Required for snapshot.'
+    required: false
+    default: ''
+  hash:
+    description: 'Expected 32-byte declaration hash, hex. Required for declaration and namespace.'
+    required: false
+    default: ''
+  namespace:
+    description: 'The namespace a declaration is claimed to own. Required for namespace.'
+    required: false
+    default: ''
+  kind:
+    description: 'Chain link rule: snapshot | entry-enriched. Required for chain, never inferred.'
+    required: false
+    default: ''
+  json:
+    description: 'Emit machine-readable output.'
+    required: false
+    default: 'false'
+
+# A Docker action rather than a composite one: the runtime is the same zero-CVE
+# Chainguard image with no shell that ships as the verification container, so the
+# action and the image cannot drift apart, and the runner needs no Rust toolchain.
+#
+# Each flag is passed as its own argv entry with the flag name gated on the input
+# being set. Unset inputs arrive as empty strings, which `rcx` skips — that is why
+# it must, because assembling argv conditionally would otherwise need a shell the
+# image does not have.
+#
+# The step FAILS when verification fails, which is the point of putting it in CI.
+# `rcx` separates exit 1 ("did not verify") from exit 2 ("could not run the
+# check"); both fail the step, but the log says which, so a mistyped path is never
+# mistaken for a bad signature.
+runs:
+  using: 'docker'
+  image: 'Dockerfile.verify'
+  args:
+    - 'verify'
+    - ${{ inputs.subject }}
+    - ${{ inputs.file }}
+    - ${{ inputs.key && '--key' || '' }}
+    - ${{ inputs.key }}
+    - ${{ inputs.root && '--root' || '' }}
+    - ${{ inputs.root }}
+    - ${{ inputs.hash && '--hash' || '' }}
+    - ${{ inputs.hash }}
+    - ${{ inputs.namespace && '--name' || '' }}
+    - ${{ inputs.namespace }}
+    - ${{ inputs.kind && '--kind' || '' }}
+    - ${{ inputs.kind }}
+    - ${{ inputs.json == 'true' && '--json' || '' }}

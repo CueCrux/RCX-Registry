@@ -1,0 +1,26 @@
+[package]
+name = "rcx-cli"
+description = "Command-line verification for the RCX protocol (rcx-spec/v1)."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+
+# Same dependency discipline as the SDK: no HTTP client, no TLS stack, no async
+# runtime. `rcx` verifies bytes you already have — if it could fetch, it could be
+# fooled into fetching from the party it is supposed to be checking.
+#
+# Argument parsing is hand-rolled rather than pulling clap. Four subcommands do
+# not justify a parser crate in a tool whose whole pitch is "small enough to
+# audit".
+[dependencies]
+hex.workspace = true
+rcx-verify = { path = "../rcx-verify" }
+serde_json.workspace = true
+
+[dev-dependencies]
+blake3.workspace = true
+
+[[bin]]
+name = "rcx"
+path = "src/main.rs"
