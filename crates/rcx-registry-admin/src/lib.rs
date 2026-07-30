@@ -1,5 +1,7 @@
 //! Internal onboarding and moderation helpers.
 
+pub mod pop;
+
 use rcx_registry_crown::{PublisherRightsVerifiedReceipt, ReceiptDocument, HASH_LEN, ULID_LEN};
 use serde::{Deserialize, Serialize};
 use thiserror::Error;

@@ -9,6 +9,10 @@ use axum::response::{Html, IntoResponse, Redirect, Response};
 use axum::routing::{get, post};
 use axum::{Json, Router};
 use http::StatusCode;
+use rcx_registry_admin::pop::{
+    check_fingerprint, verify_pop, NonceBinding, NonceStore, OAuthStateBinding, OAuthStateStore,
+    PopError, DEFAULT_NONCE_TTL_MS,
+};
 use rcx_registry_admin::{
     build_publisher_rights_verified_receipt, classify_namespace, dns_txt_challenge,
     publisher_rights_record, verify_dns_txt, verify_github_passport, AdminError, NamespaceKind,
@@ -133,6 +137,21 @@ impl ApiError {
     }
 }
 
+impl From<PopError> for ApiError {
+    fn from(value: PopError) -> Self {
+        match value {
+            // A caller presenting a mismatched key, a bad signature, or a spent
+            // nonce has failed verification, not sent a malformed request.
+            PopError::FingerprintMismatch { .. }
+            | PopError::BadSignature
+            | PopError::UnknownNonce
+            | PopError::NonceBindingMismatch => Self::VerificationFailed(value.to_string()),
+            PopError::StorePoisoned => Self::Store(value.to_string()),
+            _ => Self::BadRequest(value.to_string()),
+        }
+    }
+}
+
 impl From<AdminError> for ApiError {
     fn from(value: AdminError) -> Self {
         match value {
@@ -162,6 +181,8 @@ pub struct ApiState {
     dns_resolver: SharedDnsTxtResolver,
     github_oauth_provider: SharedGitHubOAuthProvider,
     published_record_store: SharedPublishedRecordStore,
+    pop_nonces: Arc<NonceStore>,
+    oauth_states: Arc<OAuthStateStore>,
 }
 
 impl ApiState {
@@ -173,6 +194,8 @@ impl ApiState {
             dns_resolver: Arc::new(UnavailableDnsTxtResolver),
             github_oauth_provider: Arc::new(UnavailableGitHubOAuthProvider),
             published_record_store: Arc::new(InMemoryPublishedRecordStore::default()),
+            pop_nonces: Arc::new(NonceStore::new(DEFAULT_NONCE_TTL_MS)),
+            oauth_states: Arc::new(OAuthStateStore::new(DEFAULT_NONCE_TTL_MS)),
         }
     }
 
@@ -241,6 +264,8 @@ pub struct IncludeDeletedQuery {
 
 #[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
 pub struct DnsChallengeRequest {
+    /// Ed25519 verifying key whose fingerprint must equal `passport_fingerprint`.
+    pub public_key_hex: String,
     pub server_name: String,
     pub publisher_passport: String,
     pub passport_fingerprint: String,
@@ -254,6 +279,9 @@ pub struct DnsChallengeResponse {
     pub verification_method: &'static str,
     pub record_name: String,
     pub expected_value: String,
+    /// Single-use nonce the caller must sign to prove key possession.
+    pub nonce: String,
+    pub nonce_expires_at: u64,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
@@ -261,7 +289,12 @@ pub struct DnsVerifyRequest {
     pub server_name: String,
     pub publisher_passport: String,
     pub passport_fingerprint: String,
-    pub verified_at: Option<u64>,
+    /// Ed25519 verifying key whose fingerprint must equal `passport_fingerprint`.
+    pub public_key_hex: String,
+    /// Nonce issued by `dns-challenge`. Single-use.
+    pub nonce: String,
+    /// Signature over `challenge_signing_bytes(nonce, server_name, passport_fingerprint)`.
+    pub signature: String,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
@@ -269,7 +302,6 @@ pub struct GitHubStartQuery {
     pub server_name: String,
     pub publisher_passport: String,
     pub redirect_uri: String,
-    pub state: String,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
@@ -277,8 +309,9 @@ pub struct GitHubCallbackQuery {
     pub server_name: String,
     pub publisher_passport: String,
     pub code: String,
+    /// Must be a `state` this server issued via `github/start`. Single-use.
     pub state: String,
-    pub verified_at: Option<u64>,
+    pub redirect_uri: String,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
@@ -487,6 +520,7 @@ async fn publish_onboarding_page() -> Html<&'static str> {
 }
 
 async fn dns_challenge(
+    State(state): State<ApiState>,
     Json(body): Json<DnsChallengeRequest>,
 ) -> Result<Json<DnsChallengeResponse>, ApiError> {
     let claim = classify_namespace(&body.server_name)?;
@@ -495,6 +529,21 @@ async fn dns_challenge(
             "dns txt verification only applies to reverse-dns namespaces".to_string(),
         ));
     };
+    // Refuse to issue a challenge for a fingerprint the caller cannot own: the
+    // fingerprint must be derived from the key they present.
+    check_fingerprint(&body.passport_fingerprint, &body.public_key_hex)?;
+
+    let nonce = fresh_nonce()?;
+    let nonce_expires_at = state.pop_nonces.issue(
+        now_ms(),
+        &nonce,
+        NonceBinding {
+            server_name: claim.server_name.clone(),
+            passport_fpr: body.passport_fingerprint.clone(),
+            public_key_hex: body.public_key_hex.clone(),
+        },
+    )?;
+
     let challenge = dns_txt_challenge(domain, &body.passport_fingerprint);
     Ok(Json(DnsChallengeResponse {
         publisher_passport: body.publisher_passport,
@@ -503,6 +552,8 @@ async fn dns_challenge(
         verification_method: VerificationMethod::DnsTxt.as_str(),
         record_name: challenge.record_name,
         expected_value: challenge.expected_value,
+        nonce,
+        nonce_expires_at,
     }))
 }
 
@@ -517,11 +568,33 @@ async fn dns_verify(
                 "dns txt verification only applies to reverse-dns namespaces".to_string(),
             ));
         };
+        // Fact (2): spend the nonce first, so a failed attempt cannot be retried
+        // against the same live challenge.
+        state.pop_nonces.consume(
+            now_ms(),
+            &body.nonce,
+            &NonceBinding {
+                server_name: claim.server_name.clone(),
+                passport_fpr: body.passport_fingerprint.clone(),
+                public_key_hex: body.public_key_hex.clone(),
+            },
+        )?;
+        verify_pop(
+            &body.nonce,
+            &claim.server_name,
+            &body.passport_fingerprint,
+            &body.public_key_hex,
+            &body.signature,
+        )?;
+
+        // Fact (3): the domain names that same fingerprint.
         let challenge = dns_txt_challenge(domain, &body.passport_fingerprint);
         let observed_values = state.dns_resolver.lookup_txt(&challenge.record_name)?;
         verify_dns_txt(&claim, &body.passport_fingerprint, &observed_values)?;
 
-        let verified_at = body.verified_at.unwrap_or_else(now_ms);
+        // Server-owned: a caller must not be able to backdate its own record,
+        // because this timestamp is signed into the receipt.
+        let verified_at = now_ms();
         let record = build_verified_rights_record(
             &claim,
             &body.publisher_passport,
@@ -551,10 +624,23 @@ async fn github_oauth_start(
         }
     };
 
+    // Server-issued, single-use, bound to (server_name, passport, redirect_uri).
+    // A caller-chosen state is the CSRF hole this closes.
+    let oauth_state = fresh_nonce()?;
+    state.oauth_states.issue(
+        now_ms(),
+        &oauth_state,
+        OAuthStateBinding {
+            server_name: claim.server_name.clone(),
+            publisher_passport: query.publisher_passport.clone(),
+            redirect_uri: query.redirect_uri.clone(),
+        },
+    )?;
+
     let authorize_url =
         state
             .github_oauth_provider
-            .authorize_url(owner, &query.redirect_uri, &query.state)?;
+            .authorize_url(owner, &query.redirect_uri, &oauth_state)?;
     Ok(Redirect::temporary(&authorize_url))
 }
 
@@ -575,6 +661,17 @@ async fn github_oauth_callback(
             }
         };
 
+        // Reject any state this server did not issue for exactly this flow.
+        state.oauth_states.consume(
+            now_ms(),
+            &query.state,
+            &OAuthStateBinding {
+                server_name: claim.server_name.clone(),
+                publisher_passport: query.publisher_passport.clone(),
+                redirect_uri: query.redirect_uri.clone(),
+            },
+        )?;
+
         // `exchange_code` uses a blocking reqwest client, so it must run off the
         // async runtime here alongside the sync store write (see spawn_store).
         let resolved_owner = state
@@ -586,7 +683,7 @@ async fn github_oauth_callback(
             )));
         }
 
-        let verified_at = query.verified_at.unwrap_or_else(now_ms);
+        let verified_at = now_ms();
         let record = build_verified_rights_record(
             &claim,
             &query.publisher_passport,
@@ -695,6 +792,17 @@ fn now_ms() -> u64 {
         .duration_since(UNIX_EPOCH)
         .unwrap_or_default()
         .as_millis() as u64
+}
+
+/// 32 bytes of OS entropy, hex-encoded, for challenge nonces and OAuth state.
+///
+/// Deliberately not derived from a ULID or the clock: both are predictable, and a
+/// guessable nonce or state defeats the replay and CSRF protections entirely.
+fn fresh_nonce() -> Result<String, ApiError> {
+    let mut bytes = [0u8; 32];
+    getrandom::getrandom(&mut bytes)
+        .map_err(|e| ApiError::Store(format!("could not obtain entropy: {e}")))?;
+    Ok(hex::encode(bytes))
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -1060,9 +1168,11 @@ mod tests {
             &self,
             _owner: &str,
             _redirect_uri: &str,
-            _state: &str,
+            state: &str,
         ) -> Result<String, super::ApiError> {
-            Ok(self.authorize_url.clone())
+            // Echo the state the way a real provider round-trips it, so tests can
+            // recover the server-issued value.
+            Ok(format!("{}&state={}", self.authorize_url, state))
         }
 
         fn exchange_code(&self, _code: &str, _state: &str) -> Result<String, super::ApiError> {
@@ -1125,12 +1235,64 @@ mod tests {
         ]))
     }
 
+    /// A deterministic publisher keypair: (signing key, passport fingerprint, pubkey hex).
+    fn publisher_keypair(seed: u8) -> (ed25519_dalek::SigningKey, String, String) {
+        let key = ed25519_dalek::SigningKey::from_bytes(&[seed; 32]);
+        let public = key.verifying_key().to_bytes();
+        (
+            key,
+            rcx_registry_admin::pop::passport_fpr_from_public_key(&public),
+            hex::encode(public),
+        )
+    }
+
+    /// Drive `dns-challenge` and return the nonce it issued.
+    async fn issue_dns_nonce(app: &axum::Router, fpr: &str, public_key_hex: &str) -> String {
+        let response = app
+            .clone()
+            .oneshot(
+                Request::builder()
+                    .method("POST")
+                    .uri("/v0/publisher-rights/dns-challenge")
+                    .header("content-type", "application/json")
+                    .body(Body::from(
+                        serde_json::to_vec(&json!({
+                            "server_name": "io.example.com/document-proofer",
+                            "publisher_passport": "passport:dns:example.com",
+                            "passport_fingerprint": fpr,
+                            "public_key_hex": public_key_hex
+                        }))
+                        .expect("json body should serialize"),
+                    ))
+                    .expect("request should build"),
+            )
+            .await
+            .expect("request should succeed");
+        assert_eq!(response.status(), StatusCode::OK);
+        let body = to_bytes(response.into_body(), usize::MAX)
+            .await
+            .expect("body should read");
+        let json: serde_json::Value = serde_json::from_slice(&body).expect("body should be json");
+        json["nonce"].as_str().expect("nonce present").to_string()
+    }
+
+    fn sign_challenge(
+        key: &ed25519_dalek::SigningKey,
+        nonce: &str,
+        server_name: &str,
+        fpr: &str,
+    ) -> String {
+        use ed25519_dalek::Signer;
+        let msg = rcx_registry_admin::pop::challenge_signing_bytes(nonce, server_name, fpr);
+        hex::encode(key.sign(&msg).to_bytes())
+    }
+
     fn publisher_state() -> ApiState {
+        // The TXT record must carry the real derived fingerprint — that is the
+        // domain-control half of the proof.
+        let (_, fpr, _) = publisher_keypair(11);
         let mut dns_records = BTreeMap::new();
-        dns_records.insert(
-            "_rcx-registry.example.com".to_string(),
-            vec!["fingerprint:abc123".to_string()],
-        );
+        dns_records.insert("_rcx-registry.example.com".to_string(), vec![fpr]);
 
         ApiState::new(store())
             .with_publisher_rights_store(Arc::new(InMemoryPublisherRightsStore::default()))
@@ -1368,6 +1530,7 @@ mod tests {
     #[tokio::test]
     async fn dns_challenge_route_returns_expected_record_name() {
         let app = router_with_state(publisher_state());
+        let (_, fpr, pk) = publisher_keypair(11);
 
         let response = app
             .oneshot(
@@ -1379,7 +1542,8 @@ mod tests {
                         serde_json::to_vec(&json!({
                             "server_name": "io.example.com/document-proofer",
                             "publisher_passport": "passport:dns:example.com",
-                            "passport_fingerprint": "fingerprint:abc123"
+                            "passport_fingerprint": fpr,
+                            "public_key_hex": pk
                         }))
                         .expect("json body should serialize"),
                     ))
@@ -1395,11 +1559,21 @@ mod tests {
         let json: serde_json::Value = serde_json::from_slice(&body).expect("body should be json");
         assert_eq!(json["record_name"], "_rcx-registry.example.com");
         assert_eq!(json["verification_method"], "dns_txt");
+        // The TXT value the publisher must set is the fingerprint itself.
+        assert_eq!(json["expected_value"], fpr);
+        assert_eq!(
+            json["nonce"].as_str().expect("nonce issued").len(),
+            64,
+            "nonce should be 32 bytes of hex"
+        );
     }
 
     #[tokio::test]
     async fn dns_verify_route_persists_verified_namespace() {
         let app = router_with_state(publisher_state());
+        let (key, fpr, pk) = publisher_keypair(11);
+        let nonce = issue_dns_nonce(&app, &fpr, &pk).await;
+        let sig = sign_challenge(&key, &nonce, "io.example.com/document-proofer", &fpr);
 
         let response = app
             .clone()
@@ -1412,8 +1586,10 @@ mod tests {
                         serde_json::to_vec(&json!({
                             "server_name": "io.example.com/document-proofer",
                             "publisher_passport": "passport:dns:example.com",
-                            "passport_fingerprint": "fingerprint:abc123",
-                            "verified_at": 1776683200000u64
+                            "passport_fingerprint": fpr,
+                            "public_key_hex": pk,
+                            "nonce": nonce,
+                            "signature": sig
                         }))
                         .expect("json body should serialize"),
                     ))
@@ -1429,6 +1605,11 @@ mod tests {
         let json: serde_json::Value = serde_json::from_slice(&body).expect("body should be json");
         assert_eq!(json["namespace"], "io.example.com");
         assert_eq!(json["verification_method"], "dns_txt");
+        // Server-owned timestamp: must be a real clock value, not a caller's.
+        assert!(
+            json["verified_at"].as_u64().expect("verified_at present") > 1_700_000_000_000,
+            "verified_at should be server-generated"
+        );
 
         let list_response = app
             .clone()
@@ -1484,7 +1665,7 @@ mod tests {
         let response = app
             .oneshot(
                 Request::builder()
-                    .uri("/v0/publisher-rights/github/start?server_name=io.github.example-org%2Fdocument-proofer&publisher_passport=passport:github:example-org&redirect_uri=https%3A%2F%2Fregistry.rcxprotocol.org%2Fv0%2Fpublisher-rights%2Fgithub%2Fcallback&state=test-state")
+                    .uri("/v0/publisher-rights/github/start?server_name=io.github.example-org%2Fdocument-proofer&publisher_passport=passport:github:example-org&redirect_uri=https%3A%2F%2Fregistry.rcxprotocol.org%2Fv0%2Fpublisher-rights%2Fgithub%2Fcallback")
                     .body(Body::empty())
                     .expect("request should build"),
             )
@@ -1492,23 +1673,31 @@ mod tests {
             .expect("request should succeed");
 
         assert_eq!(response.status(), StatusCode::TEMPORARY_REDIRECT);
-        assert_eq!(
-            response
-                .headers()
-                .get("location")
-                .and_then(|value| value.to_str().ok()),
-            Some("https://github.com/login/oauth/authorize?client_id=test")
-        );
+        let location = response
+            .headers()
+            .get("location")
+            .and_then(|value| value.to_str().ok())
+            .expect("redirect location present");
+        assert!(location.starts_with("https://github.com/login/oauth/authorize?client_id=test"));
+        // The state must be server-issued entropy, not anything the caller chose.
+        let state = location
+            .split("&state=")
+            .nth(1)
+            .expect("state echoed in redirect");
+        assert_eq!(state.len(), 64, "state should be 32 bytes of hex");
     }
 
     #[tokio::test]
     async fn github_callback_route_records_verified_owner() {
         let app = router_with_state(publisher_state());
+        let redirect_uri = "https://registry.rcxprotocol.org/v0/publisher-rights/github/callback";
+        let state = github_start_state(&app, redirect_uri).await;
 
         let response = app
+            .clone()
             .oneshot(
                 Request::builder()
-                    .uri("/v0/publisher-rights/github/callback?server_name=io.github.example-org%2Fdocument-proofer&publisher_passport=passport:github:example-org&code=abc123&state=test-state&verified_at=1776683200000")
+                    .uri(format!("/v0/publisher-rights/github/callback?server_name=io.github.example-org%2Fdocument-proofer&publisher_passport=passport:github:example-org&code=abc123&state={state}&redirect_uri=https%3A%2F%2Fregistry.rcxprotocol.org%2Fv0%2Fpublisher-rights%2Fgithub%2Fcallback"))
                     .body(Body::empty())
                     .expect("request should build"),
             )
@@ -1522,6 +1711,309 @@ mod tests {
         let json: serde_json::Value = serde_json::from_slice(&body).expect("body should be json");
         assert_eq!(json["verification_method"], "github_oauth");
         assert_eq!(json["namespace"], "io.github.example-org");
+        assert!(
+            json["verified_at"].as_u64().expect("verified_at") > 1_700_000_000_000,
+            "verified_at should be server-generated"
+        );
+    }
+
+    /// Run `github/start` and recover the server-issued `state`.
+    async fn github_start_state(app: &axum::Router, redirect_uri: &str) -> String {
+        let encoded = redirect_uri.replace(':', "%3A").replace('/', "%2F");
+        let response = app
+            .clone()
+            .oneshot(
+                Request::builder()
+                    .uri(format!("/v0/publisher-rights/github/start?server_name=io.github.example-org%2Fdocument-proofer&publisher_passport=passport:github:example-org&redirect_uri={encoded}"))
+                    .body(Body::empty())
+                    .expect("request should build"),
+            )
+            .await
+            .expect("request should succeed");
+        assert_eq!(response.status(), StatusCode::TEMPORARY_REDIRECT);
+        response
+            .headers()
+            .get("location")
+            .and_then(|v| v.to_str().ok())
+            .expect("location")
+            .split("&state=")
+            .nth(1)
+            .expect("state")
+            .to_string()
+    }
+
+    /// Post a dns-verify body and return the status.
+    async fn dns_verify_status(app: &axum::Router, body: serde_json::Value) -> StatusCode {
+        app.clone()
+            .oneshot(
+                Request::builder()
+                    .method("POST")
+                    .uri("/v0/publisher-rights/dns-verify")
+                    .header("content-type", "application/json")
+                    .body(Body::from(
+                        serde_json::to_vec(&body).expect("json body should serialize"),
+                    ))
+                    .expect("request should build"),
+            )
+            .await
+            .expect("request should succeed")
+            .status()
+    }
+
+    #[tokio::test]
+    async fn dns_verify_rejects_a_replayed_nonce() {
+        let app = router_with_state(publisher_state());
+        let (key, fpr, pk) = publisher_keypair(11);
+        let nonce = issue_dns_nonce(&app, &fpr, &pk).await;
+        let sig = sign_challenge(&key, &nonce, "io.example.com/document-proofer", &fpr);
+        let body = json!({
+            "server_name": "io.example.com/document-proofer",
+            "publisher_passport": "passport:dns:example.com",
+            "passport_fingerprint": fpr,
+            "public_key_hex": pk,
+            "nonce": nonce,
+            "signature": sig
+        });
+
+        assert_eq!(
+            dns_verify_status(&app, body.clone()).await,
+            StatusCode::CREATED
+        );
+        // Byte-identical replay must fail closed.
+        assert_eq!(
+            dns_verify_status(&app, body).await,
+            StatusCode::UNPROCESSABLE_ENTITY
+        );
+    }
+
+    #[tokio::test]
+    async fn dns_verify_rejects_a_nonce_that_was_never_issued() {
+        let app = router_with_state(publisher_state());
+        let (key, fpr, pk) = publisher_keypair(11);
+        let forged = "00".repeat(32);
+        let sig = sign_challenge(&key, &forged, "io.example.com/document-proofer", &fpr);
+
+        assert_eq!(
+            dns_verify_status(
+                &app,
+                json!({
+                    "server_name": "io.example.com/document-proofer",
+                    "publisher_passport": "passport:dns:example.com",
+                    "passport_fingerprint": fpr,
+                    "public_key_hex": pk,
+                    "nonce": forged,
+                    "signature": sig
+                })
+            )
+            .await,
+            StatusCode::UNPROCESSABLE_ENTITY
+        );
+    }
+
+    /// The core threat: an observer reads the public TXT record and tries to claim
+    /// the namespace with their own key. Domain control alone must not be enough.
+    #[tokio::test]
+    async fn dns_verify_rejects_an_attacker_key_against_a_public_txt_record() {
+        let app = router_with_state(publisher_state());
+        let (_, victim_fpr, _) = publisher_keypair(11);
+        let (attacker_key, attacker_fpr, attacker_pk) = publisher_keypair(99);
+
+        // The attacker can see the TXT value (it names the victim's fingerprint),
+        // and holds a perfectly valid key of their own — just not the victim's.
+        let nonce = issue_dns_nonce(&app, &attacker_fpr, &attacker_pk).await;
+        let sig = sign_challenge(
+            &attacker_key,
+            &nonce,
+            "io.example.com/document-proofer",
+            &attacker_fpr,
+        );
+        assert_ne!(attacker_fpr, victim_fpr);
+
+        // Fails at fact (3): the domain does not name the attacker's fingerprint.
+        assert_eq!(
+            dns_verify_status(
+                &app,
+                json!({
+                    "server_name": "io.example.com/document-proofer",
+                    "publisher_passport": "passport:dns:example.com",
+                    "passport_fingerprint": attacker_fpr,
+                    "public_key_hex": attacker_pk,
+                    "nonce": nonce,
+                    "signature": sig
+                })
+            )
+            .await,
+            StatusCode::UNPROCESSABLE_ENTITY
+        );
+    }
+
+    /// The mirror-image threat: the attacker names the victim's fingerprint (which
+    /// the TXT record does authorise) but cannot sign for it.
+    #[tokio::test]
+    async fn dns_challenge_rejects_claiming_a_fingerprint_you_hold_no_key_for() {
+        let app = router_with_state(publisher_state());
+        let (_, victim_fpr, _) = publisher_keypair(11);
+        let (_, _, attacker_pk) = publisher_keypair(99);
+
+        let response = app
+            .oneshot(
+                Request::builder()
+                    .method("POST")
+                    .uri("/v0/publisher-rights/dns-challenge")
+                    .header("content-type", "application/json")
+                    .body(Body::from(
+                        serde_json::to_vec(&json!({
+                            "server_name": "io.example.com/document-proofer",
+                            "publisher_passport": "passport:dns:example.com",
+                            "passport_fingerprint": victim_fpr,
+                            "public_key_hex": attacker_pk
+                        }))
+                        .expect("json body should serialize"),
+                    ))
+                    .expect("request should build"),
+            )
+            .await
+            .expect("request should succeed");
+
+        // Refused at issue time — no challenge is even handed out.
+        assert_eq!(response.status(), StatusCode::UNPROCESSABLE_ENTITY);
+    }
+
+    #[tokio::test]
+    async fn dns_verify_rejects_a_signature_over_a_different_server_name() {
+        let app = router_with_state(publisher_state());
+        let (key, fpr, pk) = publisher_keypair(11);
+        let nonce = issue_dns_nonce(&app, &fpr, &pk).await;
+        // Signed for a different server_name than the one being claimed.
+        let sig = sign_challenge(&key, &nonce, "io.example.com/some-other-server", &fpr);
+
+        assert_eq!(
+            dns_verify_status(
+                &app,
+                json!({
+                    "server_name": "io.example.com/document-proofer",
+                    "publisher_passport": "passport:dns:example.com",
+                    "passport_fingerprint": fpr,
+                    "public_key_hex": pk,
+                    "nonce": nonce,
+                    "signature": sig
+                })
+            )
+            .await,
+            StatusCode::UNPROCESSABLE_ENTITY
+        );
+    }
+
+    #[tokio::test]
+    async fn dns_verify_ignores_a_caller_supplied_verified_at() {
+        let app = router_with_state(publisher_state());
+        let (key, fpr, pk) = publisher_keypair(11);
+        let nonce = issue_dns_nonce(&app, &fpr, &pk).await;
+        let sig = sign_challenge(&key, &nonce, "io.example.com/document-proofer", &fpr);
+
+        let response = app
+            .clone()
+            .oneshot(
+                Request::builder()
+                    .method("POST")
+                    .uri("/v0/publisher-rights/dns-verify")
+                    .header("content-type", "application/json")
+                    .body(Body::from(
+                        serde_json::to_vec(&json!({
+                            "server_name": "io.example.com/document-proofer",
+                            "publisher_passport": "passport:dns:example.com",
+                            "passport_fingerprint": fpr,
+                            "public_key_hex": pk,
+                            "nonce": nonce,
+                            "signature": sig,
+                            // Backdating attempt — the field no longer exists on the
+                            // request type, so it must not influence the record.
+                            "verified_at": 1_000_000_000_000u64
+                        }))
+                        .expect("json body should serialize"),
+                    ))
+                    .expect("request should build"),
+            )
+            .await
+            .expect("request should succeed");
+
+        assert_eq!(response.status(), StatusCode::CREATED);
+        let body = to_bytes(response.into_body(), usize::MAX)
+            .await
+            .expect("body should read");
+        let json: serde_json::Value = serde_json::from_slice(&body).expect("body should be json");
+        assert_ne!(json["verified_at"].as_u64(), Some(1_000_000_000_000));
+        assert!(json["verified_at"].as_u64().expect("verified_at") > 1_700_000_000_000);
+    }
+
+    #[tokio::test]
+    async fn github_callback_rejects_an_attacker_chosen_state() {
+        let app = router_with_state(publisher_state());
+
+        // No github/start was performed — this state was invented by the caller.
+        let response = app
+            .oneshot(
+                Request::builder()
+                    .uri("/v0/publisher-rights/github/callback?server_name=io.github.example-org%2Fdocument-proofer&publisher_passport=passport:github:example-org&code=abc123&state=attacker-chosen&redirect_uri=https%3A%2F%2Fregistry.rcxprotocol.org%2Fv0%2Fpublisher-rights%2Fgithub%2Fcallback")
+                    .body(Body::empty())
+                    .expect("request should build"),
+            )
+            .await
+            .expect("request should succeed");
+
+        assert_eq!(response.status(), StatusCode::UNPROCESSABLE_ENTITY);
+    }
+
+    #[tokio::test]
+    async fn github_callback_rejects_a_replayed_state() {
+        let app = router_with_state(publisher_state());
+        let redirect_uri = "https://registry.rcxprotocol.org/v0/publisher-rights/github/callback";
+        let state = github_start_state(&app, redirect_uri).await;
+        let uri = format!("/v0/publisher-rights/github/callback?server_name=io.github.example-org%2Fdocument-proofer&publisher_passport=passport:github:example-org&code=abc123&state={state}&redirect_uri=https%3A%2F%2Fregistry.rcxprotocol.org%2Fv0%2Fpublisher-rights%2Fgithub%2Fcallback");
+
+        let first = app
+            .clone()
+            .oneshot(
+                Request::builder()
+                    .uri(uri.clone())
+                    .body(Body::empty())
+                    .expect("request should build"),
+            )
+            .await
+            .expect("request should succeed");
+        assert_eq!(first.status(), StatusCode::CREATED);
+
+        let replay = app
+            .clone()
+            .oneshot(
+                Request::builder()
+                    .uri(uri)
+                    .body(Body::empty())
+                    .expect("request should build"),
+            )
+            .await
+            .expect("request should succeed");
+        assert_eq!(replay.status(), StatusCode::UNPROCESSABLE_ENTITY);
+    }
+
+    #[tokio::test]
+    async fn github_callback_rejects_a_swapped_redirect_uri() {
+        let app = router_with_state(publisher_state());
+        let redirect_uri = "https://registry.rcxprotocol.org/v0/publisher-rights/github/callback";
+        let state = github_start_state(&app, redirect_uri).await;
+
+        // Same valid state, different redirect target.
+        let response = app
+            .oneshot(
+                Request::builder()
+                    .uri(format!("/v0/publisher-rights/github/callback?server_name=io.github.example-org%2Fdocument-proofer&publisher_passport=passport:github:example-org&code=abc123&state={state}&redirect_uri=https%3A%2F%2Fevil.example%2Fcb"))
+                    .body(Body::empty())
+                    .expect("request should build"),
+            )
+            .await
+            .expect("request should succeed");
+
+        assert_eq!(response.status(), StatusCode::UNPROCESSABLE_ENTITY);
     }
 
     #[tokio::test]
