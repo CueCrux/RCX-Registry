@@ -27,7 +27,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      # Must request the same components as rust-toolchain.toml. Without this the
+      # minimal profile lands first and the mid-build component sync fails with
+      # "detected conflict: bin/cargo-fmt".
       - uses: dtolnay/rust-toolchain@1.93.0
+        with:
+          components: clippy, rustfmt
       - uses: actions/setup-python@v7
         with:
           python-version: '3.12'
