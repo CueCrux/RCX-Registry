@@ -6,6 +6,8 @@ license.workspace = true
 description = "Internal onboarding and moderation tools for RCX-Registry."
 
 [dependencies]
+blake3.workspace = true
+ed25519-dalek.workspace = true
 hex.workspace = true
 rcx-registry-crown = { path = "../rcx-registry-crown" }
 serde.workspace = true
