@@ -216,6 +216,24 @@ const incidents = [
           <NuxtLink to="/verify" class="text-[var(--acc)] underline">See how verification works →</NuxtLink>
         </p>
       </div>
+
+      <div class="glass-panel px-6 py-6 mt-4">
+        <p class="text-ink2 max-w-[74ch]">
+          <strong class="text-ink">Does the 2026-07-28 MCP revision change this?</strong>
+          No. That revision is a change to the MCP <em>protocol</em> — it removed protocol-level
+          sessions and the initialization handshake for clients talking to servers. The
+          <em>registry</em> API this mirrors is versioned separately, so the
+          <span class="font-mono">/v0</span> response envelope, the canonical encodings, and the
+          <span class="font-mono">rcx-spec/v1</span> receipt formats are unaffected. A server’s
+          protocol revision is a property of that server, not of the registry that lists it.
+          <a
+            class="text-[var(--acc)] underline"
+            href="https://modelcontextprotocol.io/specification/2026-07-28/changelog"
+            rel="noopener noreferrer"
+            target="_blank"
+          >Read the protocol changelog →</a>
+        </p>
+      </div>
     </section>
 
     <!-- ================= closing CTA ================= -->
