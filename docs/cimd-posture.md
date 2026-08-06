@@ -1,10 +1,16 @@
 # Posture: Client ID Metadata Documents
 
-**Status:** Proposed — awaiting operator sign-off. No code, no wire change.
-**Date:** 2026-08-03
+**Status:** **Accepted** (operator, 2026-08-04) — attest, do not compete. CIMD first as a proving
+ground, then Stage B citations. No code or wire change in this document.
+**Date:** 2026-08-03 · **Decided:** 2026-08-04
 **Context:** MCP revision `2026-07-28` deprecates OAuth Dynamic Client Registration in favour of
 Client ID Metadata Documents.
-**Recommendation:** **Attest, do not compete.**
+**Implementation home:** ExecPlan `domain-index-source-authority-signal-2026-07-08` (currently
+Parked) — CIMD lands there as a new stage, not as a parallel plan.
+
+> **Why this was accepted is not primarily the security argument below.** The deciding factor was
+> that CIMD observations are a direct input to the CueCrux **domain index**, which already exists
+> to weight data by where it came from. See [§ Relationship to the domain index](#relationship-to-the-domain-index).
 
 ---
 
@@ -80,7 +86,7 @@ standard, and asks clients to adopt a non-standard identifier for a problem CIMD
 adequately at the moment of authorization. Our differentiator has never been *establishing* identity;
 it is making history over that identity verifiable.
 
-### C. Attest — snapshot and receipt CIMDs the way we do registry entries · **RECOMMENDED**
+### C. Attest — snapshot and receipt CIMDs the way we do registry entries · **ACCEPTED**
 
 Treat a CIMD as another artifact whose *history* deserves tamper-evidence:
 
@@ -99,6 +105,58 @@ an authorization server would consult an attestation.
 
 **Cost of being wrong is low**: if nobody wants it, we have published some observations nobody reads.
 Nothing on the wire changes for existing verifiers.
+
+## Relationship to the domain index
+
+This is the reason the decision went the way it did, and it is stronger than the security argument
+above.
+
+CueCrux already runs a **domain index** that weights data by its source. On Engine `main` (the
+ExecPlan describes it as living on `Development`; it has since landed on `main`):
+
+- [`098_domain_directory.sql`](../../Engine/src/db/migrations/098_domain_directory.sql) —
+  `domain_directory(host, authority_tier, risk_bucket, jurisdiction, licence_id, robots_policy, …)`
+- the same migration — `domain_directory_signals(observed_at, diagnostics jsonb, …)`
+
+`domain_directory_signals` is already a *"what we observed about this host, and when"* time series.
+A CIMD attestation produces exactly `(host, observed_at, what-we-saw)`. **It lands there with no
+schema change**, and canonicalise → hash → receipt is the same operation whether the input is a
+CIMD or an external citation URL. The machinery is shared, not merely analogous.
+
+### What CIMD does *not* buy: coverage
+
+Recorded because the opposite is the intuitive conclusion and it is wrong.
+
+CIMDs identify MCP **client applications** — a population of dozens to hundreds, and skewed
+entirely toward AI-tooling vendors. The domain index exists to rank corpus data, which needs news,
+academic, government and reference domains. The overlap is close to zero.
+
+So collecting *every* CIMD rather than *some* barely changes the index's usefulness: the ceiling is
+low either way. The usual "more data is better" reasoning does not apply, because the constraint is
+population, not sample size.
+
+**Where the volume actually is:** Stage B of the domain-index plan — Wikipedia's external citations
+(URL / DOI / ISBN), stripped at ingest today. Millions of domains, and the thing that would
+genuinely move ranking.
+
+### So the dogfood is pipeline, not data
+
+CIMD is a small, live, external, adversarially-interesting stream where *change over time is the
+signal*. That makes it an ideal proving ground for the observe → receipt → diff machinery, with no
+corpus risk and no 27.7M-chunk re-ingest. Build it there, prove it, then point the same machinery at
+Stage B where the data is.
+
+### Phasing — and what needs an RFC
+
+The RFC obligation splits, which is what makes starting cheap:
+
+| Phase | What it does | RFC required? |
+|---|---|---|
+| **1** | Observe CIMDs, write `(host, observed_at, diagnostics)` into `domain_directory_signals` | **No** — a private Engine table, nothing on the RCX wire |
+| **2** | Publish signed CIMD attestations as a verifiable public artifact | **Yes** — a new receipt type is a wire change per [`rfcs/README.md`](../rfcs/README.md) |
+
+Phase 1 can begin immediately. Phase 2 keeps the full RFC discipline: exact bytes, hashing inputs,
+conformance vectors.
 
 ## Why deciding now is cheap
 
