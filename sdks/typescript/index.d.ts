@@ -73,9 +73,10 @@ export declare function declarationHash(declarationJson: string): {
 };
 
 /**
- * Verifies a namespace claim's internal consistency only. With no published
- * signer_kid -> public-key mapping (OQ-2) this does NOT prove
- * operator-independent ownership — see CONTRACT.md §4.
+ * Verifies a namespace claim's internal consistency only. With no live
+ * publisher-rights records this does NOT prove operator-independent
+ * ownership — see CONTRACT.md §4. Key publication (spec v1 §5.6.1) does not
+ * change that; the missing piece is publisher-rights records, not a key.
  */
 export declare function verifyNamespace(
   declarationJson: string,

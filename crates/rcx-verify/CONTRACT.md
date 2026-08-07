@@ -43,6 +43,25 @@ NOT require the caller to name the receipt type.
 
 Returns `{ receiptHash, signerKid }` so a caller can chain without re-decoding.
 
+**Where a caller gets these inputs for a live registry.** The verb stays offline
+— the *caller* fetches, the verb never does (§0). Against a production registry
+the two inputs come from:
+
+| Input | Source |
+|---|---|
+| `signedCanonicalCbor` | `GET /v0/snapshots/latest` → the signed receipt as canonical-CBOR hex |
+| `publicKey` | `GET /.well-known/rcx-keys.json` → the entry whose `signer_kid` **equals** the receipt's `signer_kid` (spec v1 §5.6.1) |
+
+Select the key by `signer_kid`, never by position, and treat that endpoint's
+`status` as load-bearing: `unsigned` (200) is a settled "no key exists",
+`unavailable` (503) is retryable and **MUST NOT** be read as `unsigned`. A
+receipt signed under a since-rotated key has no published key to match and does
+not verify — key history is `rcx-spec/v2`, not v1.
+
+That is enough to verify a real production receipt end-to-end without trusting
+the operator. `verifySnapshot` (§2) then checks the entry set that receipt's
+root digests, fetched from `GET /v0/snapshots/{id}/entries`.
+
 > Note (OQ-1, spec §5.3): steps 3 and 4 hash **different** preimages. Using one
 > for both is the defect that shipped in this repository once already and went
 > undetected because no code path called the verifier. Conformance requires the
@@ -98,12 +117,18 @@ declaration's `mcp_name` equals the namespace being claimed. Mismatch →
 `namespace_mismatch`.
 
 **Scope limit, stated plainly:** in spec v1 this is the *whole* of what a namespace
-claim can be verified against offline. There is no published mapping from
-`signer_kid` to a public key (OQ-2), and production currently publishes zero
+claim can be verified against offline, and production currently publishes zero
 passport and zero publisher-rights records — `/v0/passports` and `/v0/projects`
 both return `count: 0` because unauthenticated publisher writes fail closed. So
 this verb is conformant but thin until publisher rights reopen, and an SDK MUST
 NOT imply it proves operator-independent namespace ownership. It does not.
+
+**What key publication did and did not change.** The registry now publishes its
+ed25519 public key at `GET /.well-known/rcx-keys.json` (spec v1 §5.6.1, Erratum
+E-1), so a receipt's *signature* is verifiable by a third party without trusting
+the operator. That does **not** move this verb: what a namespace claim lacks is
+**publisher-rights records**, not a key. Do not read key publication as having
+made `verifyNamespace` operator-independent.
 
 ## 5. `verifyHistory(chain) -> ()`
 

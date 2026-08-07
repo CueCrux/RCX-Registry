@@ -145,12 +145,10 @@ rcx verify receipt examples/verify/receipt.hex --key @examples/verify/test-key.h
 Four independent SDKs (Rust, Python, TypeScript, Go) reproduce those vectors
 byte-for-byte, checked in CI on every change.
 
-**You cannot yet** verify a live server end-to-end. The production registry
-publishes no snapshot receipt, no production snapshot root, and no signing
-public key over HTTP.
-
-**You can** also verify a real server, against a registry running this version
-or later. Three endpoints publish what the registry signs:
+**You can** also verify a real server end-to-end. The production registry
+publishes its snapshot receipts, its signed snapshot roots and its ed25519
+public key over HTTP, so nothing here depends on trusting the operator. Three
+endpoints publish what the registry signs:
 
 | Endpoint | What it gives you |
 |---|---|

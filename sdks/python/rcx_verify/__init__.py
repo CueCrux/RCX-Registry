@@ -243,9 +243,10 @@ def verify_namespace(
 ) -> None:
     """Verify a namespace claim's internal consistency.
 
-    Read CONTRACT.md §4's scope limit: with no published signer_kid -> public-key
-    mapping (OQ-2) and no live publisher-rights records, this does NOT prove
-    operator-independent ownership.
+    Read CONTRACT.md §4's scope limit: with no live publisher-rights records,
+    this does NOT prove operator-independent ownership. Key publication (spec v1
+    §5.6.1) does not change that; the missing piece is publisher-rights records,
+    not a key.
     """
     verify_publisher(declaration_json, expected_declared_hash)
     declaration = _parse_declaration(declaration_json)

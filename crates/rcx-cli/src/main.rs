@@ -322,11 +322,13 @@ fn verify_namespace_command(path: &str, flags: &Flags) -> Result<Outcome, String
         Ok(()) => Ok(Outcome::Verified {
             what: format!("namespace {name}"),
             // Say plainly what this does and does not establish, so nobody reads
-            // a green line as proof of ownership. CONTRACT.md §4.
+            // a green line as proof of ownership. CONTRACT.md §4. The missing
+            // piece is publisher-rights records, NOT the signing key — that is
+            // published (spec v1 §5.6.1), so do not name it here.
             detail: "declaration hashes as published and claims this namespace. \
                      NOTE: this is internal consistency, not operator-independent \
-                     proof of ownership — no signer_kid to public-key mapping is \
-                     published yet (OQ-2)."
+                     proof of ownership — production publishes no publisher-rights \
+                     records to bind this namespace to its publisher."
                 .to_string(),
             json: flags.json,
         }),

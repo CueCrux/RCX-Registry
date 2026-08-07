@@ -270,9 +270,10 @@ func VerifyPublisher(declarationJSON string, expectedDeclaredHash []byte) error 
 
 // VerifyNamespace verifies a namespace claim's internal consistency.
 //
-// Read CONTRACT.md §4's scope limit before relying on this: with no published
-// signer_kid -> public-key mapping (OQ-2) and no live publisher-rights records,
-// it does NOT prove operator-independent ownership.
+// Read CONTRACT.md §4's scope limit before relying on this: with no live
+// publisher-rights records, it does NOT prove operator-independent ownership.
+// Key publication (spec v1 §5.6.1) does not change that — the missing piece is
+// publisher-rights records, not a key.
 func VerifyNamespace(declarationJSON string, expectedDeclaredHash []byte, claimedNamespace string) error {
 	if err := VerifyPublisher(declarationJSON, expectedDeclaredHash); err != nil {
 		return err
