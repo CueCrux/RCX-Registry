@@ -15,6 +15,7 @@ The public API version is pinned **in the URL path** (`/v0`). There is **no** co
 | `GET /v0/servers` | List mirrored servers (cursor-paginated) |
 | `GET /v0/servers/{name}/versions` | List all versions of one server |
 | `GET /v0/servers/{name}/versions/{version}` | Fetch one server version |
+| `GET /.well-known/rcx-keys.json` | Signing-key discovery — the ed25519 public key(s) keyed by `signer_kid` ([05-receipts.md §5.6.1](05-receipts.md); Erratum E-1) |
 
 `GET /v0/servers` list response:
 ```json

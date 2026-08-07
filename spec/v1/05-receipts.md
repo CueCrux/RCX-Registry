@@ -47,7 +47,7 @@ To **verify** `receipt_hash`: recompute per steps 1–3 from the receipt's other
 
 - ed25519 **public key**: 32 raw bytes (RFC 8032 compressed point). In JSON records it is 64 lowercase hex chars (`public_key_hex`).
 - ed25519 **signature**: 64 raw bytes (R‖S). On a receipt it is a **64-byte** CBOR byte string; in JSON records it is 128 lowercase hex chars.
-- `signer_kid`: opaque UTF-8 label identifying the signing key (default `vault:transit:rcx-registry-signing-key-1`). It is **not** a public key and does **not**, by itself, let a verifier obtain one (§5.6.1 / OQ-2).
+- `signer_kid`: opaque UTF-8 label identifying the signing key (default `vault:transit:rcx-registry-signing-key-1`). It is **not** a public key; a verifier resolves it to one through the key-discovery endpoint of §5.6.1.
 - The signature marshaling is **raw** ed25519 (R‖S). Although the signer requests Vault's `marshaling_algorithm:"asn1"`, that setting is inert for ed25519 and the on-wire signature is the raw 64-byte form. Implementations **MUST NOT** expect DER/ASN.1 wrapping. (grounding §5.4)
 
 ## 5.5 The six receipt types
@@ -212,16 +212,59 @@ negative.)
 An all-zero `receipt_signature` (64 zero bytes) denotes an **unsigned** receipt
 (keyless/local mode) and **MUST** be treated as not verifiable. (grounding §5.4)
 
-### 5.6.1 Public-key distribution — documented v1 gap (OQ-2)
+### 5.6.1 Public-key distribution — normative (OQ-2 resolved)
 
-v1 does **not** define how a verifier obtains the registry's 32-byte ed25519
-public key from `signer_kid`: `signer_kid` is an opaque label (§5.4), and no
-wire field or endpoint in v1 serves the key. Until a publication channel is
-defined (proposed for **M1a**), a receipt is **hash-verifiable but not
-signature-verifiable from this specification alone**. A consumer that does not
-hold the registry public key out of band **MUST** rely on `receipt_hash` (§5.3)
-for content integrity and treat the signature as unverifiable rather than as
-absent or invalid. (grounding §5.4, OQ-2.)
+> **Erratum E-1 (2026-08-07).** This section previously read *"documented v1 gap
+> (OQ-2)"* and stated that no v1 endpoint served the registry's public key. That
+> became false when key publication shipped. E-1 replaces the gap text with the
+> normative description below. **No wire format changes**: key publication is a
+> *discovery endpoint*, not a receipt field, so the §5 byte freeze is untouched
+> and every receipt already minted verifies exactly as before. See
+> [README.md § Errata](README.md).
+
+A verifier obtains the registry's ed25519 public key(s) from a discovery
+endpoint:
+
+```
+GET /.well-known/rcx-keys.json
+```
+
+The response is JSON with a `status` field, a `keys` array and a human-readable
+`note`. Each entry of `keys` has:
+
+| Key | Type | Notes |
+|---|---|---|
+| `signer_kid` | text | matches the receipt's `signer_kid` (§5.4) byte-for-byte |
+| `algorithm` | text | `ed25519` in v1 |
+| `public_key_hex` | text | lowercase hex of the 32-byte key (64 characters, §1 hex conventions) |
+
+**Three states, and they are not interchangeable.** A client **MUST**
+distinguish them by `status`, never by whether `keys` is empty:
+
+| `status` | HTTP | `keys` | Meaning |
+|---|---|---|---|
+| `published` | 200 | non-empty | These are the registry's signing keys. |
+| `unsigned` | 200 | `[]` | This registry publishes no signing key; receipts it mints are not third-party verifiable. A **settled** answer. |
+| `unavailable` | 503 (+ `Retry-After`) | `[]` | The key has not been read yet. **Retryable.** A client **MUST NOT** treat this as `unsigned`. |
+
+**Key selection is by `signer_kid`, not by position.** A client **MUST** select
+the key whose `signer_kid` equals the receipt's `signer_kid` and **MUST NOT**
+assume `keys[0]`, assume a single-element array, or assume a stable order.
+
+With the matching key, a receipt is **signature-verifiable from this
+specification alone** (§5.6 path A). A consumer that cannot resolve a key —
+`unsigned`, `unavailable`, or no `signer_kid` match — **MUST** fall back to
+`receipt_hash` (§5.3) for content integrity and treat the signature as
+unverifiable rather than as absent or invalid.
+
+**Still unsolved: key history across rotation.** The endpoint publishes the keys
+in use *now*. It carries no history, so a receipt signed under a since-rotated
+`signer_kid` will find no match and is **not** verifiable against this endpoint.
+Verifiable key rotation and history are `rcx-spec/v2` (RFC-0001), not v1.
+
+Publishing the key makes a receipt *signature-verifiable*. It does **not** make
+a namespace claim *operator-independent* — that requires publisher-rights
+records, not a key.
 
 ## 5.7 Embedded payload field sets
 
