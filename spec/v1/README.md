@@ -20,6 +20,17 @@ An implementation is **conformant** if, for every vector in [`vectors/`](vectors
 
 Requirement keywords **MUST**, **MUST NOT**, **SHOULD**, **SHOULD NOT**, **MAY** are per [RFC 2119](https://www.rfc-editor.org/rfc/rfc2119) / [RFC 8174](https://www.rfc-editor.org/rfc/rfc8174), interpreted only when in ALL CAPS.
 
+## Errata
+
+v1's **wire format is frozen and stays frozen** — no erratum may change the
+bytes of a receipt, a hash preimage, or a canonical encoding. An erratum
+corrects prose that has become false about the system it describes, and is
+recorded here, dated, rather than applied silently.
+
+| ID | Date | Section | Change |
+|---|---|---|---|
+| **E-1** | 2026-08-07 | [05-receipts.md §5.6.1](05-receipts.md), OQ-2 above, [07-api-and-errors.md §7.2](07-api-and-errors.md) | Public-key distribution is no longer a documented gap. `GET /.well-known/rcx-keys.json` is specified normatively (three-state contract; match on `signer_kid`, not position). **Discovery endpoint only — no receipt field added or altered**, and the conformance vectors pass unchanged before and after. Key *history* across rotation remains unsolved and stays v2. |
+
 ## Documents
 
 | # | File | Covers |
@@ -37,7 +48,7 @@ Requirement keywords **MUST**, **MUST NOT**, **SHOULD**, **SHOULD NOT**, **MAY**
 The six open questions from the grounding doc §9 are resolved as follows (full rationale in the grounding doc's dated **Resolutions (2026-07-19)** section):
 
 1. **Receipt signature preimage (OQ-1) — resolved: path A, normative.** The signature is ed25519 over the receipt's **full canonical CBOR with only `receipt_signature` zeroed** (real `receipt_hash` and real `signer_kid` present) — the message that mints every live receipt. Frozen in [05-receipts.md §5.6](05-receipts.md). The `receipt_hash` (BLAKE3, §5.3) is separately frozen. The reference crown verifier is being aligned to path A (verifier-side only, no wire change).
-2. **Public-key distribution (OQ-2) — documented v1 gap.** v1 does not define how a verifier obtains the registry's ed25519 public key from `signer_kid`; without the key out of band, receipts are **hash-verifiable but not signature-verifiable from this spec alone**. Key publication is proposed for **M1a**. See [05-receipts.md §5.6.1](05-receipts.md).
+2. **Public-key distribution (OQ-2) — resolved: published (Erratum E-1, 2026-08-07).** A verifier obtains the registry's ed25519 public key(s) from `GET /.well-known/rcx-keys.json`, matching on `signer_kid`; with that key a receipt is **signature-verifiable from this spec alone**. Normative in [05-receipts.md §5.6.1](05-receipts.md); endpoint listed in [07-api-and-errors.md §7.2](07-api-and-errors.md). **Still open:** key *history* across rotation — a receipt signed under a since-rotated key has no published key to match, and verifiable rotation is `rcx-spec/v2` (RFC-0001), not v1.
 3. **Producer-defined hashes (OQ-3) — resolved: form-only.** `passport_hash` / `project_hash` / `attestation_hash` are pinned to *algorithm + form* (BLAKE3 over canonical CBOR) only; their byte construction is out of scope for v1. [04-hashing.md §4.6](04-hashing.md).
 4. **Snapshot root naming (OQ-4) — resolved: name retained.** `snapshot_merkle_root` keeps its historical wire name but is described honestly as a **flat set digest**; a real proof tree is deferred to **Spec v2 (M3a)**. [06-merkle-and-snapshots.md §6.1](06-merkle-and-snapshots.md).
 5. **Canonical-JSON numbers (OQ-5) — resolved: implementation-pinned.** Numbers are frozen to observed `serde_json` parse→`Display` semantics. [03-canonical-json.md §3.4](03-canonical-json.md).
