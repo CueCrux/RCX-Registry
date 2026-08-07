@@ -41,7 +41,8 @@ pub use published_records::{
 
 pub mod snapshot_artifacts;
 pub use snapshot_artifacts::{
-    InMemorySnapshotArtifactStore, PublishedSigningKey, SnapshotArtifact, SnapshotArtifactStore,
+    InMemorySnapshotArtifactStore, PublishedSigningKey, SigningKeyPublication, SigningKeyStatus,
+    SnapshotArtifact, SnapshotArtifactStore,
 };
 
 pub type SharedSnapshotArtifactStore = Arc<dyn SnapshotArtifactStore>;
@@ -595,17 +596,57 @@ async fn get_snapshot_entries(
 
 /// The keys receipts verify under.
 ///
-/// Always 200, even when empty: an empty list is the truthful statement "this
-/// registry publishes nothing you can verify against", and a 404 would be
-/// indistinguishable from a misrouted request.
-async fn signing_keys(State(state): State<ApiState>) -> Json<Value> {
-    let keys = state.snapshot_artifact_store.signing_keys();
-    Json(serde_json::json!({
-        "keys": keys,
-        "note": "Receipts carry the signer_kid they were signed under; match on that, \
-                 not on position. Key history across rotations is not published yet, so a \
-                 receipt signed under a rotated key will not verify against this list.",
-    }))
+/// Three outcomes, kept distinct because they are three different instructions:
+///
+/// - **200 with keys** — verify against these.
+/// - **200, `status: "unsigned"`** — this registry signs nothing. Terminal;
+///   waiting will not help.
+/// - **503, `status: "unavailable"`** — a key exists but could not be read yet.
+///   Retry.
+///
+/// Collapsing the last two into an empty 200 is the mistake that tells a caller
+/// polling for a key to give up when they should retry. It is the same
+/// distinction the CLI draws between exit 1 and exit 2, and it matters more
+/// here, because the caller is a machine.
+async fn signing_keys(State(state): State<ApiState>) -> Response {
+    const MATCH_NOTE: &str = "Receipts carry the signer_kid they were signed under; match on \
+                              that, not on position. Key history across rotations is not \
+                              published yet, so a receipt signed under a rotated key will not \
+                              verify against this list.";
+
+    match state.snapshot_artifact_store.signing_keys() {
+        SigningKeyStatus::Published(keys) => (
+            StatusCode::OK,
+            Json(serde_json::json!({
+                "status": "published",
+                "keys": keys,
+                "note": MATCH_NOTE,
+            })),
+        )
+            .into_response(),
+        SigningKeyStatus::Unsigned => (
+            StatusCode::OK,
+            Json(serde_json::json!({
+                "status": "unsigned",
+                "keys": [],
+                "note": "This registry publishes no signing key. Receipts it mints cannot be \
+                         verified by a third party. This is a settled answer, not a temporary one.",
+            })),
+        )
+            .into_response(),
+        SigningKeyStatus::Unavailable => (
+            StatusCode::SERVICE_UNAVAILABLE,
+            [(http::header::RETRY_AFTER, "30")],
+            Json(serde_json::json!({
+                "status": "unavailable",
+                "keys": [],
+                "note": "The signing key has not been read yet. This is retryable and does NOT \
+                         mean the registry is unsigned — do not treat an empty list here as an \
+                         answer.",
+            })),
+        )
+            .into_response(),
+    }
 }
 
 async fn list_servers(
@@ -3152,16 +3193,99 @@ mod snapshot_artifact_tests {
         }
     }
 
-    /// A registry with nothing verifiable says so, rather than 404ing the key
-    /// route in a way a caller cannot tell from a routing mistake.
+    /// An unsigned registry says so on a 200 — a settled answer, not a routing
+    /// mistake and not something to poll.
     #[tokio::test]
-    async fn a_registry_with_no_artifacts_publishes_an_empty_key_list() {
+    async fn an_unsigned_registry_says_unsigned_on_a_200() {
         let app = router(Arc::new(InMemoryMirrorStore::new(Vec::new())));
         let (status, keys) = get_json(&app, "/.well-known/rcx-keys.json").await;
         assert_eq!(status, StatusCode::OK);
+        assert_eq!(keys["status"], "unsigned");
         assert_eq!(keys["keys"].as_array().map(Vec::len), Some(0));
 
         let (status, _) = get_json(&app, "/v0/snapshots/latest").await;
         assert_eq!(status, StatusCode::NOT_FOUND);
+    }
+
+    /// The case that motivated the three-state split: a key that exists but has
+    /// not been read yet must be retryable, and must NOT read as "unsigned".
+    ///
+    /// Getting this wrong is silent — a caller polling for a key sees an empty
+    /// list, concludes the registry signs nothing, and stops asking. It would
+    /// then never verify a receipt this registry is perfectly capable of proving.
+    #[tokio::test]
+    async fn an_unresolved_key_is_retryable_and_never_reads_as_unsigned() {
+        struct PendingKeyStore(Arc<SigningKeyPublication>);
+        impl SnapshotArtifactStore for PendingKeyStore {
+            fn latest(&self) -> Result<Option<SnapshotArtifact>, ApiError> {
+                Ok(None)
+            }
+            fn by_id(&self, _: &str) -> Result<Option<SnapshotArtifact>, ApiError> {
+                Ok(None)
+            }
+            fn entries_json(&self, _: &str) -> Result<Option<Vec<u8>>, ApiError> {
+                Ok(None)
+            }
+            fn signing_keys(&self) -> SigningKeyStatus {
+                self.0.status()
+            }
+        }
+
+        // Fresh slot: nothing resolved yet, exactly as at boot.
+        let publication = Arc::new(SigningKeyPublication::default());
+        let state = ApiState::new(Arc::new(InMemoryMirrorStore::new(Vec::new())))
+            .with_snapshot_artifact_store(Arc::new(PendingKeyStore(publication.clone())));
+        let app = router_with_state(state);
+
+        let response = app
+            .clone()
+            .oneshot(
+                Request::builder()
+                    .uri("/.well-known/rcx-keys.json")
+                    .body(Body::empty())
+                    .expect("request should build"),
+            )
+            .await
+            .expect("request should succeed");
+        assert_eq!(
+            response.status(),
+            StatusCode::SERVICE_UNAVAILABLE,
+            "an unread key is retryable, not a settled empty answer"
+        );
+        assert_eq!(
+            response
+                .headers()
+                .get(http::header::RETRY_AFTER)
+                .and_then(|value| value.to_str().ok()),
+            Some("30"),
+            "a retryable answer should say when to retry"
+        );
+        let (_, body) = get_json(&app, "/.well-known/rcx-keys.json").await;
+        assert_eq!(body["status"], "unavailable");
+        assert_ne!(body["status"], "unsigned");
+
+        // Resolution lands later, with no restart. This is the whole point:
+        // reading the key once at boot meant a transient Vault failure left the
+        // registry publishing nothing until somebody noticed.
+        publication.publish(vec![PublishedSigningKey::ed25519(KID, [9u8; 32])]);
+
+        let (status, body) = get_json(&app, "/.well-known/rcx-keys.json").await;
+        assert_eq!(status, StatusCode::OK);
+        assert_eq!(body["status"], "published");
+        assert_eq!(body["keys"][0]["signer_kid"], KID);
+        assert_eq!(body["keys"][0]["public_key_hex"], hex::encode([9u8; 32]));
+    }
+
+    /// A signer that reports it has no key is terminal, and must not be
+    /// presented as something to wait for.
+    #[tokio::test]
+    async fn a_resolved_absent_key_is_terminal_not_retryable() {
+        let publication = SigningKeyPublication::default();
+        assert!(matches!(
+            publication.status(),
+            SigningKeyStatus::Unavailable
+        ));
+        publication.mark_unsigned();
+        assert!(matches!(publication.status(), SigningKeyStatus::Unsigned));
     }
 }

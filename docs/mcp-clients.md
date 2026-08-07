@@ -158,6 +158,20 @@ or later. Three endpoints publish what the registry signs:
 | `GET /v0/snapshots/{id}/entries` | the `{name, version, canonical_json}` set that snapshot's root digests |
 | `GET /.well-known/rcx-keys.json` | the ed25519 public key(s), keyed by `signer_kid` |
 
+The key endpoint answers in three ways, and an automated caller must tell them
+apart:
+
+| Response | Meaning | What to do |
+|---|---|---|
+| `200`, `"status": "published"` | here are the keys | verify against them |
+| `200`, `"status": "unsigned"` | this registry signs nothing | stop; waiting will not help |
+| `503`, `"status": "unavailable"` | the key has not been read yet | retry (`Retry-After: 30`) |
+
+Do not treat an empty `keys` array as an answer on its own — read `status`. A
+registry that is still resolving its key looks identical to an unsigned one if
+you only count the array, and concluding "unsigned" there means never verifying
+receipts the registry can prove perfectly well.
+
 The check is three steps, and all three matter:
 
 ```bash
