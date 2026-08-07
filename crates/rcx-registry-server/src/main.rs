@@ -11,7 +11,7 @@ use rcx_registry_server::db;
 use rcx_registry_server::db::mirror::PgMirrorStore;
 use rcx_registry_server::db::publisher_enrichment::PgPublisherEnrichmentStore;
 use rcx_registry_server::db::publisher_rights::PgPublisherRightsStore;
-use rcx_registry_server::db::snapshots::PgSnapshotStore;
+use rcx_registry_server::db::snapshots::{PgSnapshotArtifactStore, PgSnapshotStore};
 use rcx_registry_server::dns::HickoryDnsTxtResolver;
 use rcx_registry_server::github_oauth::GitHubOAuthClient;
 use rcx_registry_server::health::HealthState;
@@ -104,6 +104,33 @@ async fn run() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
         }
     };
 
+    // Fetch the public half once at startup. It only changes on a rotation
+    // (M3c), so a per-request Vault round-trip on a public read path would buy
+    // nothing — and a Vault outage should degrade key publication, not every
+    // snapshot read. A failure here is a warning, never fatal: the registry
+    // still mirrors and still signs; it just cannot tell anyone what to verify
+    // against, and saying nothing beats publishing a key that signs nothing.
+    let signing_keys = match signer.public_key() {
+        Ok(Some(key)) => vec![rcx_registry_api::PublishedSigningKey::ed25519(
+            signer.signer_kid(),
+            key,
+        )],
+        Ok(None) => {
+            tracing::warn!(
+                "signer exposes no public key — /.well-known/rcx-keys.json will be empty \
+                 and published receipts cannot be verified by third parties"
+            );
+            Vec::new()
+        }
+        Err(error) => {
+            tracing::warn!(error = %error, "could not read the signing public key from vault");
+            Vec::new()
+        }
+    };
+    let snapshot_artifacts: Arc<dyn rcx_registry_api::SnapshotArtifactStore> = Arc::new(
+        PgSnapshotArtifactStore::new(snapshots.clone(), signing_keys),
+    );
+
     let metrics = Metrics::new();
     let api_state = ApiStateBuilder {
         mirror: mirror_store.clone(),
@@ -111,6 +138,7 @@ async fn run() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
         publisher_enrichment: publisher_enrichment.clone(),
         dns_resolver: Some(dns_resolver),
         github_oauth,
+        snapshot_artifacts: Some(snapshot_artifacts),
     }
     .build();
 

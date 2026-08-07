@@ -1687,6 +1687,7 @@ dependencies = [
  "rcx-registry-crown",
  "rcx-registry-enrich",
  "rcx-registry-ingest",
+ "rcx-verify",
  "serde",
  "serde_json",
  "thiserror 2.0.12",

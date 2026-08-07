@@ -51,6 +51,10 @@ pub struct ApiStateBuilder {
     pub publisher_enrichment: Arc<dyn PublisherEnrichmentStore>,
     pub dns_resolver: Option<Arc<dyn rcx_registry_api::DnsTxtResolver>>,
     pub github_oauth: Option<Arc<dyn GitHubOAuthProvider>>,
+    /// `None` leaves the artifact routes serving 404s and an empty key list,
+    /// which is the honest state for a registry with nothing verifiable to hand
+    /// out.
+    pub snapshot_artifacts: Option<Arc<dyn rcx_registry_api::SnapshotArtifactStore>>,
 }
 
 impl ApiStateBuilder {
@@ -66,6 +70,9 @@ impl ApiStateBuilder {
             Some(provider) => state.with_github_oauth_provider(provider),
             None => state.with_github_oauth_provider(Arc::new(UnavailableGitHubOAuthProvider)),
         };
+        if let Some(artifacts) = self.snapshot_artifacts {
+            state = state.with_snapshot_artifact_store(artifacts);
+        }
         state
     }
 }

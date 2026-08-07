@@ -147,10 +147,56 @@ byte-for-byte, checked in CI on every change.
 
 **You cannot yet** verify a live server end-to-end. The production registry
 publishes no snapshot receipt, no production snapshot root, and no signing
-public key over HTTP — the only verifiable bytes published today are the
-conformance vectors, which are signed with an obvious test-only key. Until those
-production artifacts are served, pointing a client at RCX gets you a mirror with
-a documented trust model, not an independently verified one.
+public key over HTTP.
 
-That is a deliberate statement of a current limit, not an oversight to work
-around. A verification story that only works against test vectors should say so.
+**You can** also verify a real server, against a registry running this version
+or later. Three endpoints publish what the registry signs:
+
+| Endpoint | What it gives you |
+|---|---|
+| `GET /v0/snapshots/latest` | the most recent **verifiable** snapshot: its signed receipt as canonical-CBOR hex, plus the root and `signer_kid` |
+| `GET /v0/snapshots/{id}/entries` | the `{name, version, canonical_json}` set that snapshot's root digests |
+| `GET /.well-known/rcx-keys.json` | the ed25519 public key(s), keyed by `signer_kid` |
+
+The check is three steps, and all three matter:
+
+```bash
+BASE=https://registry.rcxprotocol.org
+curl -fsS "$BASE/v0/snapshots/latest" -o snapshot.json
+curl -fsS "$BASE/.well-known/rcx-keys.json" -o keys.json
+
+# 1. the receipt is genuinely signed by the registry
+python3 -c "import json;print(json.load(open('snapshot.json'))['receipt_cbor_hex'])" > receipt.hex
+python3 -c "import json;print(json.load(open('keys.json'))['keys'][0]['public_key_hex'])" > key.hex
+rcx verify receipt receipt.hex --key @key.hex
+
+# 2. the entry set really digests to the root inside that signed receipt
+ID=$(python3 -c "import json;print(json.load(open('snapshot.json'))['snapshot_id'])")
+ROOT=$(python3 -c "import json;print(json.load(open('snapshot.json'))['snapshot_root'])")
+curl -fsS "$BASE/v0/snapshots/$ID/entries" -o entries.json
+rcx verify snapshot entries.json --root "$ROOT"
+
+# 3. your server is in that set
+grep -q '"name":"io.example/thing"' entries.json && echo "present in the signed snapshot"
+```
+
+Skipping step 3 is the easy mistake: a snapshot that verifies but does not
+contain your server proves nothing about your server.
+
+**What this does and does not establish.** It proves the registry signed a
+snapshot with root R, and that the entry set you were handed is exactly the set R
+digests — so a server inside it was mirrored as shown at that moment. It does
+**not** prove the registry never rewrote its history: v1's root is a flat set
+digest, not a Merkle tree, so there are no inclusion or consistency proofs, and
+no independent witness has co-signed anything. Detecting a fork or a silent
+rewrite needs the transparency log, which is a later milestone.
+
+**Two limits worth knowing before you rely on this.** Entry sets are retained
+only for the most recent snapshots — older ones keep a verifiable receipt but
+report `"entries_available": false`, so membership can no longer be recomputed
+for them. And snapshots minted before this version have no stored signed bytes
+at all; they are skipped by `/v0/snapshots/latest` rather than served
+unverifiably.
+
+Say plainly which of these you are relying on. A verification story that
+overstates its reach is worse than one that admits its edges.
