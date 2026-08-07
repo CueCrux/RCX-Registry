@@ -28,6 +28,10 @@ pub const MIGRATIONS: &[(&str, &str)] = &[
         "0006_rcx_enrichment_publisher_meta.sql",
         include_str!("../../../../migrations/0006_rcx_enrichment_publisher_meta.sql"),
     ),
+    (
+        "0007_snapshot_artifacts.sql",
+        include_str!("../../../../migrations/0007_snapshot_artifacts.sql"),
+    ),
 ];
 
 const MIGRATION_0005: &str = r#"
@@ -106,6 +110,7 @@ mod tests {
                 "0004_publisher_rights.sql",
                 "0005_mcp_servers_envelope.sql",
                 "0006_rcx_enrichment_publisher_meta.sql",
+                "0007_snapshot_artifacts.sql",
             ]
         );
     }

@@ -40,6 +40,8 @@ pub enum SyncError {
     Vault(#[from] VaultError),
     #[error("server entry missing field `{0}`")]
     Field(&'static str),
+    #[error("encode: {0}")]
+    Encode(String),
 }
 
 #[derive(Clone)]
@@ -152,14 +154,13 @@ fn run_tick_blocking(
         }
     }
 
-    let prior_snapshot = snapshots.latest()?;
+    let prior_hash = snapshots.latest_hash()?;
     let snapshot_id = derive_ulid_from_now();
     let event_id = derive_ulid_from_seed(&format!(
         "snapshot:{}:{}",
         Utc::now().timestamp_millis(),
         current_mirrored.len()
     ));
-    let prior_hash = prior_snapshot.as_ref().map(|prior| prior.snapshot_hash);
     let scraped_at_ms = Utc::now().timestamp_millis().max(0) as u64;
 
     let plan = build_snapshot_plan(
@@ -181,7 +182,11 @@ fn run_tick_blocking(
     let diff = compute_full_diff(mirror, &current_mirrored)?;
     reconcile_soft_deletes_blocking(mirror, &current_mirrored)?;
 
-    persist_snapshot(snapshots, &plan, signer)?;
+    let snapshot_entries = current_mirrored
+        .iter()
+        .map(|(_, mirrored)| mirrored.clone())
+        .collect::<Vec<_>>();
+    persist_snapshot(snapshots, &plan, signer, &snapshot_entries)?;
     metrics
         .mcp_servers_mirrored
         .store(current_mirrored.len() as u64, Ordering::Relaxed);
@@ -326,9 +331,40 @@ fn persist_snapshot(
     snapshots: &PgSnapshotStore,
     plan: &SnapshotPlan,
     signer: &dyn Signer,
+    entries: &[MirroredServer],
 ) -> Result<(), SyncError> {
+    // The signing preimage is the full canonical CBOR while `receipt_signature`
+    // is still zeroed and `receipt_hash` / `signer_kid` are already populated —
+    // byte-for-byte what every SDK reconstructs at verify step 4. Do not reorder
+    // this against the assignment below: signing the signed form would produce a
+    // receipt that verifies nowhere.
     let signing_bytes = plan.snapshot_receipt.to_canonical_cbor();
     let signature = signer.sign(&signing_bytes)?;
+
+    // Re-encode WITH the signature in place. This is the artifact third parties
+    // fetch and the only form that verifies; it cannot be rebuilt from the
+    // derived columns, so if it is not captured here it does not exist.
+    let mut signed_receipt = plan.snapshot_receipt.clone();
+    signed_receipt.receipt_signature = signature;
+    let receipt_cbor = signed_receipt.to_canonical_cbor();
+
+    // The membership set the root digests, in the shape the `rcx` CLI and every
+    // SDK already accept. Only the three fields that enter the digest — the
+    // mirror-only ones would imply they were covered by the root when they are
+    // not.
+    let entries_json = serde_json::to_vec(
+        &entries
+            .iter()
+            .map(|entry| {
+                serde_json::json!({
+                    "name": entry.name,
+                    "version": entry.version,
+                    "canonical_json": entry.canonical_json,
+                })
+            })
+            .collect::<Vec<_>>(),
+    )
+    .map_err(|error| SyncError::Encode(error.to_string()))?;
 
     let stored = StoredSnapshot {
         snapshot_id: plan.snapshot_receipt.snapshot_id,
@@ -341,6 +377,8 @@ fn persist_snapshot(
         receipt_hash: plan.snapshot_receipt.receipt_hash,
         receipt_signature: signature,
         signer_kid: signer.signer_kid().to_string(),
+        receipt_cbor,
+        entries_json,
     };
     snapshots.record(&stored)?;
     Ok(())

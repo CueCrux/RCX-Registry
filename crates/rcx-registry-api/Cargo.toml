@@ -22,4 +22,8 @@ tokio.workspace = true
 
 [dev-dependencies]
 ed25519-dalek.workspace = true
+# The published verifier, used as an independent oracle: the endpoint test
+# checks that what we SERVE verifies under the SDK third parties actually run,
+# rather than under a re-implementation living in this crate's tests.
+rcx-verify = { path = "../rcx-verify" }
 tower.workspace = true

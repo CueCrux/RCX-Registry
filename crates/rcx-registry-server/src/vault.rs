@@ -41,11 +41,22 @@ pub enum VaultError {
     Base64(#[from] base64::DecodeError),
     #[error("expected {SIGNATURE_LEN}-byte ed25519 signature, got {0}")]
     SignatureLength(usize),
+    #[error("expected 32-byte ed25519 public key, got {0}")]
+    PublicKeyLength(usize),
 }
 
 pub trait Signer: Send + Sync {
     fn sign(&self, message: &[u8]) -> Result<[u8; SIGNATURE_LEN], VaultError>;
     fn signer_kid(&self) -> &str;
+
+    /// The ed25519 **public** key this signer's receipts verify under.
+    ///
+    /// `None` means "no verifiable key", not "not fetched yet" — a caller that
+    /// gets `None` must publish nothing rather than publish a placeholder, or
+    /// third parties would verify against a key that signs nothing.
+    fn public_key(&self) -> Result<Option<[u8; 32]>, VaultError> {
+        Ok(None)
+    }
 }
 
 /// Where the Vault token comes from.
@@ -187,6 +198,62 @@ impl Signer for VaultTransitSigner {
     fn signer_kid(&self) -> &str {
         &self.signer_kid
     }
+
+    /// Reads the public half from Vault Transit.
+    ///
+    /// Transit returns one entry per key version; we take the highest, which is
+    /// the version `sign` uses. Key *history* — so that receipts signed under a
+    /// rotated key still verify — is M3c and deliberately not attempted here: a
+    /// half-built history that silently drops old versions would break exactly
+    /// the receipts it claims to preserve.
+    fn public_key(&self) -> Result<Option<[u8; 32]>, VaultError> {
+        let url = format!("{}/v1/transit/keys/{}", self.addr, self.key_name);
+        let token = self.token.resolve()?;
+        let mut request = self.client.get(&url).header("X-Vault-Token", &token);
+        if let Some(namespace) = &self.namespace {
+            request = request.header("X-Vault-Namespace", namespace);
+        }
+        let response = request.send()?;
+        if !response.status().is_success() {
+            return Err(VaultError::Status(response.status().as_u16()));
+        }
+        let body: VaultKeyResponse = response.json()?;
+
+        let latest = body
+            .data
+            .keys
+            .iter()
+            .filter_map(|(version, entry)| {
+                version.parse::<u64>().ok().map(|number| (number, entry))
+            })
+            .max_by_key(|(number, _)| *number);
+        let Some((_, entry)) = latest else {
+            return Ok(None);
+        };
+
+        let bytes = BASE64_STANDARD.decode(entry.public_key.trim())?;
+        if bytes.len() != 32 {
+            return Err(VaultError::PublicKeyLength(bytes.len()));
+        }
+        let mut key = [0u8; 32];
+        key.copy_from_slice(&bytes);
+        Ok(Some(key))
+    }
+}
+
+#[derive(Debug, Deserialize)]
+struct VaultKeyResponse {
+    data: VaultKeyData,
+}
+
+#[derive(Debug, Deserialize)]
+struct VaultKeyData {
+    keys: std::collections::BTreeMap<String, VaultKeyEntry>,
+}
+
+#[derive(Debug, Deserialize)]
+struct VaultKeyEntry {
+    public_key: String,
 }
 
 #[cfg(test)]

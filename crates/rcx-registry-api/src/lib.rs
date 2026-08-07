@@ -39,6 +39,12 @@ pub use published_records::{
     ProjectPublishRecord, PublishedRecordStore,
 };
 
+pub mod snapshot_artifacts;
+pub use snapshot_artifacts::{
+    InMemorySnapshotArtifactStore, PublishedSigningKey, SnapshotArtifact, SnapshotArtifactStore,
+};
+
+pub type SharedSnapshotArtifactStore = Arc<dyn SnapshotArtifactStore>;
 pub type SharedMirrorStore = Arc<dyn MirrorStore>;
 pub type SharedPublisherRightsStore = Arc<dyn PublisherRightsStore>;
 pub type SharedPublisherEnrichmentStore = Arc<dyn PublisherEnrichmentStore>;
@@ -193,6 +199,7 @@ pub struct ApiState {
     dns_resolver: SharedDnsTxtResolver,
     github_oauth_provider: SharedGitHubOAuthProvider,
     published_record_store: SharedPublishedRecordStore,
+    snapshot_artifact_store: SharedSnapshotArtifactStore,
     pop_nonces: Arc<NonceStore>,
     oauth_states: Arc<OAuthStateStore>,
     /// Operator bearer for `manual-verify`. `None` leaves the route unmounted.
@@ -209,6 +216,10 @@ impl ApiState {
             dns_resolver: Arc::new(UnavailableDnsTxtResolver),
             github_oauth_provider: Arc::new(UnavailableGitHubOAuthProvider),
             published_record_store: Arc::new(InMemoryPublishedRecordStore::default()),
+            // Defaults to an empty store, which serves 404s and an empty key
+            // list. That is the correct answer for a registry that has not been
+            // wired to a snapshot store — never a placeholder key.
+            snapshot_artifact_store: Arc::new(InMemorySnapshotArtifactStore::default()),
             pop_nonces: Arc::new(NonceStore::new(DEFAULT_NONCE_TTL_MS)),
             oauth_states: Arc::new(OAuthStateStore::new(DEFAULT_NONCE_TTL_MS)),
             operator_token: None,
@@ -257,6 +268,11 @@ impl ApiState {
 
     pub fn with_published_record_store(mut self, store: SharedPublishedRecordStore) -> Self {
         self.published_record_store = store;
+        self
+    }
+
+    pub fn with_snapshot_artifact_store(mut self, store: SharedSnapshotArtifactStore) -> Self {
+        self.snapshot_artifact_store = store;
         self
     }
 
@@ -414,6 +430,13 @@ pub fn router_with_state(state: ApiState) -> Router {
     };
     operator_routes
         .merge(Router::new())
+        .route("/v0/snapshots/latest", get(latest_snapshot))
+        .route("/v0/snapshots/{snapshot_id}", get(get_snapshot))
+        .route(
+            "/v0/snapshots/{snapshot_id}/entries",
+            get(get_snapshot_entries),
+        )
+        .route("/.well-known/rcx-keys.json", get(signing_keys))
         .route("/v0/servers", get(list_servers))
         .route("/v0/servers/{server_name}/versions", get(list_versions))
         .route(
@@ -528,6 +551,61 @@ async fn get_project_handler(
     })
     .await?;
     record.map(Json).ok_or(ApiError::NotFound)
+}
+
+// ---------------------------------------------------------------------------
+// snapshot artifacts — the public verification surface
+// ---------------------------------------------------------------------------
+
+async fn latest_snapshot(
+    State(state): State<ApiState>,
+) -> Result<Json<SnapshotArtifact>, ApiError> {
+    let artifact = spawn_store(move || state.snapshot_artifact_store.latest()).await?;
+    artifact.map(Json).ok_or(ApiError::NotFound)
+}
+
+async fn get_snapshot(
+    State(state): State<ApiState>,
+    Path(snapshot_id): Path<String>,
+) -> Result<Json<SnapshotArtifact>, ApiError> {
+    let artifact = spawn_store(move || state.snapshot_artifact_store.by_id(&snapshot_id)).await?;
+    artifact.map(Json).ok_or(ApiError::NotFound)
+}
+
+/// The membership set, streamed back exactly as stored.
+///
+/// Handed out as pre-serialised bytes with an explicit content type rather than
+/// via `Json`, because round-tripping through a serialiser could re-escape
+/// `canonical_json` and these bytes are only worth anything if they re-digest to
+/// the published root.
+async fn get_snapshot_entries(
+    State(state): State<ApiState>,
+    Path(snapshot_id): Path<String>,
+) -> Result<Response, ApiError> {
+    let entries =
+        spawn_store(move || state.snapshot_artifact_store.entries_json(&snapshot_id)).await?;
+    let body = entries.ok_or(ApiError::NotFound)?;
+    Ok((
+        StatusCode::OK,
+        [(http::header::CONTENT_TYPE, "application/json")],
+        body,
+    )
+        .into_response())
+}
+
+/// The keys receipts verify under.
+///
+/// Always 200, even when empty: an empty list is the truthful statement "this
+/// registry publishes nothing you can verify against", and a 404 would be
+/// indistinguishable from a misrouted request.
+async fn signing_keys(State(state): State<ApiState>) -> Json<Value> {
+    let keys = state.snapshot_artifact_store.signing_keys();
+    Json(serde_json::json!({
+        "keys": keys,
+        "note": "Receipts carry the signer_kid they were signed under; match on that, \
+                 not on position. Key history across rotations is not published yet, so a \
+                 receipt signed under a rotated key will not verify against this list.",
+    }))
 }
 
 async fn list_servers(
@@ -2789,5 +2867,301 @@ mod tests {
             parsed.planning_target.as_deref(),
             Some("github://owner/repo")
         );
+    }
+}
+
+/// The verification surface, checked against the SDK third parties actually run.
+///
+/// These tests deliberately use `rcx-verify` as an independent oracle rather
+/// than re-deriving hashes here. A test that recomputed the digest with its own
+/// code would pass just as happily if both it and the server were wrong in the
+/// same way — which is the exact failure mode a published verifier exists to
+/// catch.
+#[cfg(test)]
+mod snapshot_artifact_tests {
+    use std::sync::Arc;
+
+    use axum::body::Body;
+    use ed25519_dalek::{Signer as _, SigningKey};
+    use http::{Request, StatusCode};
+    use rcx_registry_crown::ReceiptDocument;
+    use rcx_registry_ingest::build_snapshot_plan;
+    use rcx_registry_ingest::MirroredServer;
+    use serde_json::Value;
+    use tower::ServiceExt;
+
+    use super::*;
+    use crate::snapshot_artifacts::{
+        InMemorySnapshotArtifactStore, PublishedSigningKey, SnapshotArtifact,
+    };
+
+    const KID: &str = "vault:transit:test-key-1";
+
+    fn mirrored(name: &str, version: &str, canonical_json: &str) -> MirroredServer {
+        MirroredServer {
+            name: name.to_string(),
+            version: version.to_string(),
+            schema_uri: String::new(),
+            schema_date: String::new(),
+            status: "active".to_string(),
+            updated_at: None,
+            is_latest: true,
+            canonical_json: canonical_json.to_string(),
+        }
+    }
+
+    /// Mints a snapshot exactly the way the sync loop does, so the artifacts
+    /// under test are produced by the production path rather than hand-rolled.
+    fn signed_snapshot() -> (SnapshotArtifact, Vec<u8>, [u8; 32], Vec<MirroredServer>) {
+        let entries = vec![
+            mirrored(
+                "io.example/alpha",
+                "1.0.0",
+                r#"{"name":"io.example/alpha"}"#,
+            ),
+            mirrored("io.example/beta", "2.1.0", r#"{"name":"io.example/beta"}"#),
+        ];
+
+        let plan = build_snapshot_plan(
+            &entries,
+            &[],
+            [1u8; rcx_registry_crown::ULID_LEN],
+            [2u8; rcx_registry_crown::ULID_LEN],
+            1_784_761_200_000,
+            None,
+            None,
+            KID,
+        );
+
+        // Same two-step the sync loop performs: sign the zero-signature form,
+        // then re-encode with the signature in place.
+        let signing_key = SigningKey::from_bytes(&[7u8; 32]);
+        let signature = signing_key.sign(&plan.snapshot_receipt.to_canonical_cbor());
+
+        let mut receipt = plan.snapshot_receipt.clone();
+        receipt.receipt_signature = signature.to_bytes();
+        let receipt_cbor = receipt.to_canonical_cbor();
+
+        let entries_json = serde_json::to_vec(
+            &entries
+                .iter()
+                .map(|entry| {
+                    serde_json::json!({
+                        "name": entry.name,
+                        "version": entry.version,
+                        "canonical_json": entry.canonical_json,
+                    })
+                })
+                .collect::<Vec<_>>(),
+        )
+        .expect("entry set should serialise");
+
+        let artifact = SnapshotArtifact {
+            snapshot_id: hex::encode(receipt.snapshot_id),
+            scraped_at: "2026-07-19T00:00:00Z".to_string(),
+            server_count: entries.len() as u32,
+            snapshot_root: hex::encode(receipt.snapshot_merkle_root),
+            receipt_hash: hex::encode(receipt.receipt_hash),
+            signer_kid: KID.to_string(),
+            receipt_cbor_hex: hex::encode(&receipt_cbor),
+            entries_available: true,
+        };
+
+        (
+            artifact,
+            entries_json,
+            signing_key.verifying_key().to_bytes(),
+            entries,
+        )
+    }
+
+    fn app() -> (Router, String) {
+        let (artifact, entries_json, public_key, _) = signed_snapshot();
+        let snapshot_id = artifact.snapshot_id.clone();
+        let store = InMemorySnapshotArtifactStore::default()
+            .with_artifact(artifact, Some(entries_json))
+            .with_key(PublishedSigningKey::ed25519(KID, public_key))
+            .shared();
+
+        let state = ApiState::new(Arc::new(InMemoryMirrorStore::new(Vec::new())))
+            .with_snapshot_artifact_store(store);
+        (router_with_state(state), snapshot_id)
+    }
+
+    async fn get_json(app: &Router, uri: &str) -> (StatusCode, Value) {
+        let response = app
+            .clone()
+            .oneshot(
+                Request::builder()
+                    .uri(uri)
+                    .body(Body::empty())
+                    .expect("request should build"),
+            )
+            .await
+            .expect("request should succeed");
+        let status = response.status();
+        let bytes = axum::body::to_bytes(response.into_body(), usize::MAX)
+            .await
+            .expect("body should read");
+        let value = serde_json::from_slice(&bytes).unwrap_or(Value::Null);
+        (status, value)
+    }
+
+    /// The gate: fetch what we publish, verify it with the published SDK, and
+    /// prove a named server is inside the signed snapshot.
+    #[tokio::test]
+    async fn published_artifacts_verify_a_named_server_end_to_end() {
+        let (app, _) = app();
+
+        let (status, snapshot) = get_json(&app, "/v0/snapshots/latest").await;
+        assert_eq!(status, StatusCode::OK);
+
+        let (status, keys) = get_json(&app, "/.well-known/rcx-keys.json").await;
+        assert_eq!(status, StatusCode::OK);
+        let public_key = hex::decode(
+            keys["keys"][0]["public_key_hex"]
+                .as_str()
+                .expect("a published key"),
+        )
+        .expect("key should be hex");
+        assert_eq!(
+            keys["keys"][0]["signer_kid"].as_str(),
+            snapshot["signer_kid"].as_str(),
+            "a caller matches key to receipt on signer_kid; they must agree"
+        );
+
+        // 1. the receipt verifies under the published key, via the published SDK
+        let receipt_cbor = hex::decode(
+            snapshot["receipt_cbor_hex"]
+                .as_str()
+                .expect("receipt bytes"),
+        )
+        .expect("receipt should be hex");
+        let facts = rcx_verify::verify_receipt(&receipt_cbor, &public_key)
+            .expect("published receipt must verify under the published key");
+
+        // 2. the root the receipt commits to is the one advertised
+        let served_root = hex::decode(snapshot["snapshot_root"].as_str().expect("root"))
+            .expect("root should be hex");
+        assert_eq!(
+            facts.snapshot_root.as_ref().map(|root| root.to_vec()),
+            Some(served_root.clone()),
+            "the advertised root must be the one inside the signed bytes, not beside them"
+        );
+
+        // 3. the entry set re-digests to that root
+        let snapshot_id = snapshot["snapshot_id"].as_str().expect("id");
+        let response = app
+            .oneshot(
+                Request::builder()
+                    .uri(format!("/v0/snapshots/{snapshot_id}/entries"))
+                    .body(Body::empty())
+                    .expect("request should build"),
+            )
+            .await
+            .expect("request should succeed");
+        assert_eq!(response.status(), StatusCode::OK);
+        let raw = axum::body::to_bytes(response.into_body(), usize::MAX)
+            .await
+            .expect("entries body should read");
+        let served: Vec<Value> = serde_json::from_slice(&raw).expect("entries should be JSON");
+
+        let entries: Vec<rcx_verify::Entry> = served
+            .iter()
+            .map(|entry| {
+                rcx_verify::Entry::new(
+                    entry["name"].as_str().expect("name").to_string(),
+                    entry["version"].as_str().expect("version").to_string(),
+                    entry["canonical_json"]
+                        .as_str()
+                        .expect("canonical_json")
+                        .to_string(),
+                )
+            })
+            .collect();
+
+        let mut expected_root = [0u8; 32];
+        expected_root.copy_from_slice(&served_root);
+        rcx_verify::verify_snapshot(&entries, &expected_root)
+            .expect("the served entry set must re-digest to the signed root");
+
+        // 4. and the server you came for is actually in it
+        assert!(
+            served
+                .iter()
+                .any(|entry| entry["name"] == "io.example/alpha"),
+            "membership is the whole point: a set that verifies but omits your server proves nothing"
+        );
+    }
+
+    /// A tampered entry must break the root. Without this, every assertion above
+    /// would pass just as well against a verifier that always says yes.
+    #[tokio::test]
+    async fn a_tampered_entry_no_longer_matches_the_signed_root() {
+        let (_, _, _, entries) = signed_snapshot();
+        let plan = build_snapshot_plan(
+            &entries,
+            &[],
+            [1u8; rcx_registry_crown::ULID_LEN],
+            [2u8; rcx_registry_crown::ULID_LEN],
+            1_784_761_200_000,
+            None,
+            None,
+            KID,
+        );
+        let root = plan.snapshot_receipt.snapshot_merkle_root;
+
+        let tampered: Vec<rcx_verify::Entry> = entries
+            .iter()
+            .map(|entry| {
+                let json = if entry.name == "io.example/alpha" {
+                    r#"{"name":"io.example/alpha","backdoor":true}"#.to_string()
+                } else {
+                    entry.canonical_json.clone()
+                };
+                rcx_verify::Entry::new(entry.name.clone(), entry.version.clone(), json)
+            })
+            .collect();
+
+        assert!(
+            rcx_verify::verify_snapshot(&tampered, &root).is_err(),
+            "editing a served entry must break the root, or membership means nothing"
+        );
+    }
+
+    /// An unknown or malformed snapshot id is "no such snapshot", not an error.
+    #[tokio::test]
+    async fn unknown_and_malformed_snapshot_ids_are_not_found() {
+        let (app, _) = app();
+        for uri in [
+            "/v0/snapshots/deadbeef",
+            "/v0/snapshots/not-hex-at-all",
+            "/v0/snapshots/deadbeef/entries",
+        ] {
+            let response = app
+                .clone()
+                .oneshot(
+                    Request::builder()
+                        .uri(uri)
+                        .body(Body::empty())
+                        .expect("request should build"),
+                )
+                .await
+                .expect("request should succeed");
+            assert_eq!(response.status(), StatusCode::NOT_FOUND, "for {uri}");
+        }
+    }
+
+    /// A registry with nothing verifiable says so, rather than 404ing the key
+    /// route in a way a caller cannot tell from a routing mistake.
+    #[tokio::test]
+    async fn a_registry_with_no_artifacts_publishes_an_empty_key_list() {
+        let app = router(Arc::new(InMemoryMirrorStore::new(Vec::new())));
+        let (status, keys) = get_json(&app, "/.well-known/rcx-keys.json").await;
+        assert_eq!(status, StatusCode::OK);
+        assert_eq!(keys["keys"].as_array().map(Vec::len), Some(0));
+
+        let (status, _) = get_json(&app, "/v0/snapshots/latest").await;
+        assert_eq!(status, StatusCode::NOT_FOUND);
     }
 }
