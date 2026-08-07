@@ -52,6 +52,17 @@ jobs:
         working-directory: sdks/typescript
       - name: Conformance — TypeScript SDK
         run: ./scripts/conformance-harness.py --adapter "node sdks/typescript/adapter.mjs"
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.26'
+          cache-dependency-path: sdks/go/go.sum
+      - name: Vet and build the Go adapter
+        run: |
+          go vet ./...
+          go build -o adapter-bin ./cmd/adapter
+        working-directory: sdks/go
+      - name: Conformance — Go SDK
+        run: ./scripts/conformance-harness.py --adapter "sdks/go/adapter-bin"
 
   frontdoor:
     runs-on: ubuntu-latest

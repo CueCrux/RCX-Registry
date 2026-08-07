@@ -9,7 +9,7 @@ is decided by one harness running one set of vectors against all of them.
 | Rust (reference) | [`crates/rcx-verify`](../crates/rcx-verify) | conformant — 52/52 |
 | Python | [`python/`](python) | conformant — 52/52 |
 | TypeScript | [`typescript/`](typescript) | conformant — 52/52 |
-| Go | — | not started |
+| Go | [`go/`](go) | conformant — 52/52 |
 
 ## Running the harness
 
@@ -18,13 +18,15 @@ cargo build -p rcx-verify --bin rcx-verify-adapter
 ./scripts/conformance-harness.py --adapter "./target/debug/rcx-verify-adapter"
 ./scripts/conformance-harness.py --adapter "python3 sdks/python/adapter.py"
 ./scripts/conformance-harness.py --adapter "node sdks/typescript/adapter.mjs"
+(cd sdks/go && go build -o adapter-bin ./cmd/adapter)
+./scripts/conformance-harness.py --adapter "sdks/go/adapter-bin"
 ```
 
 Exit 0 conformant, 1 not conformant, 2 the harness could not run the check —
 that third case is deliberately distinct, because "we could not look" must never
 be reported as "we looked and it was fine".
 
-CI runs all three on every change (`conformance` job). Cross-language reproducibility
+CI runs all four on every change (`conformance` job). Cross-language reproducibility
 is only a property if it is checked continuously; checked at release, it is a
 coincidence.
 
@@ -64,6 +66,12 @@ bytes before trusting anything.
 **Chain kind is an argument, never an inference.** Snapshot chains link
 `previous_snapshot_hash` → prior `snapshot_merkle_root`; enrichment chains link
 `supersedes_prior` → prior `receipt_hash`.
+
+**Go and JavaScript both lose the int/float distinction on parse.** `json.Unmarshal`
+into `any` gives `float64` for every number; `JSON.parse` gives `number`. Go needs
+`Decoder.UseNumber`, JS needs `JSON.parse` source access. Rust and Python parsers
+preserve it natively — which is exactly why the contract takes raw text and does
+not trust the caller's parser.
 
 ## Python SDK dependencies
 
