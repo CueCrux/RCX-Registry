@@ -63,6 +63,11 @@ jobs:
         working-directory: sdks/go
       - name: Conformance — Go SDK
         run: ./scripts/conformance-harness.py --adapter "sdks/go/adapter-bin"
+      # The client-config templates are what users paste. A template that stops
+      # producing parseable config fails silently otherwise — nobody reads these
+      # before pasting them, which is the point of generating them.
+      - name: Client config templates render for every client
+        run: ./scripts/rcx-client-config.py --selftest
 
   verify-action:
     # Exercises the published Action and the verification image end-to-end, on a
