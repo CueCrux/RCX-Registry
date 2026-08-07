@@ -129,6 +129,13 @@ pub trait SnapshotArtifactStore: Send + Sync + 'static {
 
     fn by_id(&self, snapshot_id_hex: &str) -> Result<Option<SnapshotArtifact>, ApiError>;
 
+    /// Verifiable snapshots, newest first, optionally starting before an
+    /// RFC-3339 instant.
+    ///
+    /// Only snapshots that can actually be checked appear here. Listing one a
+    /// caller cannot verify would put a row in an explorer that dead-ends.
+    fn list(&self, limit: u32, before: Option<&str>) -> Result<Vec<SnapshotArtifact>, ApiError>;
+
     /// The entry set as stored, byte for byte.
     ///
     /// Raw bytes, never a parsed value: re-serialising through a JSON writer
@@ -184,6 +191,16 @@ impl SnapshotArtifactStore for InMemorySnapshotArtifactStore {
             .iter()
             .find(|(artifact, _)| artifact.snapshot_id == snapshot_id_hex)
             .and_then(|(_, entries)| entries.clone()))
+    }
+
+    fn list(&self, limit: u32, _before: Option<&str>) -> Result<Vec<SnapshotArtifact>, ApiError> {
+        Ok(self
+            .artifacts
+            .iter()
+            .rev()
+            .take(limit as usize)
+            .map(|(artifact, _)| artifact.clone())
+            .collect())
     }
 
     /// No keys configured reports `Unsigned`, not `Unavailable`: an in-memory

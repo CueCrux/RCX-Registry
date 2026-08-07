@@ -431,6 +431,7 @@ pub fn router_with_state(state: ApiState) -> Router {
     };
     operator_routes
         .merge(Router::new())
+        .route("/v0/snapshots", get(list_snapshots))
         .route("/v0/snapshots/latest", get(latest_snapshot))
         .route("/v0/snapshots/{snapshot_id}", get(get_snapshot))
         .route(
@@ -557,6 +558,64 @@ async fn get_project_handler(
 // ---------------------------------------------------------------------------
 // snapshot artifacts — the public verification surface
 // ---------------------------------------------------------------------------
+
+/// Shape check only — the store parses it properly. This exists so the *reject*
+/// decision is uniform across backends, not to duplicate date parsing.
+fn looks_like_rfc3339(value: &str) -> bool {
+    let bytes = value.as_bytes();
+    bytes.len() >= 20
+        && bytes[..10].iter().enumerate().all(|(index, byte)| {
+            if index == 4 || index == 7 {
+                *byte == b'-'
+            } else {
+                byte.is_ascii_digit()
+            }
+        })
+        && (bytes[10] == b'T' || bytes[10] == b't')
+}
+
+#[derive(Debug, Deserialize)]
+struct ListSnapshotsQuery {
+    limit: Option<u32>,
+    before: Option<String>,
+}
+
+/// Verifiable snapshots, newest first.
+///
+/// Capped at 100. An explorer paging history should not be able to ask for the
+/// whole chain in one request — each row carries its signed receipt so the
+/// response is not small.
+async fn list_snapshots(
+    State(state): State<ApiState>,
+    Query(query): Query<ListSnapshotsQuery>,
+) -> Result<Json<Value>, ApiError> {
+    let limit = query.limit.unwrap_or(20).clamp(1, 100);
+    // Validate the cursor HERE rather than in a store implementation, so the
+    // contract is the same whichever store is wired. A malformed cursor that
+    // one backend rejects and another silently treats as "start from newest"
+    // pages the caller in a loop over the same rows forever.
+    if let Some(cursor) = query.before.as_deref() {
+        if !looks_like_rfc3339(cursor) {
+            return Err(ApiError::BadRequest(format!(
+                "`before` must be an RFC-3339 instant, got `{cursor}`"
+            )));
+        }
+    }
+    let snapshots = spawn_store(move || {
+        state
+            .snapshot_artifact_store
+            .list(limit, query.before.as_deref())
+    })
+    .await?;
+    // `next_before` is the oldest row's timestamp, so paging is a copy-paste
+    // rather than a date-arithmetic exercise for the caller.
+    let next_before = snapshots.last().map(|s| s.scraped_at.clone());
+    Ok(Json(serde_json::json!({
+        "count": snapshots.len(),
+        "snapshots": snapshots,
+        "next_before": next_before,
+    })))
+}
 
 async fn latest_snapshot(
     State(state): State<ApiState>,
@@ -3226,6 +3285,9 @@ mod snapshot_artifact_tests {
             fn entries_json(&self, _: &str) -> Result<Option<Vec<u8>>, ApiError> {
                 Ok(None)
             }
+            fn list(&self, _: u32, _: Option<&str>) -> Result<Vec<SnapshotArtifact>, ApiError> {
+                Ok(Vec::new())
+            }
             fn signing_keys(&self) -> SigningKeyStatus {
                 self.0.status()
             }
@@ -3274,6 +3336,50 @@ mod snapshot_artifact_tests {
         assert_eq!(body["status"], "published");
         assert_eq!(body["keys"][0]["signer_kid"], KID);
         assert_eq!(body["keys"][0]["public_key_hex"], hex::encode([9u8; 32]));
+    }
+
+    /// The explorer's history list. Newest first, capped, and paged by a cursor
+    /// the caller can copy rather than compute.
+    #[tokio::test]
+    async fn snapshot_list_is_newest_first_capped_and_pageable() {
+        let (artifact, entries, public_key, _) = signed_snapshot();
+        let mut older = artifact.clone();
+        older.snapshot_id = "aa".repeat(16);
+        older.scraped_at = "2026-07-01T00:00:00Z".to_string();
+
+        let store = InMemorySnapshotArtifactStore::default()
+            .with_artifact(older, Some(entries.clone()))
+            .with_artifact(artifact.clone(), Some(entries))
+            .with_key(PublishedSigningKey::ed25519(KID, public_key))
+            .shared();
+        let app = router_with_state(
+            ApiState::new(Arc::new(InMemoryMirrorStore::new(Vec::new())))
+                .with_snapshot_artifact_store(store),
+        );
+
+        let (status, body) = get_json(&app, "/v0/snapshots").await;
+        assert_eq!(status, StatusCode::OK);
+        assert_eq!(body["count"], 2);
+        assert_eq!(
+            body["snapshots"][0]["snapshot_id"], artifact.snapshot_id,
+            "newest must come first, or an explorer opens on stale history"
+        );
+        // The cursor is the oldest row's timestamp, so paging is copy-paste.
+        assert_eq!(body["next_before"], "2026-07-01T00:00:00Z");
+
+        // Every listed row carries its signed bytes, so a row is verifiable
+        // without a second fetch.
+        assert!(body["snapshots"][0]["receipt_cbor_hex"]
+            .as_str()
+            .is_some_and(|hex| !hex.is_empty()));
+
+        let (_, capped) = get_json(&app, "/v0/snapshots?limit=1").await;
+        assert_eq!(capped["count"], 1);
+
+        // An unparseable cursor is a bad request, not a silent restart from the
+        // newest row — that would page a caller in a loop forever.
+        let (status, _) = get_json(&app, "/v0/snapshots?before=not-a-date").await;
+        assert_eq!(status, StatusCode::BAD_REQUEST);
     }
 
     /// A signer that reports it has no key is terminal, and must not be

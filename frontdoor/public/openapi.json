@@ -5,218 +5,760 @@
     "version": "0.1.0",
     "summary": "MCP-compatible registry mirror with a frozen signed-evidence format.",
     "description": "The baseline read API preserves the upstream MCP registry response envelope. All public publisher verification and declaration writes currently return 404 while caller identity, proof binding, server-owned audit time, signing, and retrieval are hardened. Production has zero publisher-rights rows; snapshot receipts are minted and signed with Vault Transit ed25519 on each sync tick. This document is self-contained (no external $ref).",
-    "license": { "name": "Apache-2.0", "url": "https://www.apache.org/licenses/LICENSE-2.0" },
-    "contact": { "name": "RCX-Registry", "url": "https://rcxprotocol.org" }
+    "license": {
+      "name": "Apache-2.0",
+      "url": "https://www.apache.org/licenses/LICENSE-2.0"
+    },
+    "contact": {
+      "name": "RCX-Registry",
+      "url": "https://rcxprotocol.org"
+    }
   },
-  "servers": [{ "url": "https://registry.rcxprotocol.org", "description": "Production API host" }],
-  "externalDocs": { "description": "Source", "url": "https://github.com/CueCrux/RCX-Registry" },
+  "servers": [
+    {
+      "url": "https://registry.rcxprotocol.org",
+      "description": "Production API host"
+    }
+  ],
+  "externalDocs": {
+    "description": "Source",
+    "url": "https://github.com/CueCrux/RCX-Registry"
+  },
   "tags": [
-    { "name": "registry", "description": "Baseline mirror read API." },
-    { "name": "publisher-rights", "description": "Publisher-rights reads plus disabled verification contracts." },
-    { "name": "published-records", "description": "Passport and project discovery. Production persistence and publish ingestion are not yet wired." },
-    { "name": "onboarding", "description": "Publisher onboarding documentation." }
+    {
+      "name": "registry",
+      "description": "Baseline mirror read API."
+    },
+    {
+      "name": "publisher-rights",
+      "description": "Publisher-rights reads plus disabled verification contracts."
+    },
+    {
+      "name": "published-records",
+      "description": "Passport and project discovery. Production persistence and publish ingestion are not yet wired."
+    },
+    {
+      "name": "onboarding",
+      "description": "Publisher onboarding documentation."
+    }
   ],
   "paths": {
     "/v0/servers": {
       "get": {
-        "tags": ["registry"],
+        "tags": [
+          "registry"
+        ],
         "summary": "List mirrored servers",
         "description": "Returns the upstream-compatible `{servers, metadata}` envelope. Deleted rows are hidden unless `include_deleted=true` or `updated_since` is supplied.",
         "parameters": [
-          { "name": "cursor", "in": "query", "schema": { "type": "string" }, "description": "Opaque cursor returned as `metadata.nextCursor`." },
-          { "name": "limit", "in": "query", "schema": { "type": "integer", "minimum": 1, "maximum": 100, "default": 30 } },
-          { "name": "updated_since", "in": "query", "schema": { "type": "string" }, "description": "Lexicographic upstream update timestamp lower bound." },
-          { "name": "search", "in": "query", "schema": { "type": "string" }, "description": "Case-insensitive server-name substring." },
-          { "name": "version", "in": "query", "schema": { "type": "string" }, "description": "Exact version or `latest`." },
-          { "name": "include_deleted", "in": "query", "schema": { "type": "boolean", "default": false } }
+          {
+            "name": "cursor",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Opaque cursor returned as `metadata.nextCursor`."
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 30
+            }
+          },
+          {
+            "name": "updated_since",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Lexicographic upstream update timestamp lower bound."
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Case-insensitive server-name substring."
+          },
+          {
+            "name": "version",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Exact version or `latest`."
+          },
+          {
+            "name": "include_deleted",
+            "in": "query",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
         ],
         "responses": {
-          "200": { "description": "A page of server envelopes.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ServerList" } } } },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "500": { "$ref": "#/components/responses/StoreError" }
+          "200": {
+            "description": "A page of server envelopes.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServerList"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "500": {
+            "$ref": "#/components/responses/StoreError"
+          }
         }
       }
     },
     "/v0/servers/{server_name}/versions": {
       "get": {
-        "tags": ["registry"],
+        "tags": [
+          "registry"
+        ],
         "summary": "List versions for a server",
         "description": "An unknown server name returns `200` with an empty `servers` array.",
         "parameters": [
-          { "$ref": "#/components/parameters/ServerName" },
-          { "$ref": "#/components/parameters/IncludeDeleted" }
+          {
+            "$ref": "#/components/parameters/ServerName"
+          },
+          {
+            "$ref": "#/components/parameters/IncludeDeleted"
+          }
         ],
         "responses": {
-          "200": { "description": "All matching versions, newest first.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ServerList" } } } },
-          "500": { "$ref": "#/components/responses/StoreError" }
+          "200": {
+            "description": "All matching versions, newest first.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServerList"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/StoreError"
+          }
         }
       }
     },
     "/v0/servers/{server_name}/versions/{version}": {
       "get": {
-        "tags": ["registry"],
+        "tags": [
+          "registry"
+        ],
         "summary": "Fetch one server version",
         "parameters": [
-          { "$ref": "#/components/parameters/ServerName" },
-          { "name": "version", "in": "path", "required": true, "schema": { "type": "string" }, "description": "Exact version or `latest`." },
-          { "$ref": "#/components/parameters/IncludeDeleted" }
+          {
+            "$ref": "#/components/parameters/ServerName"
+          },
+          {
+            "name": "version",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Exact version or `latest`."
+          },
+          {
+            "$ref": "#/components/parameters/IncludeDeleted"
+          }
         ],
         "responses": {
-          "200": { "description": "One server envelope.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ServerEnvelope" } } } },
-          "404": { "$ref": "#/components/responses/NotFound" },
-          "500": { "$ref": "#/components/responses/StoreError" }
+          "200": {
+            "description": "One server envelope.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServerEnvelope"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/StoreError"
+          }
+        }
+      }
+    },
+    "/v0/snapshots": {
+      "get": {
+        "summary": "List verifiable snapshots, newest first.",
+        "description": "Only snapshots whose signed bytes were retained appear here. Snapshots minted before artifact retention existed have no verifiable form and are omitted rather than served unverifiably.",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20
+            }
+          },
+          {
+            "name": "before",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "description": "RFC-3339 instant; returns snapshots strictly older. Copy `next_before` from the previous page. A malformed value is a 400, never a silent restart from the newest row."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Snapshot list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SnapshotList"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Malformed `before` cursor"
+          }
+        }
+      }
+    },
+    "/v0/snapshots/latest": {
+      "get": {
+        "summary": "The most recent verifiable snapshot.",
+        "description": "404 when no snapshot has retained signed bytes yet.",
+        "responses": {
+          "200": {
+            "description": "Snapshot artifact",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SnapshotArtifact"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No verifiable snapshot"
+          }
+        }
+      }
+    },
+    "/v0/snapshots/{snapshot_id}": {
+      "get": {
+        "summary": "One snapshot by hex id.",
+        "parameters": [
+          {
+            "name": "snapshot_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Snapshot artifact",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SnapshotArtifact"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Unknown or malformed id"
+          }
+        }
+      }
+    },
+    "/v0/snapshots/{snapshot_id}/entries": {
+      "get": {
+        "summary": "The entry set this snapshot's root digests.",
+        "description": "The `{name, version, canonical_json}` set, in the shape `rcx verify snapshot` consumes. Large (tens of MB): v1's root is a flat set digest with no inclusion proof, so proving membership means recomputing over every entry. 404 once the set has aged out of retention; the receipt still verifies.",
+        "parameters": [
+          {
+            "name": "snapshot_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Entry set",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SnapshotEntry"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Unknown snapshot, or entries aged out"
+          }
+        }
+      }
+    },
+    "/.well-known/rcx-keys.json": {
+      "get": {
+        "summary": "The ed25519 public key(s) receipts verify under.",
+        "description": "Three outcomes, deliberately distinct: 200 `published` (verify against these), 200 `unsigned` (this registry signs nothing — terminal), 503 `unavailable` (not read yet — retryable, `Retry-After` set). Do not treat an empty `keys` array as an answer; read `status`.",
+        "responses": {
+          "200": {
+            "description": "Published, or a settled `unsigned`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SigningKeys"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Key not resolved yet — retryable"
+          }
         }
       }
     },
     "/v0/publisher-rights/dns-challenge": {
       "post": {
-        "tags": ["publisher-rights"],
+        "tags": [
+          "publisher-rights"
+        ],
         "summary": "DNS TXT challenge (disabled)",
         "description": "The production edge returns 404. This route will not reopen until domain proof is bound to an authenticated publisher identity.",
         "deprecated": true,
         "responses": {
-          "404": { "description": "Publisher verification is fail-closed." }
+          "404": {
+            "description": "Publisher verification is fail-closed."
+          }
         }
       }
     },
     "/v0/publisher-rights/dns-verify": {
       "post": {
-        "tags": ["publisher-rights"],
+        "tags": [
+          "publisher-rights"
+        ],
         "summary": "DNS TXT verification (disabled)",
         "description": "The production edge returns 404. Reopening requires authenticated passport binding and server-owned verification time.",
         "deprecated": true,
         "responses": {
-          "404": { "description": "Publisher verification is fail-closed." }
+          "404": {
+            "description": "Publisher verification is fail-closed."
+          }
         }
       }
     },
     "/v0/publisher-rights/github/start": {
       "get": {
-        "tags": ["publisher-rights"],
+        "tags": [
+          "publisher-rights"
+        ],
         "summary": "GitHub OAuth start (disabled)",
         "description": "The production edge returns 404. OAuth credentials are unset; server-bound state and explicit organization ownership proof are also required before reopening.",
         "deprecated": true,
         "responses": {
-          "404": { "description": "Publisher verification is fail-closed." }
+          "404": {
+            "description": "Publisher verification is fail-closed."
+          }
         }
       }
     },
     "/v0/publisher-rights/github/callback": {
       "get": {
-        "tags": ["publisher-rights"],
+        "tags": [
+          "publisher-rights"
+        ],
         "summary": "GitHub OAuth callback (disabled)",
         "description": "The production edge returns 404. The replacement must bind callback state and use server-owned audit time.",
         "deprecated": true,
         "responses": {
-          "404": { "description": "Publisher verification is fail-closed." }
+          "404": {
+            "description": "Publisher verification is fail-closed."
+          }
         }
       }
     },
     "/v0/publishers/{publisher_passport}": {
       "get": {
-        "tags": ["publisher-rights"],
+        "tags": [
+          "publisher-rights"
+        ],
         "summary": "List a publisher's verified namespace rights",
         "description": "Always returns `200`; an unknown passport has an empty `rights` array.",
-        "parameters": [{ "name": "publisher_passport", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "parameters": [
+          {
+            "name": "publisher_passport",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
-          "200": { "description": "Publisher rights list.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/PublisherRightsList" } } } },
-          "500": { "$ref": "#/components/responses/StoreError" }
+          "200": {
+            "description": "Publisher rights list.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublisherRightsList"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/StoreError"
+          }
         }
       }
     },
     "/v0/passports": {
       "get": {
-        "tags": ["published-records"],
+        "tags": [
+          "published-records"
+        ],
         "summary": "List published passport descriptors",
         "description": "The production service currently uses an empty in-memory store for this additive surface.",
         "parameters": [
-          { "name": "category", "in": "query", "schema": { "type": "string" } },
-          { "name": "min_tier", "in": "query", "schema": { "type": "string" } },
-          { "name": "agent_work_gate", "in": "query", "schema": { "type": "boolean" } }
+          {
+            "name": "category",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "min_tier",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "agent_work_gate",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          }
         ],
         "responses": {
-          "200": { "description": "Filtered descriptors.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/PassportList" } } } },
-          "500": { "$ref": "#/components/responses/StoreError" }
+          "200": {
+            "description": "Filtered descriptors.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PassportList"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/StoreError"
+          }
         }
       }
     },
     "/v0/passports/{passport_fpr}": {
       "get": {
-        "tags": ["published-records"],
+        "tags": [
+          "published-records"
+        ],
         "summary": "Fetch one published passport descriptor",
-        "parameters": [{ "name": "passport_fpr", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "parameters": [
+          {
+            "name": "passport_fpr",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
-          "200": { "description": "Passport descriptor.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/PassportRecord" } } } },
-          "404": { "$ref": "#/components/responses/NotFound" },
-          "500": { "$ref": "#/components/responses/StoreError" }
+          "200": {
+            "description": "Passport descriptor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PassportRecord"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/StoreError"
+          }
         }
       }
     },
     "/v0/projects": {
       "get": {
-        "tags": ["published-records"],
+        "tags": [
+          "published-records"
+        ],
         "summary": "List published project descriptors",
         "description": "The production service currently uses an empty in-memory store for this additive surface.",
-        "parameters": [{ "name": "publisher", "in": "query", "schema": { "type": "string" } }],
+        "parameters": [
+          {
+            "name": "publisher",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
-          "200": { "description": "Filtered descriptors.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ProjectList" } } } },
-          "500": { "$ref": "#/components/responses/StoreError" }
+          "200": {
+            "description": "Filtered descriptors.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProjectList"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/StoreError"
+          }
         }
       }
     },
     "/v0/projects/{publisher_passport}/{project_id}": {
       "get": {
-        "tags": ["published-records"],
+        "tags": [
+          "published-records"
+        ],
         "summary": "Fetch one published project descriptor",
         "parameters": [
-          { "name": "publisher_passport", "in": "path", "required": true, "schema": { "type": "string" } },
-          { "name": "project_id", "in": "path", "required": true, "schema": { "type": "string" } }
+          {
+            "name": "publisher_passport",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
         ],
         "responses": {
-          "200": { "description": "Project descriptor.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ProjectRecord" } } } },
-          "404": { "$ref": "#/components/responses/NotFound" },
-          "500": { "$ref": "#/components/responses/StoreError" }
+          "200": {
+            "description": "Project descriptor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProjectRecord"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/StoreError"
+          }
         }
       }
     },
     "/publish": {
       "get": {
-        "tags": ["onboarding"],
+        "tags": [
+          "onboarding"
+        ],
         "summary": "Publisher onboarding page",
-        "responses": { "200": { "description": "HTML onboarding guidance.", "content": { "text/html": { "schema": { "type": "string" } } } } }
+        "responses": {
+          "200": {
+            "description": "HTML onboarding guidance.",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
       }
     }
   },
   "components": {
     "parameters": {
-      "ServerName": { "name": "server_name", "in": "path", "required": true, "schema": { "type": "string" }, "description": "MCP server name; clients serialize `/` for the path as required.", "example": "io.github.owner/server" },
-      "ServerNameQuery": { "name": "server_name", "in": "query", "required": true, "schema": { "type": "string" }, "example": "io.github.owner/server" },
-      "PublisherPassportQuery": { "name": "publisher_passport", "in": "query", "required": true, "schema": { "type": "string" }, "example": "passport:github:owner" },
-      "IncludeDeleted": { "name": "include_deleted", "in": "query", "required": false, "schema": { "type": "boolean", "default": false } }
+      "ServerName": {
+        "name": "server_name",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string"
+        },
+        "description": "MCP server name; clients serialize `/` for the path as required.",
+        "example": "io.github.owner/server"
+      },
+      "ServerNameQuery": {
+        "name": "server_name",
+        "in": "query",
+        "required": true,
+        "schema": {
+          "type": "string"
+        },
+        "example": "io.github.owner/server"
+      },
+      "PublisherPassportQuery": {
+        "name": "publisher_passport",
+        "in": "query",
+        "required": true,
+        "schema": {
+          "type": "string"
+        },
+        "example": "passport:github:owner"
+      },
+      "IncludeDeleted": {
+        "name": "include_deleted",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "boolean",
+          "default": false
+        }
+      }
     },
     "responses": {
-      "BadRequest": { "description": "Invalid request or cursor.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } } },
-      "NotFound": { "description": "No such record.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } } },
-      "VerificationFailed": { "description": "The supplied ownership proof did not verify.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } } },
-      "Unavailable": { "description": "The required verifier is not configured.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } } },
-      "StoreError": { "description": "Internal storage failure.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } } }
+      "BadRequest": {
+        "description": "Invalid request or cursor.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "NotFound": {
+        "description": "No such record.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "VerificationFailed": {
+        "description": "The supplied ownership proof did not verify.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "Unavailable": {
+        "description": "The required verifier is not configured.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "StoreError": {
+        "description": "Internal storage failure.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      }
     },
     "schemas": {
       "Error": {
         "type": "object",
-        "required": ["code", "message"],
-        "properties": { "code": { "type": "string" }, "message": { "type": "string" } },
+        "required": [
+          "code",
+          "message"
+        ],
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          }
+        },
         "additionalProperties": false
       },
       "ServerList": {
         "type": "object",
-        "required": ["servers", "metadata"],
+        "required": [
+          "servers",
+          "metadata"
+        ],
         "properties": {
-          "servers": { "type": "array", "items": { "$ref": "#/components/schemas/ServerEnvelope" } },
+          "servers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ServerEnvelope"
+            }
+          },
           "metadata": {
             "type": "object",
-            "required": ["count"],
-            "properties": { "nextCursor": { "type": ["string", "null"] }, "count": { "type": "integer", "minimum": 0 } },
+            "required": [
+              "count"
+            ],
+            "properties": {
+              "nextCursor": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "count": {
+                "type": "integer",
+                "minimum": 0
+              }
+            },
             "additionalProperties": false
           }
         },
@@ -224,16 +766,32 @@
       },
       "ServerEnvelope": {
         "type": "object",
-        "required": ["server", "_meta"],
+        "required": [
+          "server",
+          "_meta"
+        ],
         "properties": {
-          "server": { "type": "object", "description": "Upstream MCP `server.json` document.", "additionalProperties": true },
+          "server": {
+            "type": "object",
+            "description": "Upstream MCP `server.json` document.",
+            "additionalProperties": true
+          },
           "_meta": {
             "type": "object",
             "description": "Upstream official metadata plus optional RCX auto/publisher extensions.",
             "properties": {
-              "io.modelcontextprotocol.registry/official": { "type": "object", "additionalProperties": true },
-              "org.rcxprotocol.registry/publisher": { "type": "object", "additionalProperties": true },
-              "org.rcxprotocol.registry/auto": { "type": "object", "additionalProperties": true }
+              "io.modelcontextprotocol.registry/official": {
+                "type": "object",
+                "additionalProperties": true
+              },
+              "org.rcxprotocol.registry/publisher": {
+                "type": "object",
+                "additionalProperties": true
+              },
+              "org.rcxprotocol.registry/auto": {
+                "type": "object",
+                "additionalProperties": true
+              }
             },
             "additionalProperties": true
           }
@@ -242,39 +800,219 @@
       },
       "PublisherRightsRecord": {
         "type": "object",
-        "required": ["publisher_passport", "namespace", "server_name", "verification_method", "verified_at", "receipt_hash"],
+        "required": [
+          "publisher_passport",
+          "namespace",
+          "server_name",
+          "verification_method",
+          "verified_at",
+          "receipt_hash"
+        ],
         "properties": {
-          "publisher_passport": { "type": "string" },
-          "namespace": { "type": "string" },
-          "server_name": { "type": "string" },
-          "verification_method": { "type": "string", "enum": ["dns_txt", "github_oauth", "manual"] },
-          "verified_at": { "type": "integer", "format": "int64", "minimum": 0, "description": "Unix epoch milliseconds." },
-          "receipt_hash": { "type": "string", "pattern": "^blake3:[0-9a-f]{64}$", "description": "Deterministic receipt hash; the full receipt and signing key are not returned by this API." }
+          "publisher_passport": {
+            "type": "string"
+          },
+          "namespace": {
+            "type": "string"
+          },
+          "server_name": {
+            "type": "string"
+          },
+          "verification_method": {
+            "type": "string",
+            "enum": [
+              "dns_txt",
+              "github_oauth",
+              "manual"
+            ]
+          },
+          "verified_at": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "description": "Unix epoch milliseconds."
+          },
+          "receipt_hash": {
+            "type": "string",
+            "pattern": "^blake3:[0-9a-f]{64}$",
+            "description": "Deterministic receipt hash; the full receipt and signing key are not returned by this API."
+          }
         },
         "additionalProperties": false
       },
       "PublisherRightsList": {
         "type": "object",
-        "required": ["publisher_passport", "rights"],
+        "required": [
+          "publisher_passport",
+          "rights"
+        ],
         "properties": {
-          "publisher_passport": { "type": "string" },
-          "rights": { "type": "array", "items": { "$ref": "#/components/schemas/PublisherRightsRecord" } }
+          "publisher_passport": {
+            "type": "string"
+          },
+          "rights": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PublisherRightsRecord"
+            }
+          }
         },
         "additionalProperties": false
       },
-      "PassportRecord": { "type": "object", "description": "A passport publish descriptor.", "additionalProperties": true },
+      "PassportRecord": {
+        "type": "object",
+        "description": "A passport publish descriptor.",
+        "additionalProperties": true
+      },
       "PassportList": {
         "type": "object",
-        "required": ["count", "passports"],
-        "properties": { "count": { "type": "integer", "minimum": 0 }, "passports": { "type": "array", "items": { "$ref": "#/components/schemas/PassportRecord" } } },
+        "required": [
+          "count",
+          "passports"
+        ],
+        "properties": {
+          "count": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "passports": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PassportRecord"
+            }
+          }
+        },
         "additionalProperties": false
       },
-      "ProjectRecord": { "type": "object", "description": "A project publish descriptor.", "additionalProperties": true },
+      "ProjectRecord": {
+        "type": "object",
+        "description": "A project publish descriptor.",
+        "additionalProperties": true
+      },
       "ProjectList": {
         "type": "object",
-        "required": ["count", "projects"],
-        "properties": { "count": { "type": "integer", "minimum": 0 }, "projects": { "type": "array", "items": { "$ref": "#/components/schemas/ProjectRecord" } } },
+        "required": [
+          "count",
+          "projects"
+        ],
+        "properties": {
+          "count": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "projects": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProjectRecord"
+            }
+          }
+        },
         "additionalProperties": false
+      },
+      "SnapshotArtifact": {
+        "type": "object",
+        "properties": {
+          "snapshot_id": {
+            "type": "string",
+            "description": "hex"
+          },
+          "scraped_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "server_count": {
+            "type": "integer"
+          },
+          "snapshot_root": {
+            "type": "string",
+            "description": "hex of the flat BLAKE3 set digest — not a Merkle tree; no inclusion proof is derivable (spec v1 §6)"
+          },
+          "receipt_hash": {
+            "type": "string",
+            "description": "hex"
+          },
+          "signer_kid": {
+            "type": "string",
+            "description": "match a key on this, never on position"
+          },
+          "receipt_cbor_hex": {
+            "type": "string",
+            "description": "the signed canonical CBOR — the input to verifyReceipt"
+          },
+          "entries_available": {
+            "type": "boolean",
+            "description": "false once the entry set has aged out; the receipt still verifies, membership can no longer be recomputed"
+          }
+        }
+      },
+      "SnapshotList": {
+        "type": "object",
+        "properties": {
+          "count": {
+            "type": "integer"
+          },
+          "snapshots": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SnapshotArtifact"
+            }
+          },
+          "next_before": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "pass as `before` for the next page"
+          }
+        }
+      },
+      "SnapshotEntry": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string"
+          },
+          "canonical_json": {
+            "type": "string",
+            "description": "the exact bytes that enter the digest"
+          }
+        }
+      },
+      "SigningKeys": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "published",
+              "unsigned",
+              "unavailable"
+            ]
+          },
+          "keys": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "signer_kid": {
+                  "type": "string"
+                },
+                "algorithm": {
+                  "type": "string"
+                },
+                "public_key_hex": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "note": {
+            "type": "string"
+          }
+        }
       }
     }
   }
