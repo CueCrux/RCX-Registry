@@ -5,6 +5,7 @@
 
 use std::process::ExitCode;
 use std::sync::Arc;
+use std::time::Duration;
 
 use rcx_registry_server::config::Config;
 use rcx_registry_server::db;
@@ -104,31 +105,19 @@ async fn run() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
         }
     };
 
-    // Fetch the public half once at startup. It only changes on a rotation
-    // (M3c), so a per-request Vault round-trip on a public read path would buy
-    // nothing — and a Vault outage should degrade key publication, not every
-    // snapshot read. A failure here is a warning, never fatal: the registry
-    // still mirrors and still signs; it just cannot tell anyone what to verify
-    // against, and saying nothing beats publishing a key that signs nothing.
-    let signing_keys = match signer.public_key() {
-        Ok(Some(key)) => vec![rcx_registry_api::PublishedSigningKey::ed25519(
-            signer.signer_kid(),
-            key,
-        )],
-        Ok(None) => {
-            tracing::warn!(
-                "signer exposes no public key — /.well-known/rcx-keys.json will be empty \
-                 and published receipts cannot be verified by third parties"
-            );
-            Vec::new()
-        }
-        Err(error) => {
-            tracing::warn!(error = %error, "could not read the signing public key from vault");
-            Vec::new()
-        }
-    };
+    // The key is resolved in the background rather than inline, because a
+    // failure here is expected rather than exceptional: with a `vault-agent`
+    // sink there is no guaranteed start order between the agent and this
+    // process, and the token file is routinely unreadable for the first few
+    // seconds. Reading it once at boot would turn that ordinary race into a
+    // registry that publishes no key until somebody notices and restarts it.
+    //
+    // Until it resolves, the endpoint reports `unavailable` (retryable) rather
+    // than an empty key list, so a caller polling for a key is never told the
+    // registry is unsigned when it is merely not ready.
+    let signing_keys = Arc::new(rcx_registry_api::SigningKeyPublication::default());
     let snapshot_artifacts: Arc<dyn rcx_registry_api::SnapshotArtifactStore> = Arc::new(
-        PgSnapshotArtifactStore::new(snapshots.clone(), signing_keys),
+        PgSnapshotArtifactStore::new(snapshots.clone(), signing_keys.clone()),
     );
 
     let metrics = Metrics::new();
@@ -149,6 +138,12 @@ async fn run() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     let router = server::build_router(api_state, health_state, metrics.clone());
 
     let (shutdown_tx, shutdown_rx) = watch::channel(false);
+
+    tokio::spawn(resolve_signing_key(
+        signer.clone(),
+        signing_keys,
+        shutdown_rx.clone(),
+    ));
 
     let sync_deps = loops::sync::SyncDeps {
         mirror: PgMirrorStore::new(pool.clone()),
@@ -231,5 +226,85 @@ async fn wait_for_signal() {
     #[cfg(not(unix))]
     {
         let _ = signal::ctrl_c().await;
+    }
+}
+
+/// Fill the signing-key slot, retrying until it succeeds.
+///
+/// Terminates on exactly two outcomes: the key is published, or the signer
+/// reports it has none. Everything else is transient by assumption and retried
+/// with capped backoff, because the common failure — a `vault-agent` sink that
+/// has not written its token yet — resolves itself within seconds, and the less
+/// common one (Vault down) resolves itself within hours. Neither should require
+/// an operator to restart the registry to get a key published.
+async fn resolve_signing_key(
+    signer: Arc<dyn Signer>,
+    publication: Arc<rcx_registry_api::SigningKeyPublication>,
+    mut shutdown: watch::Receiver<bool>,
+) {
+    const FIRST_DELAY: Duration = Duration::from_secs(2);
+    const MAX_DELAY: Duration = Duration::from_secs(300);
+
+    let mut delay = FIRST_DELAY;
+    let mut attempts: u32 = 0;
+
+    loop {
+        if *shutdown.borrow() {
+            return;
+        }
+
+        let probe = signer.clone();
+        // `public_key` uses a blocking HTTP client; calling it directly on the
+        // async runtime would panic.
+        let outcome = tokio::task::spawn_blocking(move || probe.public_key()).await;
+        attempts += 1;
+
+        match outcome {
+            Ok(Ok(Some(key))) => {
+                publication.publish(vec![rcx_registry_api::PublishedSigningKey::ed25519(
+                    signer.signer_kid(),
+                    key,
+                )]);
+                tracing::info!(
+                    signer_kid = signer.signer_kid(),
+                    attempts,
+                    "signing public key published — receipts are now independently verifiable"
+                );
+                return;
+            }
+            Ok(Ok(None)) => {
+                // Terminal: there is no key, so retrying would never produce one
+                // and the endpoint should say so rather than say "try later".
+                publication.mark_unsigned();
+                tracing::warn!(
+                    "signer exposes no public key — this registry is unsigned and its receipts \
+                     cannot be verified by a third party"
+                );
+                return;
+            }
+            Ok(Err(error)) => {
+                // Loud once, quiet after. A vault-agent race is normal at boot
+                // and should not look like an incident; a persistent outage
+                // should still leave a trail.
+                if attempts == 1 {
+                    tracing::warn!(error = %error, "could not read the signing public key yet — retrying");
+                } else {
+                    tracing::debug!(error = %error, attempts, "signing public key still unreadable");
+                }
+            }
+            Err(error) => {
+                tracing::warn!(error = %error, "signing key probe task failed");
+            }
+        }
+
+        tokio::select! {
+            _ = tokio::time::sleep(delay) => {}
+            changed = shutdown.changed() => {
+                if changed.is_err() || *shutdown.borrow() {
+                    return;
+                }
+            }
+        }
+        delay = (delay * 2).min(MAX_DELAY);
     }
 }

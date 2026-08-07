@@ -15,7 +15,7 @@
 //! cheaper-looking check before then would be offering a weaker guarantee under
 //! the same name.
 
-use std::sync::Arc;
+use std::sync::{Arc, RwLock};
 
 use serde::Serialize;
 
@@ -60,6 +60,66 @@ impl PublishedSigningKey {
     }
 }
 
+/// Whether a key is publishable, and if not, *why* not.
+///
+/// The two negative cases are deliberately distinct, for the same reason the
+/// CLI separates exit 1 from exit 2: "this registry signs nothing" and "we could
+/// not read the key just now" are opposite instructions to a caller. Collapsing
+/// them into an empty list tells someone polling for a key to give up when they
+/// should retry, or to retry forever when they should give up.
+#[derive(Debug, Clone)]
+pub enum SigningKeyStatus {
+    Published(Vec<PublishedSigningKey>),
+    /// The signer has no key at all — an unsigned registry. Terminal; nothing
+    /// will arrive by waiting.
+    Unsigned,
+    /// A key exists but has not been read yet. Retryable.
+    Unavailable,
+}
+
+/// A key slot that starts empty and is filled once resolution succeeds.
+///
+/// Resolution happens off the request path, so a key store that is briefly
+/// unreachable never adds latency to a public read — and, unlike a value
+/// captured once at boot, a transient failure at startup does not leave the
+/// registry publishing nothing until someone restarts it. That startup race is
+/// the expected case, not the exotic one: with a `vault-agent` sink there is no
+/// guaranteed start order between the agent and this process.
+pub struct SigningKeyPublication {
+    status: RwLock<SigningKeyStatus>,
+}
+
+impl Default for SigningKeyPublication {
+    fn default() -> Self {
+        Self {
+            status: RwLock::new(SigningKeyStatus::Unavailable),
+        }
+    }
+}
+
+impl SigningKeyPublication {
+    pub fn status(&self) -> SigningKeyStatus {
+        match self.status.read() {
+            Ok(guard) => guard.clone(),
+            // A poisoned lock means a writer panicked. Report unavailable rather
+            // than an empty list: we genuinely do not know what the key is.
+            Err(_) => SigningKeyStatus::Unavailable,
+        }
+    }
+
+    pub fn publish(&self, keys: Vec<PublishedSigningKey>) {
+        if let Ok(mut guard) = self.status.write() {
+            *guard = SigningKeyStatus::Published(keys);
+        }
+    }
+
+    pub fn mark_unsigned(&self) {
+        if let Ok(mut guard) = self.status.write() {
+            *guard = SigningKeyStatus::Unsigned;
+        }
+    }
+}
+
 pub trait SnapshotArtifactStore: Send + Sync + 'static {
     /// The most recent snapshot that is actually verifiable — which is not
     /// necessarily the most recent snapshot. Rows minted before the signed bytes
@@ -76,9 +136,9 @@ pub trait SnapshotArtifactStore: Send + Sync + 'static {
     /// worth because they re-digest to the published root.
     fn entries_json(&self, snapshot_id_hex: &str) -> Result<Option<Vec<u8>>, ApiError>;
 
-    /// Empty means no key is publishable, which is the honest answer when the
-    /// registry is running unsigned. Never synthesise one.
-    fn signing_keys(&self) -> Vec<PublishedSigningKey>;
+    /// Never synthesise a key: a placeholder would have third parties verifying
+    /// against something that signs nothing.
+    fn signing_keys(&self) -> SigningKeyStatus;
 }
 
 /// Test double. Also what a registry with no signer configured effectively is:
@@ -126,7 +186,14 @@ impl SnapshotArtifactStore for InMemorySnapshotArtifactStore {
             .and_then(|(_, entries)| entries.clone()))
     }
 
-    fn signing_keys(&self) -> Vec<PublishedSigningKey> {
-        self.keys.clone()
+    /// No keys configured reports `Unsigned`, not `Unavailable`: an in-memory
+    /// store has no key source to wait on, so telling a caller to retry would be
+    /// telling them to wait for something that is never coming.
+    fn signing_keys(&self) -> SigningKeyStatus {
+        if self.keys.is_empty() {
+            SigningKeyStatus::Unsigned
+        } else {
+            SigningKeyStatus::Published(self.keys.clone())
+        }
     }
 }

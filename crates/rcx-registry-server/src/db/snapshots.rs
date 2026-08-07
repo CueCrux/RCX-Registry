@@ -1,7 +1,11 @@
 //! Postgres-backed snapshot storage helper used by the sync loop.
 
+use std::sync::Arc;
+
 use chrono::{DateTime, Utc};
-use rcx_registry_api::{ApiError, PublishedSigningKey, SnapshotArtifact, SnapshotArtifactStore};
+use rcx_registry_api::{
+    ApiError, SigningKeyPublication, SigningKeyStatus, SnapshotArtifact, SnapshotArtifactStore,
+};
 use rcx_registry_crown::{HASH_LEN, SIGNATURE_LEN, ULID_LEN};
 
 use super::{DbError, PgPool};
@@ -195,17 +199,18 @@ fn vec_to_fixed<const N: usize>(bytes: Vec<u8>) -> [u8; N] {
 
 /// Adapts the Postgres store to the API's artifact trait.
 ///
-/// Carries the signing keys as data rather than reaching for the signer: the
-/// public half does not change without a rotation (M3c), so fetching it once at
-/// startup keeps a Vault round-trip off a public read path — and a Vault outage
-/// then degrades key *publication*, not every snapshot read.
+/// Reads the signing key from a slot filled asynchronously rather than calling
+/// the signer: the public half only changes on a rotation (M3c), so a Vault
+/// round-trip per request would buy nothing and would make a Vault outage
+/// degrade every key read. Using a slot rather than a value captured at boot is
+/// what lets a startup failure recover without a restart.
 pub struct PgSnapshotArtifactStore {
     store: PgSnapshotStore,
-    keys: Vec<PublishedSigningKey>,
+    keys: Arc<SigningKeyPublication>,
 }
 
 impl PgSnapshotArtifactStore {
-    pub fn new(store: PgSnapshotStore, keys: Vec<PublishedSigningKey>) -> Self {
+    pub fn new(store: PgSnapshotStore, keys: Arc<SigningKeyPublication>) -> Self {
         Self { store, keys }
     }
 }
@@ -259,8 +264,8 @@ impl SnapshotArtifactStore for PgSnapshotArtifactStore {
             .map_err(|error| ApiError::Store(error.to_string()))
     }
 
-    fn signing_keys(&self) -> Vec<PublishedSigningKey> {
-        self.keys.clone()
+    fn signing_keys(&self) -> SigningKeyStatus {
+        self.keys.status()
     }
 }
 
