@@ -2,6 +2,7 @@
 
 Repository-local documentation lives here.
 
+- [mcp-clients.md](mcp-clients.md) — pointing Claude Desktop, VS Code, Cursor, Continue, OpenCode and MCP Inspector at RCX, and migrating from the official registry.
 - [publishing.md](publishing.md) — disabled publisher-proof contracts and the gates required before onboarding reopens.
 
 Current repo-local publisher onboarding surface:
