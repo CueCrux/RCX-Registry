@@ -120,6 +120,34 @@ impl PgSnapshotStore {
     /// Not the same as the most recent snapshot: rows written before the
     /// artifact columns existed have no signed bytes and never will, so serving
     /// them would hand a caller a snapshot they cannot check.
+    /// Verifiable snapshots, newest first, optionally starting strictly before
+    /// an instant. Unverifiable rows are excluded so an explorer never lists a
+    /// snapshot whose bytes it cannot hand over.
+    pub fn list_artifacts(
+        &self,
+        limit: i64,
+        before: Option<DateTime<Utc>>,
+    ) -> Result<Vec<StoredSnapshotArtifact>, DbError> {
+        let mut conn = self.pool.get()?;
+        let rows = match before {
+            Some(cutoff) => conn.query(
+                "SELECT snapshot_id, snapshot_hash, server_count, scraped_at, receipt_hash, \
+                        signer_kid, receipt_cbor, (entries_json IS NOT NULL) AS has_entries \
+                   FROM snapshots WHERE receipt_cbor IS NOT NULL AND scraped_at < $2 \
+                  ORDER BY scraped_at DESC LIMIT $1",
+                &[&limit, &cutoff],
+            )?,
+            None => conn.query(
+                "SELECT snapshot_id, snapshot_hash, server_count, scraped_at, receipt_hash, \
+                        signer_kid, receipt_cbor, (entries_json IS NOT NULL) AS has_entries \
+                   FROM snapshots WHERE receipt_cbor IS NOT NULL \
+                  ORDER BY scraped_at DESC LIMIT $1",
+                &[&limit],
+            )?,
+        };
+        Ok(rows.into_iter().map(artifact_from_row).collect())
+    }
+
     pub fn latest_artifact(&self) -> Result<Option<StoredSnapshotArtifact>, DbError> {
         let mut conn = self.pool.get()?;
         let row = conn.query_opt(
@@ -262,6 +290,26 @@ impl SnapshotArtifactStore for PgSnapshotArtifactStore {
         self.store
             .entries_json(&id)
             .map_err(|error| ApiError::Store(error.to_string()))
+    }
+
+    fn list(&self, limit: u32, before: Option<&str>) -> Result<Vec<SnapshotArtifact>, ApiError> {
+        // An unparseable cursor is a bad request, not "start from newest" —
+        // silently ignoring it would page a caller in a loop over the same rows.
+        let cutoff = match before {
+            Some(raw) => Some(
+                DateTime::parse_from_rfc3339(raw)
+                    .map_err(|error| ApiError::BadRequest(format!("bad `before`: {error}")))?
+                    .with_timezone(&Utc),
+            ),
+            None => None,
+        };
+        Ok(self
+            .store
+            .list_artifacts(limit as i64, cutoff)
+            .map_err(|error| ApiError::Store(error.to_string()))?
+            .into_iter()
+            .map(to_api)
+            .collect())
     }
 
     fn signing_keys(&self) -> SigningKeyStatus {

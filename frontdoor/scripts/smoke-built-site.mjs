@@ -63,7 +63,10 @@ async function requireNotFound(path) {
 try {
   await waitUntilReady()
 
-  const baselinePaths = ['/', '/verify', '/publish', '/subregistry', '/badge', '/legal']
+  // /explorer is included deliberately: it fetches the registry client-side, so
+  // it must render on a build machine with no registry reachable at all. If it
+  // ever starts fetching during SSR this line is what fails.
+  const baselinePaths = ['/', '/verify', '/explorer', '/publish', '/subregistry', '/badge', '/legal']
   const specPaths = [
     '/spec/v1',
     '/spec/v1/01-conventions',
