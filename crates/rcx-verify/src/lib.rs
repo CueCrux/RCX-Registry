@@ -253,10 +253,11 @@ fn parse_declaration(declaration_json: &str) -> Result<Value, VerifyError> {
 /// Verify a namespace claim: the declaration hashes as published **and** names
 /// the namespace being claimed (§4).
 ///
-/// Read §4's scope limit before relying on this. In spec v1 there is no published
-/// `signer_kid` → public-key mapping (OQ-2) and production publishes zero
+/// Read §4's scope limit before relying on this. Production publishes zero
 /// publisher-rights records, so this establishes internal consistency of a claim,
-/// **not** operator-independent proof of ownership.
+/// **not** operator-independent proof of ownership. Key publication (spec v1
+/// §5.6.1) does not change that: what is missing is publisher-rights records,
+/// not a key.
 pub fn verify_namespace(
     declaration_json: &str,
     expected_declared_hash: &[u8; HASH_LEN],

@@ -59,9 +59,15 @@ exit 2 rather than an attempt.
 ## What `verify namespace` does not tell you
 
 It confirms a declaration hashes as published and claims the namespace you named.
-It does **not** prove operator-independent ownership — no `signer_kid` →
-public-key mapping is published yet (OQ-2). The tool prints that caveat on
-success, so a green line cannot be mistaken for more than it is.
+It does **not** prove operator-independent ownership: production publishes zero
+publisher-rights records, so nothing independent binds that namespace to that
+publisher. The tool prints that caveat on success, so a green line cannot be
+mistaken for more than it is.
+
+Note what this is *not* waiting on. The registry publishes its signing key at
+`/.well-known/rcx-keys.json`, so receipt **signatures** are third-party
+verifiable — see `verify receipt --key`. Namespace ownership needs
+publisher-rights records, which is a different thing entirely.
 
 ## In Docker
 

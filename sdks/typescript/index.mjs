@@ -244,9 +244,10 @@ export function verifyPublisher(declarationJson, expectedDeclaredHash) {
 /**
  * Verify a namespace claim's internal consistency.
  *
- * Read CONTRACT.md §4's scope limit: with no published signer_kid -> public-key
- * mapping (OQ-2) and no live publisher-rights records, this does NOT prove
- * operator-independent ownership.
+ * Read CONTRACT.md §4's scope limit: with no live publisher-rights records, this
+ * does NOT prove operator-independent ownership. Key publication (spec v1
+ * §5.6.1) does not change that; the missing piece is publisher-rights records,
+ * not a key.
  */
 export function verifyNamespace(declarationJson, expectedDeclaredHash, claimedNamespace) {
   verifyPublisher(declarationJson, expectedDeclaredHash);
