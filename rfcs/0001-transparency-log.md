@@ -1,10 +1,11 @@
 ---
 rfc: 0001
 title: Transparency log — inclusion proofs, consistency proofs, witness co-signing, key rotation
-status: Draft
+status: Review
 spec-target: rcx-spec/v2 (additive; v1 unaffected)
 created: 2026-07-30
-comment-period-closes: not yet opened
+comment-period-opens: 2026-08-07
+comment-period-closes: 2026-09-04
 ---
 
 # RFC-0001: Transparency log
@@ -27,7 +28,8 @@ Today RCX signs its history. It cannot prove it.
 **There is no tree.** The field is called `snapshot_merkle_root`, but the
 construction is a flat sequential BLAKE3 over lex-sorted `(name, version,
 canonical_json)` entries framed with `0x00`/`0xFF` separators
-([`rcx-registry-ingest`](../crates/rcx-registry-ingest/src/lib.rs), frozen in
+([`rcx-registry-crown/src/hashing.rs`](../crates/rcx-registry-crown/src/hashing.rs),
+`snapshot_merkle_root`; `rcx-registry-ingest` re-exports it, frozen in
 [spec §6](../spec/v1/06-merkle-and-snapshots.md)). It is a **set digest**. Spec v1
 says so plainly rather than hiding behind the field name, and that honesty is
 what makes this RFC necessary:
@@ -44,16 +46,23 @@ what makes this RFC necessary:
   it — which is not the claim RCX makes. The claim is verification *without
   trusting the operator*, and a single-signer log cannot support it: the operator
   can sign two different histories and no verifier holding only one can tell.
-- **Rotation is unspecified.** There is no published `signer_kid` → public-key
-  mapping at all (OQ-2), so a verifier cannot currently obtain the key to check a
-  signature against without asking the operator for it — and cannot check a
-  historical receipt whose key has since changed.
+- **Rotation is unspecified.** The registry's *current* key is published — `GET
+  /.well-known/rcx-keys.json` serves it, keyed by `signer_kid` (spec v1 §5.6.1,
+  Erratum E-1, 2026-08-07), so a verifier can check a signature today without
+  asking the operator for anything. What does not exist is **key history**: no
+  published record of which key was valid over which interval, and no revocation
+  status. A receipt signed under a since-rotated key therefore has nothing to
+  verify against, and rotating the key today would silently strand every
+  signature made before it.
 
-The last point is worth stating sharply: **spec v1 verification is presently
-incomplete in practice**, not because the receipt format is wrong but because key
-distribution does not exist. Inclusion proofs over an unverifiable signature are
-decoration. Key publication is therefore in scope here, and this RFC treats it as
-a prerequisite rather than a later nicety.
+The last point is worth stating precisely, because it moved recently. Key
+*publication* shipped, so spec v1 verification is complete in practice for a
+receipt signed under the current key — inclusion proofs would no longer sit on
+top of an unverifiable signature. Key *history across rotation* remains missing,
+and that is a genuine prerequisite for the rotation half of this RFC (§5): a log
+whose signatures stop verifying the moment its key changes has not solved
+history, it has postponed the problem. Publication is out of scope here; history
+and revocation are in.
 
 ## Proposal
 
@@ -100,10 +109,15 @@ the initial witness set are **unresolved** (see below); they are governance
 decisions, not cryptographic ones, and this RFC deliberately does not settle them
 alone.
 
-### 5. Key publication, rotation, revocation
+### 5. Key history, rotation, revocation
+
+Publication of the *current* key already shipped in v1 (§5.6.1) and is not
+proposed here. What follows extends it backwards in time.
 
 - A published, signed **key history**: `signer_kid` → public key, validity
-  interval, status. Served at a stable path and independently mirrorable.
+  interval, status. Served at a stable path and independently mirrorable. v1's
+  `/.well-known/rcx-keys.json` answers "what is valid now"; this answers "what
+  was valid then", which is the question a historical receipt asks.
 - A receipt signed under a since-rotated key MUST still verify, against the key
   that was valid at its timestamp. Rotation that breaks history is not rotation,
   it is amnesia.
@@ -187,6 +201,26 @@ presented as a leaf.
 - **Sign each entry individually instead of a tree.** Rejected: O(n) signatures
   per snapshot, no consistency property, and it answers the membership question
   while leaving the rewriting question untouched.
+
+## Comment period
+
+**Open 2026-08-07, closes 2026-09-04** — 28 days, the minimum this repository's
+[process](README.md) requires for anything touching cryptography or wire format.
+If those dates and this file's front matter ever disagree, the front matter wins.
+
+Comment by opening an issue or a PR against this file. Disagreement with a
+*rejected* alternative is as useful as disagreement with the proposal; the
+"Alternatives considered" section names the judgement calls most likely to be
+wrong, and the Trillian/Rekor rejection is the most consequential of them.
+
+The reviewers this document is written for are listed in
+[README § Invited reviewers](README.md#invited-reviewers): Sigstore,
+Certificate Transparency, IETF SCITT, Transparency.dev.
+
+Per process rule 3, code **may** merge during Review — but no M3a construction
+lands in this repository before the period closes, because the point of the
+clock is that the design can still change in response to a comment. If nobody
+comments, that is an outcome and it gets recorded as one, not skipped.
 
 ## Unresolved
 
