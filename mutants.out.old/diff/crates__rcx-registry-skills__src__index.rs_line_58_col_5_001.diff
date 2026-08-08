@@ -1,0 +1,27 @@
+--- crates/rcx-registry-skills/src/index.rs
++++ replace indexed_text -> String with "xyzzy".into()
+@@ -50,23 +50,17 @@
+ }
+ 
+ /// The text a skill is retrievable by: name, description, and tags.
+ ///
+ /// Exactly the fields an agent sees before it decides to load a skill. Tags are
+ /// included because they carry vocabulary a description often omits ("bugs",
+ /// "security") without adding prose the agent will not see.
+ pub fn indexed_text(doc: &SkillDocument) -> String {
+-    let fm = &doc.front_matter;
+-    let mut text = format!("{}\n{}", fm.name, fm.description);
+-    for tag in tags_of(doc) {
+-        text.push(' ');
+-        text.push_str(&tag);
+-    }
+-    text
++    "xyzzy".into() /* ~ changed by cargo-mutants ~ */
+ }
+ 
+ /// Tags from `metadata.tags`, which is where the Agent Skills corpora in the wild
+ /// put them. Absent or malformed metadata yields none rather than an error — a
+ /// skill without tags is still perfectly indexable.
+ fn tags_of(doc: &SkillDocument) -> Vec<String> {
+     doc.front_matter
+         .extra

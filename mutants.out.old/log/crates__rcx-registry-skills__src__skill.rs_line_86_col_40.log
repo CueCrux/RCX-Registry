@@ -27,117 +27,117 @@
 
 *** /home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo test --no-run --verbose --package=rcx-registry-skills@0.1.0
        Fresh unicode-ident v1.0.24
-       Fresh proc-macro2 v1.0.106
        Fresh find-msvc-tools v0.1.9
-       Fresh stable_deref_trait v1.2.1
        Fresh shlex v1.3.0
+       Fresh stable_deref_trait v1.2.1
        Fresh cfg-if v1.0.4
        Fresh itoa v1.0.18
        Fresh bytes v1.11.1
        Fresh pin-project-lite v0.2.17
-       Fresh futures-core v0.3.32
        Fresh version_check v0.9.5
+       Fresh futures-core v0.3.32
        Fresh zeroize v1.8.2
-       Fresh smallvec v1.15.1
-       Fresh typenum v1.20.0
-       Fresh futures-sink v0.3.32
        Fresh memchr v2.8.0
-       Fresh fnv v1.0.7
        Fresh writeable v0.6.3
+       Fresh fnv v1.0.7
        Fresh litemap v0.8.2
+       Fresh futures-sink v0.3.32
+       Fresh typenum v1.20.0
+       Fresh smallvec v1.15.1
        Fresh utf8_iter v1.0.4
-       Fresh once_cell v1.21.4
-       Fresh quote v1.0.45
+       Fresh proc-macro2 v1.0.106
        Fresh cc v1.2.60
        Fresh http v1.3.1
        Fresh subtle v2.6.1
+       Fresh once_cell v1.21.4
        Fresh rustls-pki-types v1.14.0
-       Fresh futures-task v0.3.32
-       Fresh semver v1.0.28
-       Fresh futures-io v0.3.32
-       Fresh untrusted v0.9.0
        Fresh slab v0.4.12
+       Fresh futures-task v0.3.32
+       Fresh futures-io v0.3.32
        Fresh percent-encoding v2.3.2
-       Fresh tower-service v0.3.3
+       Fresh untrusted v0.9.0
+       Fresh semver v1.0.28
        Fresh ryu v1.0.23
-       Fresh try-lock v0.2.5
        Fresh equivalent v1.0.2
        Fresh hashbrown v0.17.0
-       Fresh tracing-core v0.1.36
-       Fresh syn v2.0.117
+       Fresh try-lock v0.2.5
+       Fresh tower-service v0.3.3
+       Fresh quote v1.0.45
        Fresh libc v0.2.185
-       Fresh serde_core v1.0.228
        Fresh http-body v1.0.1
+       Fresh serde_core v1.0.228
        Fresh icu_properties_data v2.2.0
-       Fresh futures-util v0.3.32
        Fresh icu_normalizer_data v2.2.0
+       Fresh futures-util v0.3.32
        Fresh rustc_version v0.4.1
-       Fresh indexmap v2.14.0
        Fresh want v0.3.1
+       Fresh tracing-core v0.1.36
+       Fresh indexmap v2.14.0
        Fresh futures-channel v0.3.32
-       Fresh cpufeatures v0.2.17
        Fresh atomic-waker v1.1.2
-       Fresh tracing v0.1.41
+       Fresh cpufeatures v0.2.17
        Fresh form_urlencoded v1.2.2
        Fresh sync_wrapper v1.0.2
-       Fresh tower-layer v0.3.3
        Fresh ipnet v2.12.0
-       Fresh signature v2.2.0
-       Fresh synstructure v0.13.2
-       Fresh zerovec-derive v0.11.3
-       Fresh displaydoc v0.2.5
-       Fresh socket2 v0.6.3
+       Fresh syn v2.0.117
        Fresh mio v1.2.0
+       Fresh socket2 v0.6.3
        Fresh generic-array v0.14.7
-       Fresh serde_derive v1.0.228
        Fresh getrandom v0.2.17
        Fresh httparse v1.10.1
-       Fresh curve25519-dalek-derive v0.1.1
+       Fresh tracing v0.1.41
+       Fresh signature v2.2.0
+       Fresh tower-layer v0.3.3
        Fresh base64 v0.22.1
-       Fresh thiserror-impl v2.0.12
-       Fresh ed25519 v2.2.3
        Fresh webpki-roots v1.0.7
-       Fresh arrayvec v0.7.6
        Fresh iri-string v0.7.12
        Fresh arrayref v0.3.9
        Fresh bitflags v2.11.1
+       Fresh arrayvec v0.7.6
        Fresh constant_time_eq v0.3.1
        Fresh http-body-util v0.1.3
-       Fresh zerofrom-derive v0.1.7
-       Fresh yoke-derive v0.8.2
+       Fresh half v2.4.1
+       Fresh log v0.4.29
+       Fresh hex v0.4.3
+       Fresh synstructure v0.13.2
+       Fresh zerovec-derive v0.11.3
+       Fresh displaydoc v0.2.5
        Fresh tokio v1.52.1
-       Fresh serde v1.0.228
+       Fresh serde_derive v1.0.228
+       Fresh ring v0.17.14
        Fresh block-buffer v0.10.4
        Fresh crypto-common v0.1.7
-       Fresh ring v0.17.14
-       Fresh thiserror v2.0.12
+       Fresh curve25519-dalek-derive v0.1.1
+       Fresh ed25519 v2.2.3
+       Fresh thiserror-impl v2.0.12
        Fresh blake3 v1.5.1
-       Fresh half v2.4.1
-       Fresh hex v0.4.3
        Fresh unsafe-libyaml v0.2.11
-       Fresh log v0.4.29
-       Fresh zerofrom v0.1.7
-       Fresh rustls-webpki v0.103.12
+       Fresh zerofrom-derive v0.1.7
+       Fresh yoke-derive v0.8.2
+       Fresh serde v1.0.228
        Fresh digest v0.10.7
+       Fresh rustls-webpki v0.103.12
        Fresh hyper v1.9.0
        Fresh tower v0.5.2
+       Fresh thiserror v2.0.12
+       Fresh zerofrom v0.1.7
+       Fresh rustls v0.23.38
+       Fresh sha2 v0.10.9
+       Fresh curve25519-dalek v4.1.3
        Fresh serde_json v1.0.139
+       Fresh hyper-util v0.1.20
        Fresh serde_urlencoded v0.7.1
+       Fresh tower-http v0.6.8
        Fresh serde_yaml v0.9.34+deprecated
        Fresh yoke v0.8.2
-       Fresh rustls v0.23.38
-       Fresh curve25519-dalek v4.1.3
-       Fresh sha2 v0.10.9
-       Fresh hyper-util v0.1.20
-       Fresh tower-http v0.6.8
-       Fresh zerovec v0.11.6
-       Fresh zerotrie v0.2.4
        Fresh tokio-rustls v0.26.4
        Fresh ed25519-dalek v2.1.1
+       Fresh zerovec v0.11.6
+       Fresh zerotrie v0.2.4
+       Fresh hyper-rustls v0.27.9
+       Fresh rcx-registry-crown v0.1.0 (/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/crates/rcx-registry-crown)
        Fresh tinystr v0.8.3
        Fresh potential_utf v0.1.5
-       Fresh hyper-rustls v0.27.9
-       Fresh rcx-registry-crown v0.1.0 (/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/crates/rcx-registry-crown)
        Fresh icu_locale_core v2.2.0
        Fresh icu_collections v2.2.0
        Fresh icu_provider v2.2.0
@@ -147,212 +147,242 @@
        Fresh idna v1.1.0
        Fresh url v2.5.4
        Fresh reqwest v0.12.28
-       Dirty rcx-registry-skills v0.1.0 (/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/crates/rcx-registry-skills): the file `crates/rcx-registry-skills/src/skill.rs` has changed (1786219840.107809302s, 1s after last build at 1786219839.452451787s)
-   Compiling rcx-registry-skills v0.1.0 (/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/crates/rcx-registry-skills)
-     Running `/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/rustc --crate-name rcx_registry_skills --edition=2021 crates/rcx-registry-skills/src/lib.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --emit=dep-info,link -C embed-bitcode=no -C debuginfo=2 --test --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values())' -C metadata=2e6646de4ed339eb -C extra-filename=-3107ac08ad7c479f --out-dir /tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/deps -C incremental=/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/incremental -L dependency=/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/deps --extern ed25519_dalek=/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/deps/libed25519_dalek-70de15d1aeaaa0f5.rlib --extern rcx_registry_crown=/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/deps/librcx_registry_crown-3672d7444462e740.rlib --extern reqwest=/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/deps/libreqwest-2baf3e79fe44868d.rlib --extern serde=/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/deps/libserde-3f292ac2dddda487.rlib --extern serde_json=/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/deps/libserde_json-7fd61e939d1c4003.rlib --extern serde_yaml=/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/deps/libserde_yaml-5b5d0904a2972f2c.rlib --extern sha2=/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/deps/libsha2-b402ed9f1be72e5c.rlib --extern thiserror=/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/deps/libthiserror-f696602292a77e2a.rlib -L native=/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/build/blake3-c34afcd10fcfdfe4/out -L native=/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/build/blake3-c34afcd10fcfdfe4/out -L native=/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/build/ring-99691a876bfcb1b3/out`
-     Running `/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/rustc --crate-name rcx_registry_skills --edition=2021 crates/rcx-registry-skills/src/lib.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --crate-type lib --emit=dep-info,metadata,link -C embed-bitcode=no -C debuginfo=2 --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values())' -C metadata=2d0c907b8870c8fb -C extra-filename=-9917f32bc589d82d --out-dir /tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/deps -C incremental=/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/incremental -L dependency=/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/deps --extern rcx_registry_crown=/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/deps/librcx_registry_crown-3672d7444462e740.rmeta --extern reqwest=/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/deps/libreqwest-2baf3e79fe44868d.rmeta --extern serde=/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/deps/libserde-3f292ac2dddda487.rmeta --extern serde_json=/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/deps/libserde_json-7fd61e939d1c4003.rmeta --extern serde_yaml=/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/deps/libserde_yaml-5b5d0904a2972f2c.rmeta --extern sha2=/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/deps/libsha2-b402ed9f1be72e5c.rmeta --extern thiserror=/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/deps/libthiserror-f696602292a77e2a.rmeta -L native=/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/build/blake3-c34afcd10fcfdfe4/out -L native=/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/build/blake3-c34afcd10fcfdfe4/out -L native=/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/build/ring-99691a876bfcb1b3/out`
-     Running `/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/rustc --crate-name signing --edition=2021 crates/rcx-registry-skills/tests/signing.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --emit=dep-info,link -C embed-bitcode=no -C debuginfo=2 --test --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values())' -C metadata=00b6d0541d26c176 -C extra-filename=-0eec55bbc20bcce8 --out-dir /tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/deps -C incremental=/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/incremental -L dependency=/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/deps --extern ed25519_dalek=/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/deps/libed25519_dalek-70de15d1aeaaa0f5.rlib --extern rcx_registry_crown=/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/deps/librcx_registry_crown-3672d7444462e740.rlib --extern rcx_registry_skills=/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/deps/librcx_registry_skills-9917f32bc589d82d.rlib --extern reqwest=/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/deps/libreqwest-2baf3e79fe44868d.rlib --extern serde=/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/deps/libserde-3f292ac2dddda487.rlib --extern serde_json=/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/deps/libserde_json-7fd61e939d1c4003.rlib --extern serde_yaml=/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/deps/libserde_yaml-5b5d0904a2972f2c.rlib --extern sha2=/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/deps/libsha2-b402ed9f1be72e5c.rlib --extern thiserror=/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/deps/libthiserror-f696602292a77e2a.rlib -L native=/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/build/blake3-c34afcd10fcfdfe4/out -L native=/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/build/blake3-c34afcd10fcfdfe4/out -L native=/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/build/ring-99691a876bfcb1b3/out`
-     Running `/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/rustc --crate-name relock_live --edition=2021 crates/rcx-registry-skills/tests/relock_live.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --emit=dep-info,link -C embed-bitcode=no -C debuginfo=2 --test --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values())' -C metadata=59b73cbb0f7236f6 -C extra-filename=-c93b04c79a488cab --out-dir /tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/deps -C incremental=/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/incremental -L dependency=/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/deps --extern ed25519_dalek=/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/deps/libed25519_dalek-70de15d1aeaaa0f5.rlib --extern rcx_registry_crown=/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/deps/librcx_registry_crown-3672d7444462e740.rlib --extern rcx_registry_skills=/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/deps/librcx_registry_skills-9917f32bc589d82d.rlib --extern reqwest=/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/deps/libreqwest-2baf3e79fe44868d.rlib --extern serde=/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/deps/libserde-3f292ac2dddda487.rlib --extern serde_json=/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/deps/libserde_json-7fd61e939d1c4003.rlib --extern serde_yaml=/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/deps/libserde_yaml-5b5d0904a2972f2c.rlib --extern sha2=/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/deps/libsha2-b402ed9f1be72e5c.rlib --extern thiserror=/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/deps/libthiserror-f696602292a77e2a.rlib -L native=/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/build/blake3-c34afcd10fcfdfe4/out -L native=/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/build/blake3-c34afcd10fcfdfe4/out -L native=/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/build/ring-99691a876bfcb1b3/out`
-     Running `/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/rustc --crate-name skill_uri --edition=2021 crates/rcx-registry-skills/tests/skill_uri.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --emit=dep-info,link -C embed-bitcode=no -C debuginfo=2 --test --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values())' -C metadata=2fe7e226e15f7f19 -C extra-filename=-87a23946605edf3f --out-dir /tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/deps -C incremental=/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/incremental -L dependency=/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/deps --extern ed25519_dalek=/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/deps/libed25519_dalek-70de15d1aeaaa0f5.rlib --extern rcx_registry_crown=/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/deps/librcx_registry_crown-3672d7444462e740.rlib --extern rcx_registry_skills=/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/deps/librcx_registry_skills-9917f32bc589d82d.rlib --extern reqwest=/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/deps/libreqwest-2baf3e79fe44868d.rlib --extern serde=/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/deps/libserde-3f292ac2dddda487.rlib --extern serde_json=/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/deps/libserde_json-7fd61e939d1c4003.rlib --extern serde_yaml=/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/deps/libserde_yaml-5b5d0904a2972f2c.rlib --extern sha2=/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/deps/libsha2-b402ed9f1be72e5c.rlib --extern thiserror=/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/deps/libthiserror-f696602292a77e2a.rlib -L native=/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/build/blake3-c34afcd10fcfdfe4/out -L native=/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/build/blake3-c34afcd10fcfdfe4/out -L native=/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/build/ring-99691a876bfcb1b3/out`
-     Running `/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/rustc --crate-name lockfile --edition=2021 crates/rcx-registry-skills/tests/lockfile.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --emit=dep-info,link -C embed-bitcode=no -C debuginfo=2 --test --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values())' -C metadata=cc4bc2fbab148c94 -C extra-filename=-0b0f99abbfdbd022 --out-dir /tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/deps -C incremental=/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/incremental -L dependency=/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/deps --extern ed25519_dalek=/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/deps/libed25519_dalek-70de15d1aeaaa0f5.rlib --extern rcx_registry_crown=/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/deps/librcx_registry_crown-3672d7444462e740.rlib --extern rcx_registry_skills=/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/deps/librcx_registry_skills-9917f32bc589d82d.rlib --extern reqwest=/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/deps/libreqwest-2baf3e79fe44868d.rlib --extern serde=/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/deps/libserde-3f292ac2dddda487.rlib --extern serde_json=/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/deps/libserde_json-7fd61e939d1c4003.rlib --extern serde_yaml=/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/deps/libserde_yaml-5b5d0904a2972f2c.rlib --extern sha2=/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/deps/libsha2-b402ed9f1be72e5c.rlib --extern thiserror=/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/deps/libthiserror-f696602292a77e2a.rlib -L native=/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/build/blake3-c34afcd10fcfdfe4/out -L native=/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/build/blake3-c34afcd10fcfdfe4/out -L native=/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/build/ring-99691a876bfcb1b3/out`
-     Running `/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/rustc --crate-name fetch_live --edition=2021 crates/rcx-registry-skills/tests/fetch_live.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --emit=dep-info,link -C embed-bitcode=no -C debuginfo=2 --test --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values())' -C metadata=a2c702037cca9e8b -C extra-filename=-c28d1e30e8bc4a0a --out-dir /tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/deps -C incremental=/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/incremental -L dependency=/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/deps --extern ed25519_dalek=/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/deps/libed25519_dalek-70de15d1aeaaa0f5.rlib --extern rcx_registry_crown=/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/deps/librcx_registry_crown-3672d7444462e740.rlib --extern rcx_registry_skills=/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/deps/librcx_registry_skills-9917f32bc589d82d.rlib --extern reqwest=/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/deps/libreqwest-2baf3e79fe44868d.rlib --extern serde=/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/deps/libserde-3f292ac2dddda487.rlib --extern serde_json=/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/deps/libserde_json-7fd61e939d1c4003.rlib --extern serde_yaml=/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/deps/libserde_yaml-5b5d0904a2972f2c.rlib --extern sha2=/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/deps/libsha2-b402ed9f1be72e5c.rlib --extern thiserror=/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/deps/libthiserror-f696602292a77e2a.rlib -L native=/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/build/blake3-c34afcd10fcfdfe4/out -L native=/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/build/blake3-c34afcd10fcfdfe4/out -L native=/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/build/ring-99691a876bfcb1b3/out`
-    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.60s
-  Executable `/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/deps/rcx_registry_skills-3107ac08ad7c479f`
-  Executable `/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/deps/fetch_live-c28d1e30e8bc4a0a`
-  Executable `/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/deps/lockfile-0b0f99abbfdbd022`
-  Executable `/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/deps/relock_live-c93b04c79a488cab`
-  Executable `/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/deps/signing-0eec55bbc20bcce8`
-  Executable `/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/deps/skill_uri-87a23946605edf3f`
+       Dirty rcx-registry-skills v0.1.0 (/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/crates/rcx-registry-skills): the file `crates/rcx-registry-skills/src/skill.rs` has changed (1786223033.588531523s, 4s after last build at 1786223029.307740412s)
+   Compiling rcx-registry-skills v0.1.0 (/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/crates/rcx-registry-skills)
+     Running `/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/rustc --crate-name rcx_registry_skills --edition=2021 crates/rcx-registry-skills/src/lib.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --emit=dep-info,link -C embed-bitcode=no -C debuginfo=2 --test --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values())' -C metadata=2e6646de4ed339eb -C extra-filename=-3107ac08ad7c479f --out-dir /tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/deps -C incremental=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/incremental -L dependency=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/deps --extern ed25519_dalek=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/deps/libed25519_dalek-70de15d1aeaaa0f5.rlib --extern rcx_registry_crown=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/deps/librcx_registry_crown-3672d7444462e740.rlib --extern reqwest=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/deps/libreqwest-2baf3e79fe44868d.rlib --extern serde=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/deps/libserde-3f292ac2dddda487.rlib --extern serde_json=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/deps/libserde_json-7fd61e939d1c4003.rlib --extern serde_yaml=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/deps/libserde_yaml-5b5d0904a2972f2c.rlib --extern sha2=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/deps/libsha2-b402ed9f1be72e5c.rlib --extern thiserror=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/deps/libthiserror-f696602292a77e2a.rlib -L native=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/build/blake3-c34afcd10fcfdfe4/out -L native=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/build/blake3-c34afcd10fcfdfe4/out -L native=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/build/ring-99691a876bfcb1b3/out`
+     Running `/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/rustc --crate-name rcx_registry_skills --edition=2021 crates/rcx-registry-skills/src/lib.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --crate-type lib --emit=dep-info,metadata,link -C embed-bitcode=no -C debuginfo=2 --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values())' -C metadata=2d0c907b8870c8fb -C extra-filename=-9917f32bc589d82d --out-dir /tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/deps -C incremental=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/incremental -L dependency=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/deps --extern rcx_registry_crown=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/deps/librcx_registry_crown-3672d7444462e740.rmeta --extern reqwest=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/deps/libreqwest-2baf3e79fe44868d.rmeta --extern serde=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/deps/libserde-3f292ac2dddda487.rmeta --extern serde_json=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/deps/libserde_json-7fd61e939d1c4003.rmeta --extern serde_yaml=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/deps/libserde_yaml-5b5d0904a2972f2c.rmeta --extern sha2=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/deps/libsha2-b402ed9f1be72e5c.rmeta --extern thiserror=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/deps/libthiserror-f696602292a77e2a.rmeta -L native=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/build/blake3-c34afcd10fcfdfe4/out -L native=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/build/blake3-c34afcd10fcfdfe4/out -L native=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/build/ring-99691a876bfcb1b3/out`
+     Running `/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/rustc --crate-name skill_uri --edition=2021 crates/rcx-registry-skills/tests/skill_uri.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --emit=dep-info,link -C embed-bitcode=no -C debuginfo=2 --test --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values())' -C metadata=2fe7e226e15f7f19 -C extra-filename=-87a23946605edf3f --out-dir /tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/deps -C incremental=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/incremental -L dependency=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/deps --extern ed25519_dalek=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/deps/libed25519_dalek-70de15d1aeaaa0f5.rlib --extern rcx_registry_crown=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/deps/librcx_registry_crown-3672d7444462e740.rlib --extern rcx_registry_skills=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/deps/librcx_registry_skills-9917f32bc589d82d.rlib --extern reqwest=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/deps/libreqwest-2baf3e79fe44868d.rlib --extern serde=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/deps/libserde-3f292ac2dddda487.rlib --extern serde_json=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/deps/libserde_json-7fd61e939d1c4003.rlib --extern serde_yaml=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/deps/libserde_yaml-5b5d0904a2972f2c.rlib --extern sha2=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/deps/libsha2-b402ed9f1be72e5c.rlib --extern thiserror=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/deps/libthiserror-f696602292a77e2a.rlib -L native=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/build/blake3-c34afcd10fcfdfe4/out -L native=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/build/blake3-c34afcd10fcfdfe4/out -L native=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/build/ring-99691a876bfcb1b3/out`
+     Running `/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/rustc --crate-name relock_live --edition=2021 crates/rcx-registry-skills/tests/relock_live.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --emit=dep-info,link -C embed-bitcode=no -C debuginfo=2 --test --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values())' -C metadata=59b73cbb0f7236f6 -C extra-filename=-c93b04c79a488cab --out-dir /tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/deps -C incremental=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/incremental -L dependency=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/deps --extern ed25519_dalek=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/deps/libed25519_dalek-70de15d1aeaaa0f5.rlib --extern rcx_registry_crown=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/deps/librcx_registry_crown-3672d7444462e740.rlib --extern rcx_registry_skills=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/deps/librcx_registry_skills-9917f32bc589d82d.rlib --extern reqwest=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/deps/libreqwest-2baf3e79fe44868d.rlib --extern serde=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/deps/libserde-3f292ac2dddda487.rlib --extern serde_json=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/deps/libserde_json-7fd61e939d1c4003.rlib --extern serde_yaml=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/deps/libserde_yaml-5b5d0904a2972f2c.rlib --extern sha2=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/deps/libsha2-b402ed9f1be72e5c.rlib --extern thiserror=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/deps/libthiserror-f696602292a77e2a.rlib -L native=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/build/blake3-c34afcd10fcfdfe4/out -L native=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/build/blake3-c34afcd10fcfdfe4/out -L native=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/build/ring-99691a876bfcb1b3/out`
+     Running `/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/rustc --crate-name lockfile --edition=2021 crates/rcx-registry-skills/tests/lockfile.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --emit=dep-info,link -C embed-bitcode=no -C debuginfo=2 --test --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values())' -C metadata=cc4bc2fbab148c94 -C extra-filename=-0b0f99abbfdbd022 --out-dir /tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/deps -C incremental=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/incremental -L dependency=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/deps --extern ed25519_dalek=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/deps/libed25519_dalek-70de15d1aeaaa0f5.rlib --extern rcx_registry_crown=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/deps/librcx_registry_crown-3672d7444462e740.rlib --extern rcx_registry_skills=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/deps/librcx_registry_skills-9917f32bc589d82d.rlib --extern reqwest=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/deps/libreqwest-2baf3e79fe44868d.rlib --extern serde=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/deps/libserde-3f292ac2dddda487.rlib --extern serde_json=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/deps/libserde_json-7fd61e939d1c4003.rlib --extern serde_yaml=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/deps/libserde_yaml-5b5d0904a2972f2c.rlib --extern sha2=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/deps/libsha2-b402ed9f1be72e5c.rlib --extern thiserror=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/deps/libthiserror-f696602292a77e2a.rlib -L native=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/build/blake3-c34afcd10fcfdfe4/out -L native=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/build/blake3-c34afcd10fcfdfe4/out -L native=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/build/ring-99691a876bfcb1b3/out`
+     Running `/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/rustc --crate-name retrieval_eval --edition=2021 crates/rcx-registry-skills/tests/retrieval_eval.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --emit=dep-info,link -C embed-bitcode=no -C debuginfo=2 --test --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values())' -C metadata=02e3fc2c1cea3fc8 -C extra-filename=-0072a41c3c0186b0 --out-dir /tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/deps -C incremental=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/incremental -L dependency=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/deps --extern ed25519_dalek=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/deps/libed25519_dalek-70de15d1aeaaa0f5.rlib --extern rcx_registry_crown=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/deps/librcx_registry_crown-3672d7444462e740.rlib --extern rcx_registry_skills=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/deps/librcx_registry_skills-9917f32bc589d82d.rlib --extern reqwest=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/deps/libreqwest-2baf3e79fe44868d.rlib --extern serde=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/deps/libserde-3f292ac2dddda487.rlib --extern serde_json=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/deps/libserde_json-7fd61e939d1c4003.rlib --extern serde_yaml=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/deps/libserde_yaml-5b5d0904a2972f2c.rlib --extern sha2=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/deps/libsha2-b402ed9f1be72e5c.rlib --extern thiserror=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/deps/libthiserror-f696602292a77e2a.rlib -L native=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/build/blake3-c34afcd10fcfdfe4/out -L native=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/build/blake3-c34afcd10fcfdfe4/out -L native=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/build/ring-99691a876bfcb1b3/out`
+     Running `/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/rustc --crate-name fetch_live --edition=2021 crates/rcx-registry-skills/tests/fetch_live.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --emit=dep-info,link -C embed-bitcode=no -C debuginfo=2 --test --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values())' -C metadata=a2c702037cca9e8b -C extra-filename=-c28d1e30e8bc4a0a --out-dir /tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/deps -C incremental=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/incremental -L dependency=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/deps --extern ed25519_dalek=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/deps/libed25519_dalek-70de15d1aeaaa0f5.rlib --extern rcx_registry_crown=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/deps/librcx_registry_crown-3672d7444462e740.rlib --extern rcx_registry_skills=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/deps/librcx_registry_skills-9917f32bc589d82d.rlib --extern reqwest=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/deps/libreqwest-2baf3e79fe44868d.rlib --extern serde=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/deps/libserde-3f292ac2dddda487.rlib --extern serde_json=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/deps/libserde_json-7fd61e939d1c4003.rlib --extern serde_yaml=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/deps/libserde_yaml-5b5d0904a2972f2c.rlib --extern sha2=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/deps/libsha2-b402ed9f1be72e5c.rlib --extern thiserror=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/deps/libthiserror-f696602292a77e2a.rlib -L native=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/build/blake3-c34afcd10fcfdfe4/out -L native=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/build/blake3-c34afcd10fcfdfe4/out -L native=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/build/ring-99691a876bfcb1b3/out`
+     Running `/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/rustc --crate-name signing --edition=2021 crates/rcx-registry-skills/tests/signing.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --emit=dep-info,link -C embed-bitcode=no -C debuginfo=2 --test --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values())' -C metadata=00b6d0541d26c176 -C extra-filename=-0eec55bbc20bcce8 --out-dir /tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/deps -C incremental=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/incremental -L dependency=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/deps --extern ed25519_dalek=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/deps/libed25519_dalek-70de15d1aeaaa0f5.rlib --extern rcx_registry_crown=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/deps/librcx_registry_crown-3672d7444462e740.rlib --extern rcx_registry_skills=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/deps/librcx_registry_skills-9917f32bc589d82d.rlib --extern reqwest=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/deps/libreqwest-2baf3e79fe44868d.rlib --extern serde=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/deps/libserde-3f292ac2dddda487.rlib --extern serde_json=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/deps/libserde_json-7fd61e939d1c4003.rlib --extern serde_yaml=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/deps/libserde_yaml-5b5d0904a2972f2c.rlib --extern sha2=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/deps/libsha2-b402ed9f1be72e5c.rlib --extern thiserror=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/deps/libthiserror-f696602292a77e2a.rlib -L native=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/build/blake3-c34afcd10fcfdfe4/out -L native=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/build/blake3-c34afcd10fcfdfe4/out -L native=/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/build/ring-99691a876bfcb1b3/out`
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.58s
+  Executable `/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/deps/rcx_registry_skills-3107ac08ad7c479f`
+  Executable `/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/deps/fetch_live-c28d1e30e8bc4a0a`
+  Executable `/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/deps/lockfile-0b0f99abbfdbd022`
+  Executable `/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/deps/relock_live-c93b04c79a488cab`
+  Executable `/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/deps/retrieval_eval-0072a41c3c0186b0`
+  Executable `/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/deps/signing-0eec55bbc20bcce8`
+  Executable `/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/deps/skill_uri-87a23946605edf3f`
 
 *** result: Success
 
 *** /home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo test --verbose --package=rcx-registry-skills@0.1.0 --all-targets
        Fresh unicode-ident v1.0.24
        Fresh proc-macro2 v1.0.106
+       Fresh quote v1.0.45
+       Fresh syn v2.0.117
+       Fresh synstructure v0.13.2
+       Fresh zerofrom-derive v0.1.7
+       Fresh zerofrom v0.1.7
+       Fresh libc v0.2.185
+       Fresh yoke-derive v0.8.2
        Fresh find-msvc-tools v0.1.9
-       Fresh shlex v1.3.0
        Fresh stable_deref_trait v1.2.1
+       Fresh shlex v1.3.0
+       Fresh cc v1.2.60
+       Fresh yoke v0.8.2
        Fresh cfg-if v1.0.4
+       Fresh zerovec-derive v0.11.3
        Fresh itoa v1.0.18
+       Fresh zerovec v0.11.6
+       Fresh displaydoc v0.2.5
        Fresh bytes v1.11.1
        Fresh pin-project-lite v0.2.17
+       Fresh futures-core v0.3.32
        Fresh version_check v0.9.5
        Fresh zeroize v1.8.2
-       Fresh futures-core v0.3.32
-       Fresh fnv v1.0.7
-       Fresh writeable v0.6.3
-       Fresh futures-sink v0.3.32
-       Fresh memchr v2.8.0
-       Fresh typenum v1.20.0
-       Fresh litemap v0.8.2
+       Fresh socket2 v0.6.3
+       Fresh mio v1.2.0
        Fresh smallvec v1.15.1
-       Fresh subtle v2.6.1
-       Fresh cc v1.2.60
-       Fresh http v1.3.1
-       Fresh once_cell v1.21.4
+       Fresh memchr v2.8.0
+       Fresh litemap v0.8.2
+       Fresh futures-sink v0.3.32
+       Fresh writeable v0.6.3
+       Fresh typenum v1.20.0
+       Fresh fnv v1.0.7
+       Fresh potential_utf v0.1.5
        Fresh utf8_iter v1.0.4
+       Fresh once_cell v1.21.4
+       Fresh subtle v2.6.1
+       Fresh getrandom v0.2.17
+       Fresh tinystr v0.8.3
+       Fresh http v1.3.1
+       Fresh tokio v1.52.1
+       Fresh zerotrie v0.2.4
        Fresh rustls-pki-types v1.14.0
+       Fresh icu_collections v2.2.0
+       Fresh serde_derive v1.0.228
        Fresh untrusted v0.9.0
-       Fresh semver v1.0.28
        Fresh percent-encoding v2.3.2
-       Fresh futures-io v0.3.32
+       Fresh semver v1.0.28
        Fresh slab v0.4.12
+       Fresh futures-io v0.3.32
        Fresh futures-task v0.3.32
-       Fresh try-lock v0.2.5
-       Fresh hashbrown v0.17.0
-       Fresh tower-service v0.3.3
        Fresh equivalent v1.0.2
+       Fresh tower-service v0.3.3
        Fresh ryu v1.0.23
-       Fresh quote v1.0.45
-       Fresh libc v0.2.185
+       Fresh hashbrown v0.17.0
+       Fresh icu_locale_core v2.2.0
        Fresh http-body v1.0.1
        Fresh serde_core v1.0.228
-       Fresh icu_normalizer_data v2.2.0
-       Fresh icu_properties_data v2.2.0
        Fresh futures-util v0.3.32
        Fresh rustc_version v0.4.1
+       Fresh ring v0.17.14
+       Fresh icu_normalizer_data v2.2.0
+       Fresh icu_properties_data v2.2.0
+       Fresh try-lock v0.2.5
        Fresh indexmap v2.14.0
-       Fresh want v0.3.1
-       Fresh tracing-core v0.1.36
        Fresh futures-channel v0.3.32
-       Fresh atomic-waker v1.1.2
+       Fresh tracing-core v0.1.36
        Fresh cpufeatures v0.2.17
+       Fresh atomic-waker v1.1.2
        Fresh form_urlencoded v1.2.2
        Fresh sync_wrapper v1.0.2
+       Fresh curve25519-dalek-derive v0.1.1
+       Fresh base64 v0.22.1
+       Fresh tower-layer v0.3.3
+       Fresh generic-array v0.14.7
+       Fresh icu_provider v2.2.0
+       Fresh serde v1.0.228
+       Fresh want v0.3.1
+       Fresh httparse v1.10.1
+       Fresh rustls-webpki v0.103.12
+       Fresh tracing v0.1.41
        Fresh ipnet v2.12.0
        Fresh signature v2.2.0
-       Fresh base64 v0.22.1
-       Fresh syn v2.0.117
-       Fresh mio v1.2.0
-       Fresh socket2 v0.6.3
-       Fresh generic-array v0.14.7
-       Fresh getrandom v0.2.17
-       Fresh httparse v1.10.1
-       Fresh tracing v0.1.41
-       Fresh tower-layer v0.3.3
-       Fresh ed25519 v2.2.3
+       Fresh tower v0.5.2
        Fresh webpki-roots v1.0.7
+       Fresh thiserror-impl v2.0.12
        Fresh constant_time_eq v0.3.1
-       Fresh iri-string v0.7.12
-       Fresh arrayref v0.3.9
-       Fresh arrayvec v0.7.6
        Fresh bitflags v2.11.1
+       Fresh iri-string v0.7.12
+       Fresh arrayvec v0.7.6
+       Fresh arrayref v0.3.9
        Fresh http-body-util v0.1.3
        Fresh half v2.4.1
-       Fresh hex v0.4.3
        Fresh unsafe-libyaml v0.2.11
-       Fresh log v0.4.29
-       Fresh synstructure v0.13.2
-       Fresh zerovec-derive v0.11.3
-       Fresh displaydoc v0.2.5
-       Fresh tokio v1.52.1
-       Fresh serde_derive v1.0.228
-       Fresh block-buffer v0.10.4
+       Fresh hex v0.4.3
        Fresh crypto-common v0.1.7
-       Fresh ring v0.17.14
-       Fresh curve25519-dalek-derive v0.1.1
-       Fresh thiserror-impl v2.0.12
-       Fresh blake3 v1.5.1
-       Fresh zerofrom-derive v0.1.7
-       Fresh yoke-derive v0.8.2
-       Fresh serde v1.0.228
-       Fresh digest v0.10.7
-       Fresh rustls-webpki v0.103.12
-       Fresh hyper v1.9.0
-       Fresh tower v0.5.2
-       Fresh thiserror v2.0.12
-       Fresh zerofrom v0.1.7
-       Fresh rustls v0.23.38
-       Fresh hyper-util v0.1.20
-       Fresh serde_json v1.0.139
-       Fresh curve25519-dalek v4.1.3
-       Fresh sha2 v0.10.9
-       Fresh serde_urlencoded v0.7.1
-       Fresh tower-http v0.6.8
-       Fresh serde_yaml v0.9.34+deprecated
-       Fresh yoke v0.8.2
-       Fresh tokio-rustls v0.26.4
-       Fresh ed25519-dalek v2.1.1
-       Fresh zerovec v0.11.6
-       Fresh zerotrie v0.2.4
-       Fresh hyper-rustls v0.27.9
-       Fresh rcx-registry-crown v0.1.0 (/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/crates/rcx-registry-crown)
-       Fresh tinystr v0.8.3
-       Fresh potential_utf v0.1.5
-       Fresh icu_locale_core v2.2.0
-       Fresh icu_collections v2.2.0
-       Fresh icu_provider v2.2.0
+       Fresh block-buffer v0.10.4
        Fresh icu_normalizer v2.2.0
        Fresh icu_properties v2.2.0
+       Fresh hyper v1.9.0
+       Fresh rustls v0.23.38
+       Fresh ed25519 v2.2.3
+       Fresh serde_json v1.0.139
+       Fresh tower-http v0.6.8
+       Fresh thiserror v2.0.12
+       Fresh serde_urlencoded v0.7.1
+       Fresh blake3 v1.5.1
+       Fresh log v0.4.29
+       Fresh serde_yaml v0.9.34+deprecated
+       Fresh digest v0.10.7
        Fresh idna_adapter v1.2.1
+       Fresh tokio-rustls v0.26.4
+       Fresh hyper-util v0.1.20
        Fresh idna v1.1.0
+       Fresh sha2 v0.10.9
+       Fresh curve25519-dalek v4.1.3
+       Fresh hyper-rustls v0.27.9
        Fresh url v2.5.4
+       Fresh ed25519-dalek v2.1.1
+       Fresh rcx-registry-crown v0.1.0 (/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/crates/rcx-registry-crown)
        Fresh reqwest v0.12.28
-       Fresh rcx-registry-skills v0.1.0 (/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/crates/rcx-registry-skills)
-    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.06s
-     Running `/tmp/cargo-mutants-unified-skills-m4-SWwMCN.tmp/target/debug/deps/rcx_registry_skills-3107ac08ad7c479f`
+       Fresh rcx-registry-skills v0.1.0 (/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/crates/rcx-registry-skills)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.11s
+     Running `/tmp/cargo-mutants-unified-skills-m6-MdnpWo.tmp/target/debug/deps/rcx_registry_skills-3107ac08ad7c479f`
 
-running 23 tests
+running 27 tests
 test fetch::tests::parse_commit_sha_accepts_a_real_response ... ok
-test fetch::tests::parse_commit_sha_rejects_anything_else ... ok
+test fetch::tests::corrupted_digest_fails_closed ... ok
+test fetch::tests::corrupted_bytes_fail_closed ... ok
 test fetch::tests::raw_url_pins_the_commit_when_the_entry_has_one ... ok
 test fetch::tests::raw_url_falls_back_to_head_for_an_unpinned_entry ... ok
-test fetch::tests::verified_count_counts_only_matching_entries ... ok
-test fetch::tests::is_clean_tracks_mismatches ... ok
-test fetch::tests::corrupted_digest_fails_closed ... ok
-test fetch::tests::relock_pins_observed_digests_and_drops_unfetchable ... ok
-test fetch::tests::corrupted_bytes_fail_closed ... ok
-test skill::tests::accepts_bom_and_crlf ... FAILED
-test fetch::tests::verifies_matching_bytes ... ok
-test lock::tests::rejects_malformed_hashes ... ok
-test lock::tests::len_and_is_empty_agree ... ok
 test fetch::tests::empty_content_does_not_verify_against_a_real_hash ... ok
-test lock::tests::keys_serialise_sorted_regardless_of_insertion_order ... ok
-test lock::tests::round_trip_is_byte_exact ... ok
+test fetch::tests::is_clean_tracks_mismatches ... ok
+test fetch::tests::parse_commit_sha_rejects_anything_else ... ok
+test fetch::tests::verified_count_counts_only_matching_entries ... ok
 test fetch::tests::relocking_an_unpinned_lockfile_stays_unsignable ... ok
+test fetch::tests::relock_pins_observed_digests_and_drops_unfetchable ... ok
+test fetch::tests::verifies_matching_bytes ... ok
+test index::tests::a_skill_without_tags_still_indexes ... FAILED
+test index::tests::body_is_never_indexed ... FAILED
+test index::tests::indexed_text_carries_name_description_and_tags ... FAILED
+test lock::tests::keys_serialise_sorted_regardless_of_insertion_order ... ok
+test index::tests::ingest_body_shapes_one_chunk_per_skill ... FAILED
+test lock::tests::rejects_malformed_hashes ... ok
 test lock::tests::rejects_unsupported_source_type ... ok
 test skill::tests::discovery_description_truncates_on_char_boundaries ... FAILED
-test skill::tests::parses_frontmatter_and_body ... FAILED
-test skill::tests::frontmatter_ending_at_eof_still_parses ... FAILED
+test lock::tests::len_and_is_empty_agree ... ok
+test lock::tests::round_trip_is_byte_exact ... ok
+test skill::tests::accepts_bom_and_crlf ... FAILED
 test skill::tests::preserves_unmodelled_keys ... FAILED
 test skill::tests::rejects_missing_and_unterminated_frontmatter ... FAILED
+test skill::tests::frontmatter_ending_at_eof_still_parses ... FAILED
+test skill::tests::parses_frontmatter_and_body ... FAILED
 
 failures:
 
----- skill::tests::accepts_bom_and_crlf stdout ----
+---- index::tests::a_skill_without_tags_still_indexes stdout ----
 
-thread 'skill::tests::accepts_bom_and_crlf' (89192) panicked at crates/rcx-registry-skills/src/skill.rs:121:48:
+thread 'index::tests::a_skill_without_tags_still_indexes' (63215) panicked at crates/rcx-registry-skills/src/index.rs:158:79:
 parses: Yaml(Error("missing field `name`", line: 1, column: 1))
 note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 
+---- index::tests::body_is_never_indexed stdout ----
+
+thread 'index::tests::body_is_never_indexed' (63216) panicked at crates/rcx-registry-skills/src/index.rs:126:35:
+parses: Yaml(Error("missing field `name`", line: 1, column: 1))
+
+---- index::tests::indexed_text_carries_name_description_and_tags stdout ----
+
+thread 'index::tests::indexed_text_carries_name_description_and_tags' (63217) panicked at crates/rcx-registry-skills/src/index.rs:126:35:
+parses: Yaml(Error("missing field `name`", line: 1, column: 1))
+
+---- index::tests::ingest_body_shapes_one_chunk_per_skill stdout ----
+
+thread 'index::tests::ingest_body_shapes_one_chunk_per_skill' (63218) panicked at crates/rcx-registry-skills/src/index.rs:126:35:
+parses: Yaml(Error("missing field `name`", line: 1, column: 1))
+
 ---- skill::tests::discovery_description_truncates_on_char_boundaries stdout ----
 
-thread 'skill::tests::discovery_description_truncates_on_char_boundaries' (89193) panicked at crates/rcx-registry-skills/src/skill.rs:147:43:
+thread 'skill::tests::discovery_description_truncates_on_char_boundaries' (63227) panicked at crates/rcx-registry-skills/src/skill.rs:147:43:
 parses: Yaml(Error("missing field `name`", line: 1, column: 1))
 
----- skill::tests::parses_frontmatter_and_body stdout ----
+---- skill::tests::accepts_bom_and_crlf stdout ----
 
-thread 'skill::tests::parses_frontmatter_and_body' (89195) panicked at crates/rcx-registry-skills/src/skill.rs:102:43:
-parses: Yaml(Error("missing field `name`", line: 1, column: 1))
-
----- skill::tests::frontmatter_ending_at_eof_still_parses stdout ----
-
-thread 'skill::tests::frontmatter_ending_at_eof_still_parses' (89194) panicked at crates/rcx-registry-skills/src/skill.rs:127:75:
+thread 'skill::tests::accepts_bom_and_crlf' (63226) panicked at crates/rcx-registry-skills/src/skill.rs:121:48:
 parses: Yaml(Error("missing field `name`", line: 1, column: 1))
 
 ---- skill::tests::preserves_unmodelled_keys stdout ----
 
-thread 'skill::tests::preserves_unmodelled_keys' (89196) panicked at crates/rcx-registry-skills/src/skill.rs:111:43:
+thread 'skill::tests::preserves_unmodelled_keys' (63230) panicked at crates/rcx-registry-skills/src/skill.rs:111:43:
 parses: Yaml(Error("missing field `name`", line: 1, column: 1))
 
 ---- skill::tests::rejects_missing_and_unterminated_frontmatter stdout ----
 
-thread 'skill::tests::rejects_missing_and_unterminated_frontmatter' (89197) panicked at crates/rcx-registry-skills/src/skill.rs:138:9:
+thread 'skill::tests::rejects_missing_and_unterminated_frontmatter' (63231) panicked at crates/rcx-registry-skills/src/skill.rs:138:9:
 assertion failed: matches!(SkillDocument::parse("---\nname: n\ndescription: d\n"),
     Err(SkillsError::MalformedFrontMatter))
 
+---- skill::tests::frontmatter_ending_at_eof_still_parses stdout ----
+
+thread 'skill::tests::frontmatter_ending_at_eof_still_parses' (63228) panicked at crates/rcx-registry-skills/src/skill.rs:127:75:
+parses: Yaml(Error("missing field `name`", line: 1, column: 1))
+
+---- skill::tests::parses_frontmatter_and_body stdout ----
+
+thread 'skill::tests::parses_frontmatter_and_body' (63229) panicked at crates/rcx-registry-skills/src/skill.rs:102:43:
+parses: Yaml(Error("missing field `name`", line: 1, column: 1))
+
 
 failures:
+    index::tests::a_skill_without_tags_still_indexes
+    index::tests::body_is_never_indexed
+    index::tests::indexed_text_carries_name_description_and_tags
+    index::tests::ingest_body_shapes_one_chunk_per_skill
     skill::tests::accepts_bom_and_crlf
     skill::tests::discovery_description_truncates_on_char_boundaries
     skill::tests::frontmatter_ending_at_eof_still_parses
@@ -360,7 +390,7 @@ failures:
     skill::tests::preserves_unmodelled_keys
     skill::tests::rejects_missing_and_unterminated_frontmatter
 
-test result: FAILED. 17 passed; 6 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+test result: FAILED. 17 passed; 10 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
 
 error: test failed, to rerun pass `-p rcx-registry-skills --lib`
 

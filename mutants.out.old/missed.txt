@@ -10,5 +10,4 @@ crates/rcx-registry-skills/src/fetch.rs:270:20: delete ! in fetch_locked
 crates/rcx-registry-skills/src/fetch.rs:302:5: replace fetch_one -> Result<Vec<u8>, SkillsError> with Ok(vec![])
 crates/rcx-registry-skills/src/fetch.rs:302:5: replace fetch_one -> Result<Vec<u8>, SkillsError> with Ok(vec![0])
 crates/rcx-registry-skills/src/fetch.rs:302:5: replace fetch_one -> Result<Vec<u8>, SkillsError> with Ok(vec![1])
-crates/rcx-registry-skills/src/uri.rs:100:24: replace match guard v.is_empty() with true in SkillUri::parse
-crates/rcx-registry-skills/src/uri.rs:100:24: replace match guard v.is_empty() with false in SkillUri::parse
+crates/rcx-registry-skills/src/index.rs:71:5: replace tags_of -> Vec<String> with vec![]

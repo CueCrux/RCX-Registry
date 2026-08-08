@@ -1,0 +1,44 @@
+--- crates/rcx-registry-skills/src/index.rs
++++ replace ingest_body -> IngestBody with Default::default()
+@@ -85,40 +85,17 @@
+ ///
+ /// One chunk per skill: the indexed surface is a couple of hundred characters, so
+ /// splitting it would only dilute the term statistics that make BM25 work.
+ pub fn ingest_body(
+     tenant_id: &str,
+     corpus_id: &str,
+     skills: &[(String, SkillDocument, Option<String>)],
+ ) -> IngestBody {
+-    let documents = skills
+-        .iter()
+-        .map(|(id, doc, uri)| IngestDocument {
+-            doc_id: id.clone(),
+-            title: Some(doc.front_matter.name.clone()),
+-            url: uri.clone(),
+-            chunks: vec![IngestChunk {
+-                chunk_id: format!("{id}#frontmatter"),
+-                text: indexed_text(doc),
+-                chunk_index: 0,
+-                metadata: Some(serde_json::json!({
+-                    "skill_id": id,
+-                    "license": doc.front_matter.license,
+-                    "tags": tags_of(doc),
+-                })),
+-            }],
+-        })
+-        .collect();
+-
+-    IngestBody {
+-        tenant_id: tenant_id.to_string(),
+-        corpus_id: corpus_id.to_string(),
+-        documents,
+-    }
++    Default::default() /* ~ changed by cargo-mutants ~ */
+ }
+ 
+ #[cfg(test)]
+ mod tests {
+     use super::*;
+ 
+     // `premergesentinel` is a tag and appears in no other field, so an assertion on
+     // it proves tags reached the index. Asserting on a word the description already

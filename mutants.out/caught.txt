@@ -17,6 +17,11 @@ crates/rcx-registry-skills/src/fetch.rs:234:5: replace verify_bytes -> Result<()
 crates/rcx-registry-skills/src/fetch.rs:235:15: replace == with != in verify_bytes
 crates/rcx-registry-skills/src/fetch.rs:243:5: replace hex_digest -> String with String::new()
 crates/rcx-registry-skills/src/fetch.rs:243:5: replace hex_digest -> String with "xyzzy".into()
+crates/rcx-registry-skills/src/index.rs:58:5: replace indexed_text -> String with String::new()
+crates/rcx-registry-skills/src/index.rs:58:5: replace indexed_text -> String with "xyzzy".into()
+crates/rcx-registry-skills/src/index.rs:71:5: replace tags_of -> Vec<String> with vec![]
+crates/rcx-registry-skills/src/index.rs:71:5: replace tags_of -> Vec<String> with vec![String::new()]
+crates/rcx-registry-skills/src/index.rs:71:5: replace tags_of -> Vec<String> with vec!["xyzzy".into()]
 crates/rcx-registry-skills/src/lock.rs:77:9: replace SkillLock::to_json -> Result<String, SkillsError> with Ok(String::new())
 crates/rcx-registry-skills/src/lock.rs:77:9: replace SkillLock::to_json -> Result<String, SkillsError> with Ok("xyzzy".into())
 crates/rcx-registry-skills/src/lock.rs:83:9: replace SkillLock::validate -> Result<(), SkillsError> with Ok(())
