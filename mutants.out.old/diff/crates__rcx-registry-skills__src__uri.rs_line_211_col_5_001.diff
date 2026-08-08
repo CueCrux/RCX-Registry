@@ -1,0 +1,36 @@
+--- crates/rcx-registry-skills/src/uri.rs
++++ replace resolve_by_id -> Option<Resolved<'a>> with Some(Default::default())
+@@ -203,32 +203,17 @@
+     })
+ }
+ 
+ /// Resolve a bare skill id with no registry named, honouring precedence.
+ ///
+ /// This is the search path — `skills_find_relevant` rather than a URI lookup — and
+ /// it is where [`resolution_order`] matters.
+ pub fn resolve_by_id<'a>(skill_id: &str, registries: &'a [Registry]) -> Option<Resolved<'a>> {
+-    for registry in resolution_order(registries) {
+-        if let Some(entry) = registry.lock.skills.get(skill_id) {
+-            let uri = SkillUri {
+-                registry: registry.host.clone(),
+-                skill_id: skill_id.to_string(),
+-                version: (!entry.git_ref.is_empty()).then(|| entry.git_ref.clone()),
+-            };
+-            return Some(Resolved {
+-                uri,
+-                registry: &registry.host,
+-                kind: registry.kind,
+-                entry,
+-            });
+-        }
+-    }
+-    None
++    Some(Default::default()) /* ~ changed by cargo-mutants ~ */
+ }
+ 
+ /// Every skill in `lock`, addressed under `authority`.
+ ///
+ /// Entries with no commit are emitted unpinned: a v1 lockfile can still be browsed,
+ /// it just cannot hand out stable identifiers.
+ pub fn uris_for(lock: &SkillLock, authority: &str) -> Vec<SkillUri> {
+     lock.skills

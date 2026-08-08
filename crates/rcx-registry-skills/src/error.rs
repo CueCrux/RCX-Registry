@@ -34,6 +34,11 @@ pub enum SkillsError {
     #[error("lockfile is not signable: {reason}")]
     NotSignable { reason: String },
 
+    /// A `skill://` URI could not be parsed. The grammar is public, so the parser
+    /// rejects anything ambiguous rather than guessing.
+    #[error("bad skill uri {uri:?}: {reason}")]
+    BadSkillUri { uri: String, reason: String },
+
     /// A ref could not be resolved to a commit, so nothing can be pinned.
     ///
     /// The repo field is `repo`, not `source`: `thiserror` reserves `source` for the

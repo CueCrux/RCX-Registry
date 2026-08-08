@@ -39,10 +39,13 @@ fn signable_lock() -> SkillLock {
     }
 }
 
+const SIGNED_AT: u64 = 1_786_147_200_000;
+
 fn draft() -> ReceiptDraft {
     ReceiptDraft {
         event_id: [7u8; 16],
         snapshot_id: [9u8; 16],
+        signed_at_ms: SIGNED_AT,
         previous_snapshot_hash: None,
         signer_kid: "vault:transit:rcx-registry-signing-key-1".to_string(),
     }
@@ -133,14 +136,65 @@ fn the_root_is_reproducible_across_independent_constructions() {
 }
 
 #[test]
-fn the_receipt_carries_no_timestamp_so_two_runs_are_identical() {
-    // Same inputs, prepared twice. Any wall-clock field would make these differ and
-    // silently reduce verification to "trust the operator's copy".
+fn two_runs_with_the_same_inputs_are_identical() {
+    // Reproducibility of the *envelope*, given the same caller-supplied event ids
+    // and timestamp. Nothing is read from the clock inside the crate.
     let lock = signable_lock();
     let one = prepare_receipt(&lock, draft()).expect("preparable");
     let two = prepare_receipt(&lock, draft()).expect("preparable");
     assert_eq!(one.receipt_hash, two.receipt_hash);
     assert_eq!(one.lock_merkle_root, two.lock_merkle_root);
+}
+
+#[test]
+fn the_timestamp_never_reaches_the_merkle_root() {
+    // The load-bearing boundary. `signed_at_ms` must change the receipt (so it is
+    // covered by the signature and cannot be back-dated) while leaving the root
+    // untouched (so a third party who re-fetches the same commits still derives
+    // the same value). Getting this backwards costs either auditability or
+    // verifiability, and the failure is silent in both directions.
+    let lock = signable_lock();
+    let early = prepare_receipt(&lock, draft()).expect("preparable");
+    let later = prepare_receipt(
+        &lock,
+        ReceiptDraft {
+            signed_at_ms: SIGNED_AT + 86_400_000,
+            ..draft()
+        },
+    )
+    .expect("preparable");
+
+    assert_eq!(
+        early.lock_merkle_root, later.lock_merkle_root,
+        "the timestamp must not enter the Merkle root"
+    );
+    assert_ne!(
+        early.receipt_hash, later.receipt_hash,
+        "the timestamp must be covered by the receipt hash, or it could be rewritten freely"
+    );
+
+    // And both still verify against their own signatures.
+    let key = SigningKey::from_bytes(&[0x13; 32]);
+    for mut receipt in [early, later] {
+        sign_receipt(&mut receipt, |b| {
+            Ok::<_, std::convert::Infallible>(key.sign(b).to_bytes())
+        })
+        .expect("signs");
+        verify_lock_receipt(&lock, &receipt, &key.verifying_key().to_bytes())
+            .expect("a timestamped receipt must still verify");
+    }
+}
+
+#[test]
+fn a_back_dated_timestamp_breaks_the_signature() {
+    let key = SigningKey::from_bytes(&[0x13; 32]);
+    let lock = signable_lock();
+    let mut receipt = sign(&lock, &key);
+    receipt.signed_at_ms -= 86_400_000;
+    assert!(
+        verify_lock_receipt(&lock, &receipt, &key.verifying_key().to_bytes()).is_err(),
+        "rewriting signed_at_ms must invalidate the receipt"
+    );
 }
 
 #[test]

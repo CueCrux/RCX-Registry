@@ -1,0 +1,21 @@
+--- crates/rcx-registry-skills/src/uri.rs
++++ replace == with != in SkillUri::parse
+@@ -65,17 +65,17 @@
+             .split_once('/')
+             .ok_or_else(|| bad("missing /skill-id"))?;
+ 
+         if registry.is_empty() {
+             return Err(bad("empty registry authority"));
+         }
+         if !registry
+             .bytes()
+-            .all(|b| b.is_ascii_alphanumeric() || b == b'.' || b == b'-' || b == b':')
++            .all(|b| b.is_ascii_alphanumeric() || b == b'.' || b == b'-' || b != /* ~ changed by cargo-mutants ~ */ b':')
+         {
+             return Err(bad("registry authority has characters outside host syntax"));
+         }
+ 
+         // Split on the LAST '@': a skill id may not contain one, but rejecting on
+         // that basis is friendlier than silently splitting at the wrong place.
+         let (skill_id, version) = match tail.rsplit_once('@') {
+             Some((id, ver)) => (id, Some(ver)),

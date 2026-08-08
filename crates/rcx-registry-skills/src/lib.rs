@@ -23,6 +23,7 @@ pub mod fetch;
 pub mod lock;
 pub mod sign;
 pub mod skill;
+pub mod uri;
 
 pub use error::SkillsError;
 pub use fetch::{fetch_locked, FetchOutcome, Fetched, Mismatch};
@@ -32,3 +33,7 @@ pub use sign::{
     ReceiptDraft,
 };
 pub use skill::{SkillDocument, SkillFrontMatter};
+pub use uri::{
+    resolution_order, resolve, resolve_by_id, uris_for, Registry, RegistryKind, Resolved, SkillUri,
+    RCX_SKILL_REGISTRY_AUTHORITY,
+};

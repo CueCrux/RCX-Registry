@@ -1,19 +1,27 @@
 //! Receipt over a skills lockfile.
 //!
 //! Structurally the sibling of [`RegistrySnapshotReceipt`](crate::RegistrySnapshotReceipt)
-//! — same canonical-CBOR encoding, same zeroed-field signing idiom — with one
-//! deliberate difference: **there is no timestamp in the signed body.**
+//! — same canonical-CBOR encoding, same zeroed-field signing idiom.
 //!
-//! `RegistrySnapshotReceipt` carries `scraped_at` because a mirror snapshot is a
-//! statement about a moment. A skills lockfile is not: it is a statement about a
-//! set of `(skill, commit, content-hash)` triples, every one of which is immutable.
-//! Two people who fetch the same refs must be able to compute the same root and get
-//! the same receipt hash — that is what makes the signature independently checkable
-//! rather than merely present. A timestamp would make every re-derivation differ
-//! and quietly reduce verification to "trust the operator's copy".
+//! ## Where reproducibility lives
 //!
-//! The ULID identifiers are *not* part of that guarantee: they name this particular
-//! signing event. The reproducible artefact is `lock_merkle_root`.
+//! Two different guarantees are in play and it is worth being precise about which
+//! is which, because conflating them costs you either auditability or verifiability:
+//!
+//! - **`lock_merkle_root` is reproducible.** Anyone who re-fetches the same commits
+//!   derives the same root, byte for byte. Nothing time-varying ever enters it.
+//!   This is what makes the signature independently checkable rather than merely
+//!   present.
+//! - **The receipt envelope is attested, not reproducible.** `signed_at` and the
+//!   two ULIDs name *this* signing event. You do not recompute them; you check the
+//!   signature that covers them. Certificate Transparency draws the same line — an
+//!   SCT carries a timestamp, and the log's verifiability comes from the Merkle
+//!   tree over certificates, not from re-deriving the SCT.
+//!
+//! So a timestamp is safe here and an unsigned one would not be: `signed_at` sits
+//! inside the signed body, so it cannot be back-dated without invalidating the
+//! signature. What would be unsafe is letting it reach the root — see
+//! `the_timestamp_never_reaches_the_merkle_root`.
 //!
 //! A signature here attests **origin, not safety** — that these bytes are what the
 //! named signer published. It says nothing about whether the skill is malicious.
@@ -33,6 +41,13 @@ pub const MIN_SIGNABLE_LOCK_VERSION: u64 = 2;
 pub struct SkillSnapshotReceipt {
     pub event_id: [u8; ULID_LEN],
     pub snapshot_id: [u8; ULID_LEN],
+    /// Unix milliseconds at which this receipt was signed, matching the
+    /// `scraped_at_ms` convention used by the mirror sync loop.
+    ///
+    /// Inside the signed body deliberately: a timestamp an attacker can rewrite
+    /// without breaking the signature is worse than none, because it is believed.
+    /// It never enters `lock_merkle_root`.
+    pub signed_at_ms: u64,
     /// Number of skills in the signed lockfile.
     pub skill_count: u64,
     /// Lockfile schema version. Below [`MIN_SIGNABLE_LOCK_VERSION`] this receipt
@@ -55,6 +70,7 @@ impl ReceiptDocument for SkillSnapshotReceipt {
                 "snapshot_id".into(),
                 CborValue::Bytes(self.snapshot_id.to_vec()),
             ),
+            ("signed_at_ms".into(), CborValue::Uint(self.signed_at_ms)),
             ("skill_count".into(), CborValue::Uint(self.skill_count)),
             ("lock_version".into(), CborValue::Uint(self.lock_version)),
             (

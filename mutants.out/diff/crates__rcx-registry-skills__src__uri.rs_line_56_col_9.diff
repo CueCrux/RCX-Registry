@@ -1,0 +1,80 @@
+--- crates/rcx-registry-skills/src/uri.rs
++++ replace SkillUri::parse -> Result<Self, SkillsError> with Ok(Default::default())
+@@ -48,76 +48,17 @@
+     pub version: Option<String>,
+ }
+ 
+ impl SkillUri {
+     /// Parse a `skill://` URI.
+     ///
+     /// Strict by design — see the module note on why the grammar cannot drift.
+     pub fn parse(raw: &str) -> Result<Self, SkillsError> {
+-        let bad = |why: &str| SkillsError::BadSkillUri {
+-            uri: raw.to_string(),
+-            reason: why.to_string(),
+-        };
+-
+-        let rest = raw
+-            .strip_prefix(SCHEME)
+-            .ok_or_else(|| bad("missing skill:// scheme"))?;
+-        let (registry, tail) = rest
+-            .split_once('/')
+-            .ok_or_else(|| bad("missing /skill-id"))?;
+-
+-        if registry.is_empty() {
+-            return Err(bad("empty registry authority"));
+-        }
+-        if !registry
+-            .bytes()
+-            .all(|b| b.is_ascii_alphanumeric() || b == b'.' || b == b'-' || b == b':')
+-        {
+-            return Err(bad("registry authority has characters outside host syntax"));
+-        }
+-
+-        // Split on the LAST '@': a skill id may not contain one, but rejecting on
+-        // that basis is friendlier than silently splitting at the wrong place.
+-        let (skill_id, version) = match tail.rsplit_once('@') {
+-            Some((id, ver)) => (id, Some(ver)),
+-            None => (tail, None),
+-        };
+-
+-        if skill_id.is_empty() {
+-            return Err(bad("empty skill id"));
+-        }
+-        // A '/' in the id would make the authority boundary ambiguous, and '..'
+-        // is a traversal attempt against any store that maps ids onto paths.
+-        if skill_id.contains('/') || skill_id.contains("..") {
+-            return Err(bad("skill id may not contain '/' or '..'"));
+-        }
+-        if skill_id.contains('@') {
+-            return Err(bad("skill id may not contain '@'"));
+-        }
+-
+-        let version = match version {
+-            None => None,
+-            // Literal pattern rather than a guard: `""` fails `is_commit_id` anyway,
+-            // so a guard here reads as redundant, but the distinct message is worth
+-            // keeping — "empty version" and "not a commit id" are different mistakes.
+-            Some("") => return Err(bad("empty version after '@'")),
+-            Some(v) if is_commit_id(v) => Some(v.to_ascii_lowercase()),
+-            Some(_) => {
+-                return Err(bad(
+-                    "version must be a full 40-hex commit id — a mutable tag or semver cannot pin content",
+-                ))
+-            }
+-        };
+-
+-        Ok(Self {
+-            registry: registry.to_string(),
+-            skill_id: skill_id.to_string(),
+-            version,
+-        })
++        Ok(Default::default()) /* ~ changed by cargo-mutants ~ */
+     }
+ 
+     /// True when this URI names an immutable object.
+     pub fn is_pinned(&self) -> bool {
+         self.version.is_some()
+     }
+ 
+     /// Pin an unpinned URI to a commit.

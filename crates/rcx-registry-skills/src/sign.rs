@@ -67,6 +67,10 @@ pub fn lock_merkle_root(lock: &SkillLock) -> Result<[u8; HASH_LEN], SkillsError>
 pub struct ReceiptDraft {
     pub event_id: [u8; 16],
     pub snapshot_id: [u8; 16],
+    /// Unix milliseconds to stamp into the signed body. Caller-supplied rather
+    /// than read from the clock here, so a test can pin it and a replay can
+    /// reproduce a historical receipt exactly.
+    pub signed_at_ms: u64,
     pub previous_snapshot_hash: Option<[u8; HASH_LEN]>,
     pub signer_kid: String,
 }
@@ -83,6 +87,7 @@ pub fn prepare_receipt(
     let mut receipt = SkillSnapshotReceipt {
         event_id: draft.event_id,
         snapshot_id: draft.snapshot_id,
+        signed_at_ms: draft.signed_at_ms,
         skill_count: lock.len() as u64,
         lock_version: u64::from(lock.version),
         lock_merkle_root: root,

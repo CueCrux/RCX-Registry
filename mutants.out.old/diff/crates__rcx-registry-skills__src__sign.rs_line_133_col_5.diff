@@ -1,0 +1,23 @@
+--- crates/rcx-registry-skills/src/sign.rs
++++ replace sign_receipt -> Result<(), E> with Ok(())
+@@ -125,19 +125,17 @@
+ /// without either one reimplementing the preimage rule above.
+ pub fn sign_receipt<E>(
+     receipt: &mut SkillSnapshotReceipt,
+     sign: impl FnOnce(&[u8]) -> Result<[u8; 64], E>,
+ ) -> Result<(), E> {
+     // Recompute rather than trust: a caller who mutated the body after
+     // `prepare_receipt` would otherwise sign a preimage that disagrees with the
+     // stored hash, and fail verification at the hash check with no clue why.
+-    receipt.receipt_hash = receipt.compute_hash();
+-    receipt.receipt_signature = sign(&signing_preimage(receipt))?;
+-    Ok(())
++    Ok(()) /* ~ changed by cargo-mutants ~ */
+ }
+ 
+ /// Check a receipt against a lockfile and a public key.
+ ///
+ /// Both halves are required and neither implies the other: the signature proves the
+ /// receipt came from the signer, and the root comparison proves the receipt is about
+ /// *this* lockfile. Verifying only the signature would accept a validly signed
+ /// receipt for a different set of skills — the substitution a lockfile signature

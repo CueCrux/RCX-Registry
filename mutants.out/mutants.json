@@ -1984,7 +1984,7 @@
     }
   },
   {
-    "diff": "--- crates/rcx-registry-skills/src/sign.rs\n+++ replace prepare_receipt -> Result<SkillSnapshotReceipt, SkillsError> with Ok(Default::default())\n@@ -74,30 +74,17 @@\n /// Build the receipt and its hash for `lock`, leaving the signature zeroed.\n ///\n /// Split from signing so the hash can be computed without holding a key — the\n /// server signs through Vault Transit, which never exposes one.\n pub fn prepare_receipt(\n     lock: &SkillLock,\n     draft: ReceiptDraft,\n ) -> Result<SkillSnapshotReceipt, SkillsError> {\n-    let root = lock_merkle_root(lock)?;\n-    let mut receipt = SkillSnapshotReceipt {\n-        event_id: draft.event_id,\n-        snapshot_id: draft.snapshot_id,\n-        skill_count: lock.len() as u64,\n-        lock_version: u64::from(lock.version),\n-        lock_merkle_root: root,\n-        previous_snapshot_hash: draft.previous_snapshot_hash,\n-        receipt_hash: [0u8; HASH_LEN],\n-        receipt_signature: [0u8; 64],\n-        signer_kid: draft.signer_kid,\n-    };\n-    receipt.receipt_hash = receipt.compute_hash();\n-    Ok(receipt)\n+    Ok(Default::default()) /* ~ changed by cargo-mutants ~ */\n }\n \n /// Exact bytes a signer must sign for `receipt`.\n ///\n /// The preimage is the canonical CBOR of the **whole** receipt with only\n /// `receipt_signature` zeroed — not the receipt hash, and not the fully-zeroed body\n /// that `compute_hash` uses. Three different byte strings are in play and signing\n /// the wrong one produces a signature that never verifies, with `BadSignature` as\n",
+    "diff": "--- crates/rcx-registry-skills/src/sign.rs\n+++ replace prepare_receipt -> Result<SkillSnapshotReceipt, SkillsError> with Ok(Default::default())\n@@ -78,31 +78,17 @@\n /// Build the receipt and its hash for `lock`, leaving the signature zeroed.\n ///\n /// Split from signing so the hash can be computed without holding a key — the\n /// server signs through Vault Transit, which never exposes one.\n pub fn prepare_receipt(\n     lock: &SkillLock,\n     draft: ReceiptDraft,\n ) -> Result<SkillSnapshotReceipt, SkillsError> {\n-    let root = lock_merkle_root(lock)?;\n-    let mut receipt = SkillSnapshotReceipt {\n-        event_id: draft.event_id,\n-        snapshot_id: draft.snapshot_id,\n-        signed_at_ms: draft.signed_at_ms,\n-        skill_count: lock.len() as u64,\n-        lock_version: u64::from(lock.version),\n-        lock_merkle_root: root,\n-        previous_snapshot_hash: draft.previous_snapshot_hash,\n-        receipt_hash: [0u8; HASH_LEN],\n-        receipt_signature: [0u8; 64],\n-        signer_kid: draft.signer_kid,\n-    };\n-    receipt.receipt_hash = receipt.compute_hash();\n-    Ok(receipt)\n+    Ok(Default::default()) /* ~ changed by cargo-mutants ~ */\n }\n \n /// Exact bytes a signer must sign for `receipt`.\n ///\n /// The preimage is the canonical CBOR of the **whole** receipt with only\n /// `receipt_signature` zeroed — not the receipt hash, and not the fully-zeroed body\n /// that `compute_hash` uses. Three different byte strings are in play and signing\n /// the wrong one produces a signature that never verifies, with `BadSignature` as\n",
     "file": "crates/rcx-registry-skills/src/sign.rs",
     "function": {
       "function_name": "prepare_receipt",
@@ -1992,31 +1992,31 @@
       "span": {
         "end": {
           "column": 2,
-          "line": 96
+          "line": 101
         },
         "start": {
           "column": 1,
-          "line": 74
+          "line": 78
         }
       }
     },
     "genre": "FnValue",
-    "name": "crates/rcx-registry-skills/src/sign.rs:82:5: replace prepare_receipt -> Result<SkillSnapshotReceipt, SkillsError> with Ok(Default::default())",
+    "name": "crates/rcx-registry-skills/src/sign.rs:86:5: replace prepare_receipt -> Result<SkillSnapshotReceipt, SkillsError> with Ok(Default::default())",
     "package": "rcx-registry-skills",
     "replacement": "Ok(Default::default())",
     "span": {
       "end": {
         "column": 16,
-        "line": 95
+        "line": 100
       },
       "start": {
         "column": 5,
-        "line": 82
+        "line": 86
       }
     }
   },
   {
-    "diff": "--- crates/rcx-registry-skills/src/sign.rs\n+++ replace signing_preimage -> Vec<u8> with vec![]\n@@ -103,19 +103,17 @@\n /// the wrong one produces a signature that never verifies, with `BadSignature` as\n /// the only symptom for all three.\n ///\n /// Crown has no exported helper for this, so callers reconstruct it by knowing to\n /// call `to_canonical_cbor()` *before* populating the signature field. That ordering\n /// requirement is invisible at the call site and easy to get backwards. This function\n /// zeroes the field itself, so it is correct whatever the receipt currently holds.\n pub fn signing_preimage(receipt: &SkillSnapshotReceipt) -> Vec<u8> {\n-    let mut unsigned = receipt.clone();\n-    unsigned.receipt_signature = [0u8; 64];\n-    unsigned.to_canonical_cbor()\n+    vec![] /* ~ changed by cargo-mutants ~ */\n }\n \n /// Sign `receipt` in place with a caller-supplied signer.\n ///\n /// The closure shape matches the server's Vault Transit signer, which never exposes\n /// a key — so this works for both a local test key and the production HSM path\n /// without either one reimplementing the preimage rule above.\n pub fn sign_receipt<E>(\n",
+    "diff": "--- crates/rcx-registry-skills/src/sign.rs\n+++ replace signing_preimage -> Vec<u8> with vec![]\n@@ -108,19 +108,17 @@\n /// the wrong one produces a signature that never verifies, with `BadSignature` as\n /// the only symptom for all three.\n ///\n /// Crown has no exported helper for this, so callers reconstruct it by knowing to\n /// call `to_canonical_cbor()` *before* populating the signature field. That ordering\n /// requirement is invisible at the call site and easy to get backwards. This function\n /// zeroes the field itself, so it is correct whatever the receipt currently holds.\n pub fn signing_preimage(receipt: &SkillSnapshotReceipt) -> Vec<u8> {\n-    let mut unsigned = receipt.clone();\n-    unsigned.receipt_signature = [0u8; 64];\n-    unsigned.to_canonical_cbor()\n+    vec![] /* ~ changed by cargo-mutants ~ */\n }\n \n /// Sign `receipt` in place with a caller-supplied signer.\n ///\n /// The closure shape matches the server's Vault Transit signer, which never exposes\n /// a key — so this works for both a local test key and the production HSM path\n /// without either one reimplementing the preimage rule above.\n pub fn sign_receipt<E>(\n",
     "file": "crates/rcx-registry-skills/src/sign.rs",
     "function": {
       "function_name": "signing_preimage",
@@ -2024,31 +2024,31 @@
       "span": {
         "end": {
           "column": 2,
-          "line": 114
+          "line": 119
         },
         "start": {
           "column": 1,
-          "line": 98
+          "line": 103
         }
       }
     },
     "genre": "FnValue",
-    "name": "crates/rcx-registry-skills/src/sign.rs:111:5: replace signing_preimage -> Vec<u8> with vec![]",
+    "name": "crates/rcx-registry-skills/src/sign.rs:116:5: replace signing_preimage -> Vec<u8> with vec![]",
     "package": "rcx-registry-skills",
     "replacement": "vec![]",
     "span": {
       "end": {
         "column": 33,
-        "line": 113
+        "line": 118
       },
       "start": {
         "column": 5,
-        "line": 111
+        "line": 116
       }
     }
   },
   {
-    "diff": "--- crates/rcx-registry-skills/src/sign.rs\n+++ replace signing_preimage -> Vec<u8> with vec![0]\n@@ -103,19 +103,17 @@\n /// the wrong one produces a signature that never verifies, with `BadSignature` as\n /// the only symptom for all three.\n ///\n /// Crown has no exported helper for this, so callers reconstruct it by knowing to\n /// call `to_canonical_cbor()` *before* populating the signature field. That ordering\n /// requirement is invisible at the call site and easy to get backwards. This function\n /// zeroes the field itself, so it is correct whatever the receipt currently holds.\n pub fn signing_preimage(receipt: &SkillSnapshotReceipt) -> Vec<u8> {\n-    let mut unsigned = receipt.clone();\n-    unsigned.receipt_signature = [0u8; 64];\n-    unsigned.to_canonical_cbor()\n+    vec![0] /* ~ changed by cargo-mutants ~ */\n }\n \n /// Sign `receipt` in place with a caller-supplied signer.\n ///\n /// The closure shape matches the server's Vault Transit signer, which never exposes\n /// a key — so this works for both a local test key and the production HSM path\n /// without either one reimplementing the preimage rule above.\n pub fn sign_receipt<E>(\n",
+    "diff": "--- crates/rcx-registry-skills/src/sign.rs\n+++ replace signing_preimage -> Vec<u8> with vec![0]\n@@ -108,19 +108,17 @@\n /// the wrong one produces a signature that never verifies, with `BadSignature` as\n /// the only symptom for all three.\n ///\n /// Crown has no exported helper for this, so callers reconstruct it by knowing to\n /// call `to_canonical_cbor()` *before* populating the signature field. That ordering\n /// requirement is invisible at the call site and easy to get backwards. This function\n /// zeroes the field itself, so it is correct whatever the receipt currently holds.\n pub fn signing_preimage(receipt: &SkillSnapshotReceipt) -> Vec<u8> {\n-    let mut unsigned = receipt.clone();\n-    unsigned.receipt_signature = [0u8; 64];\n-    unsigned.to_canonical_cbor()\n+    vec![0] /* ~ changed by cargo-mutants ~ */\n }\n \n /// Sign `receipt` in place with a caller-supplied signer.\n ///\n /// The closure shape matches the server's Vault Transit signer, which never exposes\n /// a key — so this works for both a local test key and the production HSM path\n /// without either one reimplementing the preimage rule above.\n pub fn sign_receipt<E>(\n",
     "file": "crates/rcx-registry-skills/src/sign.rs",
     "function": {
       "function_name": "signing_preimage",
@@ -2056,31 +2056,31 @@
       "span": {
         "end": {
           "column": 2,
-          "line": 114
+          "line": 119
         },
         "start": {
           "column": 1,
-          "line": 98
+          "line": 103
         }
       }
     },
     "genre": "FnValue",
-    "name": "crates/rcx-registry-skills/src/sign.rs:111:5: replace signing_preimage -> Vec<u8> with vec![0]",
+    "name": "crates/rcx-registry-skills/src/sign.rs:116:5: replace signing_preimage -> Vec<u8> with vec![0]",
     "package": "rcx-registry-skills",
     "replacement": "vec![0]",
     "span": {
       "end": {
         "column": 33,
-        "line": 113
+        "line": 118
       },
       "start": {
         "column": 5,
-        "line": 111
+        "line": 116
       }
     }
   },
   {
-    "diff": "--- crates/rcx-registry-skills/src/sign.rs\n+++ replace signing_preimage -> Vec<u8> with vec![1]\n@@ -103,19 +103,17 @@\n /// the wrong one produces a signature that never verifies, with `BadSignature` as\n /// the only symptom for all three.\n ///\n /// Crown has no exported helper for this, so callers reconstruct it by knowing to\n /// call `to_canonical_cbor()` *before* populating the signature field. That ordering\n /// requirement is invisible at the call site and easy to get backwards. This function\n /// zeroes the field itself, so it is correct whatever the receipt currently holds.\n pub fn signing_preimage(receipt: &SkillSnapshotReceipt) -> Vec<u8> {\n-    let mut unsigned = receipt.clone();\n-    unsigned.receipt_signature = [0u8; 64];\n-    unsigned.to_canonical_cbor()\n+    vec![1] /* ~ changed by cargo-mutants ~ */\n }\n \n /// Sign `receipt` in place with a caller-supplied signer.\n ///\n /// The closure shape matches the server's Vault Transit signer, which never exposes\n /// a key — so this works for both a local test key and the production HSM path\n /// without either one reimplementing the preimage rule above.\n pub fn sign_receipt<E>(\n",
+    "diff": "--- crates/rcx-registry-skills/src/sign.rs\n+++ replace signing_preimage -> Vec<u8> with vec![1]\n@@ -108,19 +108,17 @@\n /// the wrong one produces a signature that never verifies, with `BadSignature` as\n /// the only symptom for all three.\n ///\n /// Crown has no exported helper for this, so callers reconstruct it by knowing to\n /// call `to_canonical_cbor()` *before* populating the signature field. That ordering\n /// requirement is invisible at the call site and easy to get backwards. This function\n /// zeroes the field itself, so it is correct whatever the receipt currently holds.\n pub fn signing_preimage(receipt: &SkillSnapshotReceipt) -> Vec<u8> {\n-    let mut unsigned = receipt.clone();\n-    unsigned.receipt_signature = [0u8; 64];\n-    unsigned.to_canonical_cbor()\n+    vec![1] /* ~ changed by cargo-mutants ~ */\n }\n \n /// Sign `receipt` in place with a caller-supplied signer.\n ///\n /// The closure shape matches the server's Vault Transit signer, which never exposes\n /// a key — so this works for both a local test key and the production HSM path\n /// without either one reimplementing the preimage rule above.\n pub fn sign_receipt<E>(\n",
     "file": "crates/rcx-registry-skills/src/sign.rs",
     "function": {
       "function_name": "signing_preimage",
@@ -2088,31 +2088,31 @@
       "span": {
         "end": {
           "column": 2,
-          "line": 114
+          "line": 119
         },
         "start": {
           "column": 1,
-          "line": 98
+          "line": 103
         }
       }
     },
     "genre": "FnValue",
-    "name": "crates/rcx-registry-skills/src/sign.rs:111:5: replace signing_preimage -> Vec<u8> with vec![1]",
+    "name": "crates/rcx-registry-skills/src/sign.rs:116:5: replace signing_preimage -> Vec<u8> with vec![1]",
     "package": "rcx-registry-skills",
     "replacement": "vec![1]",
     "span": {
       "end": {
         "column": 33,
-        "line": 113
+        "line": 118
       },
       "start": {
         "column": 5,
-        "line": 111
+        "line": 116
       }
     }
   },
   {
-    "diff": "--- crates/rcx-registry-skills/src/sign.rs\n+++ replace sign_receipt -> Result<(), E> with Ok(())\n@@ -120,19 +120,17 @@\n /// without either one reimplementing the preimage rule above.\n pub fn sign_receipt<E>(\n     receipt: &mut SkillSnapshotReceipt,\n     sign: impl FnOnce(&[u8]) -> Result<[u8; 64], E>,\n ) -> Result<(), E> {\n     // Recompute rather than trust: a caller who mutated the body after\n     // `prepare_receipt` would otherwise sign a preimage that disagrees with the\n     // stored hash, and fail verification at the hash check with no clue why.\n-    receipt.receipt_hash = receipt.compute_hash();\n-    receipt.receipt_signature = sign(&signing_preimage(receipt))?;\n-    Ok(())\n+    Ok(()) /* ~ changed by cargo-mutants ~ */\n }\n \n /// Check a receipt against a lockfile and a public key.\n ///\n /// Both halves are required and neither implies the other: the signature proves the\n /// receipt came from the signer, and the root comparison proves the receipt is about\n /// *this* lockfile. Verifying only the signature would accept a validly signed\n /// receipt for a different set of skills — the substitution a lockfile signature\n",
+    "diff": "--- crates/rcx-registry-skills/src/sign.rs\n+++ replace sign_receipt -> Result<(), E> with Ok(())\n@@ -125,19 +125,17 @@\n /// without either one reimplementing the preimage rule above.\n pub fn sign_receipt<E>(\n     receipt: &mut SkillSnapshotReceipt,\n     sign: impl FnOnce(&[u8]) -> Result<[u8; 64], E>,\n ) -> Result<(), E> {\n     // Recompute rather than trust: a caller who mutated the body after\n     // `prepare_receipt` would otherwise sign a preimage that disagrees with the\n     // stored hash, and fail verification at the hash check with no clue why.\n-    receipt.receipt_hash = receipt.compute_hash();\n-    receipt.receipt_signature = sign(&signing_preimage(receipt))?;\n-    Ok(())\n+    Ok(()) /* ~ changed by cargo-mutants ~ */\n }\n \n /// Check a receipt against a lockfile and a public key.\n ///\n /// Both halves are required and neither implies the other: the signature proves the\n /// receipt came from the signer, and the root comparison proves the receipt is about\n /// *this* lockfile. Verifying only the signature would accept a validly signed\n /// receipt for a different set of skills — the substitution a lockfile signature\n",
     "file": "crates/rcx-registry-skills/src/sign.rs",
     "function": {
       "function_name": "sign_receipt",
@@ -2120,31 +2120,31 @@
       "span": {
         "end": {
           "column": 2,
-          "line": 131
+          "line": 136
         },
         "start": {
           "column": 1,
-          "line": 116
+          "line": 121
         }
       }
     },
     "genre": "FnValue",
-    "name": "crates/rcx-registry-skills/src/sign.rs:128:5: replace sign_receipt -> Result<(), E> with Ok(())",
+    "name": "crates/rcx-registry-skills/src/sign.rs:133:5: replace sign_receipt -> Result<(), E> with Ok(())",
     "package": "rcx-registry-skills",
     "replacement": "Ok(())",
     "span": {
       "end": {
         "column": 11,
-        "line": 130
+        "line": 135
       },
       "start": {
         "column": 5,
-        "line": 128
+        "line": 133
       }
     }
   },
   {
-    "diff": "--- crates/rcx-registry-skills/src/sign.rs\n+++ replace verify_lock_receipt -> Result<(), SkillsError> with Ok(())\n@@ -137,45 +137,10 @@\n /// *this* lockfile. Verifying only the signature would accept a validly signed\n /// receipt for a different set of skills — the substitution a lockfile signature\n /// exists to prevent.\n pub fn verify_lock_receipt(\n     lock: &SkillLock,\n     receipt: &SkillSnapshotReceipt,\n     public_key: &[u8],\n ) -> Result<(), SkillsError> {\n-    verify_receipt_signature(receipt, public_key).map_err(|error: CrownError| {\n-        SkillsError::NotSignable {\n-            reason: format!(\"receipt signature did not verify: {error}\"),\n-        }\n-    })?;\n-\n-    let recomputed = lock_merkle_root(lock)?;\n-    if recomputed != receipt.lock_merkle_root {\n-        return Err(SkillsError::NotSignable {\n-            reason: \"receipt is validly signed but its Merkle root does not match this lockfile\"\n-                .to_string(),\n-        });\n-    }\n-\n-    // Split rather than `||`-joined: a combined condition is satisfied by either\n-    // half, so a test that trips both at once never proves the other is checked.\n-    // `cargo-mutants` flagged exactly that — flipping the `||` to `&&` survived the\n-    // whole suite, because every case that changed the count also changed the root.\n-    if u64::from(lock.version) != receipt.lock_version {\n-        return Err(SkillsError::NotSignable {\n-            reason: format!(\n-                \"receipt describes lock version {} but this lockfile is version {}\",\n-                receipt.lock_version, lock.version\n-            ),\n-        });\n-    }\n-    if lock.len() as u64 != receipt.skill_count {\n-        return Err(SkillsError::NotSignable {\n-            reason: format!(\n-                \"receipt describes {} skills but this lockfile has {}\",\n-                receipt.skill_count,\n-                lock.len()\n-            ),\n-        });\n-    }\n-    Ok(())\n+    Ok(()) /* ~ changed by cargo-mutants ~ */\n }\n",
+    "diff": "--- crates/rcx-registry-skills/src/sign.rs\n+++ replace verify_lock_receipt -> Result<(), SkillsError> with Ok(())\n@@ -142,45 +142,10 @@\n /// *this* lockfile. Verifying only the signature would accept a validly signed\n /// receipt for a different set of skills — the substitution a lockfile signature\n /// exists to prevent.\n pub fn verify_lock_receipt(\n     lock: &SkillLock,\n     receipt: &SkillSnapshotReceipt,\n     public_key: &[u8],\n ) -> Result<(), SkillsError> {\n-    verify_receipt_signature(receipt, public_key).map_err(|error: CrownError| {\n-        SkillsError::NotSignable {\n-            reason: format!(\"receipt signature did not verify: {error}\"),\n-        }\n-    })?;\n-\n-    let recomputed = lock_merkle_root(lock)?;\n-    if recomputed != receipt.lock_merkle_root {\n-        return Err(SkillsError::NotSignable {\n-            reason: \"receipt is validly signed but its Merkle root does not match this lockfile\"\n-                .to_string(),\n-        });\n-    }\n-\n-    // Split rather than `||`-joined: a combined condition is satisfied by either\n-    // half, so a test that trips both at once never proves the other is checked.\n-    // `cargo-mutants` flagged exactly that — flipping the `||` to `&&` survived the\n-    // whole suite, because every case that changed the count also changed the root.\n-    if u64::from(lock.version) != receipt.lock_version {\n-        return Err(SkillsError::NotSignable {\n-            reason: format!(\n-                \"receipt describes lock version {} but this lockfile is version {}\",\n-                receipt.lock_version, lock.version\n-            ),\n-        });\n-    }\n-    if lock.len() as u64 != receipt.skill_count {\n-        return Err(SkillsError::NotSignable {\n-            reason: format!(\n-                \"receipt describes {} skills but this lockfile has {}\",\n-                receipt.skill_count,\n-                lock.len()\n-            ),\n-        });\n-    }\n-    Ok(())\n+    Ok(()) /* ~ changed by cargo-mutants ~ */\n }\n",
     "file": "crates/rcx-registry-skills/src/sign.rs",
     "function": {
       "function_name": "verify_lock_receipt",
@@ -2152,31 +2152,31 @@
       "span": {
         "end": {
           "column": 2,
-          "line": 181
+          "line": 186
         },
         "start": {
           "column": 1,
-          "line": 133
+          "line": 138
         }
       }
     },
     "genre": "FnValue",
-    "name": "crates/rcx-registry-skills/src/sign.rs:145:5: replace verify_lock_receipt -> Result<(), SkillsError> with Ok(())",
+    "name": "crates/rcx-registry-skills/src/sign.rs:150:5: replace verify_lock_receipt -> Result<(), SkillsError> with Ok(())",
     "package": "rcx-registry-skills",
     "replacement": "Ok(())",
     "span": {
       "end": {
         "column": 11,
-        "line": 180
+        "line": 185
       },
       "start": {
         "column": 5,
-        "line": 145
+        "line": 150
       }
     }
   },
   {
-    "diff": "--- crates/rcx-registry-skills/src/sign.rs\n+++ replace != with == in verify_lock_receipt\n@@ -144,17 +144,17 @@\n ) -> Result<(), SkillsError> {\n     verify_receipt_signature(receipt, public_key).map_err(|error: CrownError| {\n         SkillsError::NotSignable {\n             reason: format!(\"receipt signature did not verify: {error}\"),\n         }\n     })?;\n \n     let recomputed = lock_merkle_root(lock)?;\n-    if recomputed != receipt.lock_merkle_root {\n+    if recomputed == /* ~ changed by cargo-mutants ~ */ receipt.lock_merkle_root {\n         return Err(SkillsError::NotSignable {\n             reason: \"receipt is validly signed but its Merkle root does not match this lockfile\"\n                 .to_string(),\n         });\n     }\n \n     // Split rather than `||`-joined: a combined condition is satisfied by either\n     // half, so a test that trips both at once never proves the other is checked.\n",
+    "diff": "--- crates/rcx-registry-skills/src/sign.rs\n+++ replace != with == in verify_lock_receipt\n@@ -149,17 +149,17 @@\n ) -> Result<(), SkillsError> {\n     verify_receipt_signature(receipt, public_key).map_err(|error: CrownError| {\n         SkillsError::NotSignable {\n             reason: format!(\"receipt signature did not verify: {error}\"),\n         }\n     })?;\n \n     let recomputed = lock_merkle_root(lock)?;\n-    if recomputed != receipt.lock_merkle_root {\n+    if recomputed == /* ~ changed by cargo-mutants ~ */ receipt.lock_merkle_root {\n         return Err(SkillsError::NotSignable {\n             reason: \"receipt is validly signed but its Merkle root does not match this lockfile\"\n                 .to_string(),\n         });\n     }\n \n     // Split rather than `||`-joined: a combined condition is satisfied by either\n     // half, so a test that trips both at once never proves the other is checked.\n",
     "file": "crates/rcx-registry-skills/src/sign.rs",
     "function": {
       "function_name": "verify_lock_receipt",
@@ -2184,31 +2184,31 @@
       "span": {
         "end": {
           "column": 2,
-          "line": 181
+          "line": 186
         },
         "start": {
           "column": 1,
-          "line": 133
+          "line": 138
         }
       }
     },
     "genre": "BinaryOperator",
-    "name": "crates/rcx-registry-skills/src/sign.rs:152:19: replace != with == in verify_lock_receipt",
+    "name": "crates/rcx-registry-skills/src/sign.rs:157:19: replace != with == in verify_lock_receipt",
     "package": "rcx-registry-skills",
     "replacement": "==",
     "span": {
       "end": {
         "column": 21,
-        "line": 152
+        "line": 157
       },
       "start": {
         "column": 19,
-        "line": 152
+        "line": 157
       }
     }
   },
   {
-    "diff": "--- crates/rcx-registry-skills/src/sign.rs\n+++ replace != with == in verify_lock_receipt\n@@ -155,17 +155,17 @@\n                 .to_string(),\n         });\n     }\n \n     // Split rather than `||`-joined: a combined condition is satisfied by either\n     // half, so a test that trips both at once never proves the other is checked.\n     // `cargo-mutants` flagged exactly that — flipping the `||` to `&&` survived the\n     // whole suite, because every case that changed the count also changed the root.\n-    if u64::from(lock.version) != receipt.lock_version {\n+    if u64::from(lock.version) == /* ~ changed by cargo-mutants ~ */ receipt.lock_version {\n         return Err(SkillsError::NotSignable {\n             reason: format!(\n                 \"receipt describes lock version {} but this lockfile is version {}\",\n                 receipt.lock_version, lock.version\n             ),\n         });\n     }\n     if lock.len() as u64 != receipt.skill_count {\n",
+    "diff": "--- crates/rcx-registry-skills/src/sign.rs\n+++ replace != with == in verify_lock_receipt\n@@ -160,17 +160,17 @@\n                 .to_string(),\n         });\n     }\n \n     // Split rather than `||`-joined: a combined condition is satisfied by either\n     // half, so a test that trips both at once never proves the other is checked.\n     // `cargo-mutants` flagged exactly that — flipping the `||` to `&&` survived the\n     // whole suite, because every case that changed the count also changed the root.\n-    if u64::from(lock.version) != receipt.lock_version {\n+    if u64::from(lock.version) == /* ~ changed by cargo-mutants ~ */ receipt.lock_version {\n         return Err(SkillsError::NotSignable {\n             reason: format!(\n                 \"receipt describes lock version {} but this lockfile is version {}\",\n                 receipt.lock_version, lock.version\n             ),\n         });\n     }\n     if lock.len() as u64 != receipt.skill_count {\n",
     "file": "crates/rcx-registry-skills/src/sign.rs",
     "function": {
       "function_name": "verify_lock_receipt",
@@ -2216,31 +2216,31 @@
       "span": {
         "end": {
           "column": 2,
-          "line": 181
+          "line": 186
         },
         "start": {
           "column": 1,
-          "line": 133
+          "line": 138
         }
       }
     },
     "genre": "BinaryOperator",
-    "name": "crates/rcx-registry-skills/src/sign.rs:163:32: replace != with == in verify_lock_receipt",
+    "name": "crates/rcx-registry-skills/src/sign.rs:168:32: replace != with == in verify_lock_receipt",
     "package": "rcx-registry-skills",
     "replacement": "==",
     "span": {
       "end": {
         "column": 34,
-        "line": 163
+        "line": 168
       },
       "start": {
         "column": 32,
-        "line": 163
+        "line": 168
       }
     }
   },
   {
-    "diff": "--- crates/rcx-registry-skills/src/sign.rs\n+++ replace != with == in verify_lock_receipt\n@@ -163,17 +163,17 @@\n     if u64::from(lock.version) != receipt.lock_version {\n         return Err(SkillsError::NotSignable {\n             reason: format!(\n                 \"receipt describes lock version {} but this lockfile is version {}\",\n                 receipt.lock_version, lock.version\n             ),\n         });\n     }\n-    if lock.len() as u64 != receipt.skill_count {\n+    if lock.len() as u64 == /* ~ changed by cargo-mutants ~ */ receipt.skill_count {\n         return Err(SkillsError::NotSignable {\n             reason: format!(\n                 \"receipt describes {} skills but this lockfile has {}\",\n                 receipt.skill_count,\n                 lock.len()\n             ),\n         });\n     }\n",
+    "diff": "--- crates/rcx-registry-skills/src/sign.rs\n+++ replace != with == in verify_lock_receipt\n@@ -168,17 +168,17 @@\n     if u64::from(lock.version) != receipt.lock_version {\n         return Err(SkillsError::NotSignable {\n             reason: format!(\n                 \"receipt describes lock version {} but this lockfile is version {}\",\n                 receipt.lock_version, lock.version\n             ),\n         });\n     }\n-    if lock.len() as u64 != receipt.skill_count {\n+    if lock.len() as u64 == /* ~ changed by cargo-mutants ~ */ receipt.skill_count {\n         return Err(SkillsError::NotSignable {\n             reason: format!(\n                 \"receipt describes {} skills but this lockfile has {}\",\n                 receipt.skill_count,\n                 lock.len()\n             ),\n         });\n     }\n",
     "file": "crates/rcx-registry-skills/src/sign.rs",
     "function": {
       "function_name": "verify_lock_receipt",
@@ -2248,26 +2248,26 @@
       "span": {
         "end": {
           "column": 2,
-          "line": 181
+          "line": 186
         },
         "start": {
           "column": 1,
-          "line": 133
+          "line": 138
         }
       }
     },
     "genre": "BinaryOperator",
-    "name": "crates/rcx-registry-skills/src/sign.rs:171:26: replace != with == in verify_lock_receipt",
+    "name": "crates/rcx-registry-skills/src/sign.rs:176:26: replace != with == in verify_lock_receipt",
     "package": "rcx-registry-skills",
     "replacement": "==",
     "span": {
       "end": {
         "column": 28,
-        "line": 171
+        "line": 176
       },
       "start": {
         "column": 26,
-        "line": 171
+        "line": 176
       }
     }
   },
@@ -2684,6 +2684,1030 @@
       "start": {
         "column": 16,
         "line": 89
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/uri.rs\n+++ replace SkillUri::parse -> Result<Self, SkillsError> with Ok(Default::default())\n@@ -48,76 +48,17 @@\n     pub version: Option<String>,\n }\n \n impl SkillUri {\n     /// Parse a `skill://` URI.\n     ///\n     /// Strict by design — see the module note on why the grammar cannot drift.\n     pub fn parse(raw: &str) -> Result<Self, SkillsError> {\n-        let bad = |why: &str| SkillsError::BadSkillUri {\n-            uri: raw.to_string(),\n-            reason: why.to_string(),\n-        };\n-\n-        let rest = raw\n-            .strip_prefix(SCHEME)\n-            .ok_or_else(|| bad(\"missing skill:// scheme\"))?;\n-        let (registry, tail) = rest\n-            .split_once('/')\n-            .ok_or_else(|| bad(\"missing /skill-id\"))?;\n-\n-        if registry.is_empty() {\n-            return Err(bad(\"empty registry authority\"));\n-        }\n-        if !registry\n-            .bytes()\n-            .all(|b| b.is_ascii_alphanumeric() || b == b'.' || b == b'-' || b == b':')\n-        {\n-            return Err(bad(\"registry authority has characters outside host syntax\"));\n-        }\n-\n-        // Split on the LAST '@': a skill id may not contain one, but rejecting on\n-        // that basis is friendlier than silently splitting at the wrong place.\n-        let (skill_id, version) = match tail.rsplit_once('@') {\n-            Some((id, ver)) => (id, Some(ver)),\n-            None => (tail, None),\n-        };\n-\n-        if skill_id.is_empty() {\n-            return Err(bad(\"empty skill id\"));\n-        }\n-        // A '/' in the id would make the authority boundary ambiguous, and '..'\n-        // is a traversal attempt against any store that maps ids onto paths.\n-        if skill_id.contains('/') || skill_id.contains(\"..\") {\n-            return Err(bad(\"skill id may not contain '/' or '..'\"));\n-        }\n-        if skill_id.contains('@') {\n-            return Err(bad(\"skill id may not contain '@'\"));\n-        }\n-\n-        let version = match version {\n-            None => None,\n-            // Literal pattern rather than a guard: `\"\"` fails `is_commit_id` anyway,\n-            // so a guard here reads as redundant, but the distinct message is worth\n-            // keeping — \"empty version\" and \"not a commit id\" are different mistakes.\n-            Some(\"\") => return Err(bad(\"empty version after '@'\")),\n-            Some(v) if is_commit_id(v) => Some(v.to_ascii_lowercase()),\n-            Some(_) => {\n-                return Err(bad(\n-                    \"version must be a full 40-hex commit id — a mutable tag or semver cannot pin content\",\n-                ))\n-            }\n-        };\n-\n-        Ok(Self {\n-            registry: registry.to_string(),\n-            skill_id: skill_id.to_string(),\n-            version,\n-        })\n+        Ok(Default::default()) /* ~ changed by cargo-mutants ~ */\n     }\n \n     /// True when this URI names an immutable object.\n     pub fn is_pinned(&self) -> bool {\n         self.version.is_some()\n     }\n \n     /// Pin an unpinned URI to a commit.\n",
+    "file": "crates/rcx-registry-skills/src/uri.rs",
+    "function": {
+      "function_name": "SkillUri::parse",
+      "return_type": "-> Result<Self, SkillsError>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 116
+        },
+        "start": {
+          "column": 5,
+          "line": 52
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "crates/rcx-registry-skills/src/uri.rs:56:9: replace SkillUri::parse -> Result<Self, SkillsError> with Ok(Default::default())",
+    "package": "rcx-registry-skills",
+    "replacement": "Ok(Default::default())",
+    "span": {
+      "end": {
+        "column": 11,
+        "line": 115
+      },
+      "start": {
+        "column": 9,
+        "line": 56
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/uri.rs\n+++ delete ! in SkillUri::parse\n@@ -63,17 +63,17 @@\n             .ok_or_else(|| bad(\"missing skill:// scheme\"))?;\n         let (registry, tail) = rest\n             .split_once('/')\n             .ok_or_else(|| bad(\"missing /skill-id\"))?;\n \n         if registry.is_empty() {\n             return Err(bad(\"empty registry authority\"));\n         }\n-        if !registry\n+        if  /* ~ changed by cargo-mutants ~ */registry\n             .bytes()\n             .all(|b| b.is_ascii_alphanumeric() || b == b'.' || b == b'-' || b == b':')\n         {\n             return Err(bad(\"registry authority has characters outside host syntax\"));\n         }\n \n         // Split on the LAST '@': a skill id may not contain one, but rejecting on\n         // that basis is friendlier than silently splitting at the wrong place.\n",
+    "file": "crates/rcx-registry-skills/src/uri.rs",
+    "function": {
+      "function_name": "SkillUri::parse",
+      "return_type": "-> Result<Self, SkillsError>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 116
+        },
+        "start": {
+          "column": 5,
+          "line": 52
+        }
+      }
+    },
+    "genre": "UnaryOperator",
+    "name": "crates/rcx-registry-skills/src/uri.rs:71:12: delete ! in SkillUri::parse",
+    "package": "rcx-registry-skills",
+    "replacement": "",
+    "span": {
+      "end": {
+        "column": 13,
+        "line": 71
+      },
+      "start": {
+        "column": 12,
+        "line": 71
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/uri.rs\n+++ replace || with && in SkillUri::parse\n@@ -65,17 +65,17 @@\n             .split_once('/')\n             .ok_or_else(|| bad(\"missing /skill-id\"))?;\n \n         if registry.is_empty() {\n             return Err(bad(\"empty registry authority\"));\n         }\n         if !registry\n             .bytes()\n-            .all(|b| b.is_ascii_alphanumeric() || b == b'.' || b == b'-' || b == b':')\n+            .all(|b| b.is_ascii_alphanumeric() || b == b'.' || b == b'-' && /* ~ changed by cargo-mutants ~ */ b == b':')\n         {\n             return Err(bad(\"registry authority has characters outside host syntax\"));\n         }\n \n         // Split on the LAST '@': a skill id may not contain one, but rejecting on\n         // that basis is friendlier than silently splitting at the wrong place.\n         let (skill_id, version) = match tail.rsplit_once('@') {\n             Some((id, ver)) => (id, Some(ver)),\n",
+    "file": "crates/rcx-registry-skills/src/uri.rs",
+    "function": {
+      "function_name": "SkillUri::parse",
+      "return_type": "-> Result<Self, SkillsError>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 116
+        },
+        "start": {
+          "column": 5,
+          "line": 52
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "crates/rcx-registry-skills/src/uri.rs:73:74: replace || with && in SkillUri::parse",
+    "package": "rcx-registry-skills",
+    "replacement": "&&",
+    "span": {
+      "end": {
+        "column": 76,
+        "line": 73
+      },
+      "start": {
+        "column": 74,
+        "line": 73
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/uri.rs\n+++ replace || with && in SkillUri::parse\n@@ -65,17 +65,17 @@\n             .split_once('/')\n             .ok_or_else(|| bad(\"missing /skill-id\"))?;\n \n         if registry.is_empty() {\n             return Err(bad(\"empty registry authority\"));\n         }\n         if !registry\n             .bytes()\n-            .all(|b| b.is_ascii_alphanumeric() || b == b'.' || b == b'-' || b == b':')\n+            .all(|b| b.is_ascii_alphanumeric() || b == b'.' && /* ~ changed by cargo-mutants ~ */ b == b'-' || b == b':')\n         {\n             return Err(bad(\"registry authority has characters outside host syntax\"));\n         }\n \n         // Split on the LAST '@': a skill id may not contain one, but rejecting on\n         // that basis is friendlier than silently splitting at the wrong place.\n         let (skill_id, version) = match tail.rsplit_once('@') {\n             Some((id, ver)) => (id, Some(ver)),\n",
+    "file": "crates/rcx-registry-skills/src/uri.rs",
+    "function": {
+      "function_name": "SkillUri::parse",
+      "return_type": "-> Result<Self, SkillsError>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 116
+        },
+        "start": {
+          "column": 5,
+          "line": 52
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "crates/rcx-registry-skills/src/uri.rs:73:61: replace || with && in SkillUri::parse",
+    "package": "rcx-registry-skills",
+    "replacement": "&&",
+    "span": {
+      "end": {
+        "column": 63,
+        "line": 73
+      },
+      "start": {
+        "column": 61,
+        "line": 73
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/uri.rs\n+++ replace || with && in SkillUri::parse\n@@ -65,17 +65,17 @@\n             .split_once('/')\n             .ok_or_else(|| bad(\"missing /skill-id\"))?;\n \n         if registry.is_empty() {\n             return Err(bad(\"empty registry authority\"));\n         }\n         if !registry\n             .bytes()\n-            .all(|b| b.is_ascii_alphanumeric() || b == b'.' || b == b'-' || b == b':')\n+            .all(|b| b.is_ascii_alphanumeric() && /* ~ changed by cargo-mutants ~ */ b == b'.' || b == b'-' || b == b':')\n         {\n             return Err(bad(\"registry authority has characters outside host syntax\"));\n         }\n \n         // Split on the LAST '@': a skill id may not contain one, but rejecting on\n         // that basis is friendlier than silently splitting at the wrong place.\n         let (skill_id, version) = match tail.rsplit_once('@') {\n             Some((id, ver)) => (id, Some(ver)),\n",
+    "file": "crates/rcx-registry-skills/src/uri.rs",
+    "function": {
+      "function_name": "SkillUri::parse",
+      "return_type": "-> Result<Self, SkillsError>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 116
+        },
+        "start": {
+          "column": 5,
+          "line": 52
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "crates/rcx-registry-skills/src/uri.rs:73:48: replace || with && in SkillUri::parse",
+    "package": "rcx-registry-skills",
+    "replacement": "&&",
+    "span": {
+      "end": {
+        "column": 50,
+        "line": 73
+      },
+      "start": {
+        "column": 48,
+        "line": 73
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/uri.rs\n+++ replace == with != in SkillUri::parse\n@@ -65,17 +65,17 @@\n             .split_once('/')\n             .ok_or_else(|| bad(\"missing /skill-id\"))?;\n \n         if registry.is_empty() {\n             return Err(bad(\"empty registry authority\"));\n         }\n         if !registry\n             .bytes()\n-            .all(|b| b.is_ascii_alphanumeric() || b == b'.' || b == b'-' || b == b':')\n+            .all(|b| b.is_ascii_alphanumeric() || b != /* ~ changed by cargo-mutants ~ */ b'.' || b == b'-' || b == b':')\n         {\n             return Err(bad(\"registry authority has characters outside host syntax\"));\n         }\n \n         // Split on the LAST '@': a skill id may not contain one, but rejecting on\n         // that basis is friendlier than silently splitting at the wrong place.\n         let (skill_id, version) = match tail.rsplit_once('@') {\n             Some((id, ver)) => (id, Some(ver)),\n",
+    "file": "crates/rcx-registry-skills/src/uri.rs",
+    "function": {
+      "function_name": "SkillUri::parse",
+      "return_type": "-> Result<Self, SkillsError>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 116
+        },
+        "start": {
+          "column": 5,
+          "line": 52
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "crates/rcx-registry-skills/src/uri.rs:73:53: replace == with != in SkillUri::parse",
+    "package": "rcx-registry-skills",
+    "replacement": "!=",
+    "span": {
+      "end": {
+        "column": 55,
+        "line": 73
+      },
+      "start": {
+        "column": 53,
+        "line": 73
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/uri.rs\n+++ replace == with != in SkillUri::parse\n@@ -65,17 +65,17 @@\n             .split_once('/')\n             .ok_or_else(|| bad(\"missing /skill-id\"))?;\n \n         if registry.is_empty() {\n             return Err(bad(\"empty registry authority\"));\n         }\n         if !registry\n             .bytes()\n-            .all(|b| b.is_ascii_alphanumeric() || b == b'.' || b == b'-' || b == b':')\n+            .all(|b| b.is_ascii_alphanumeric() || b == b'.' || b != /* ~ changed by cargo-mutants ~ */ b'-' || b == b':')\n         {\n             return Err(bad(\"registry authority has characters outside host syntax\"));\n         }\n \n         // Split on the LAST '@': a skill id may not contain one, but rejecting on\n         // that basis is friendlier than silently splitting at the wrong place.\n         let (skill_id, version) = match tail.rsplit_once('@') {\n             Some((id, ver)) => (id, Some(ver)),\n",
+    "file": "crates/rcx-registry-skills/src/uri.rs",
+    "function": {
+      "function_name": "SkillUri::parse",
+      "return_type": "-> Result<Self, SkillsError>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 116
+        },
+        "start": {
+          "column": 5,
+          "line": 52
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "crates/rcx-registry-skills/src/uri.rs:73:66: replace == with != in SkillUri::parse",
+    "package": "rcx-registry-skills",
+    "replacement": "!=",
+    "span": {
+      "end": {
+        "column": 68,
+        "line": 73
+      },
+      "start": {
+        "column": 66,
+        "line": 73
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/uri.rs\n+++ replace == with != in SkillUri::parse\n@@ -65,17 +65,17 @@\n             .split_once('/')\n             .ok_or_else(|| bad(\"missing /skill-id\"))?;\n \n         if registry.is_empty() {\n             return Err(bad(\"empty registry authority\"));\n         }\n         if !registry\n             .bytes()\n-            .all(|b| b.is_ascii_alphanumeric() || b == b'.' || b == b'-' || b == b':')\n+            .all(|b| b.is_ascii_alphanumeric() || b == b'.' || b == b'-' || b != /* ~ changed by cargo-mutants ~ */ b':')\n         {\n             return Err(bad(\"registry authority has characters outside host syntax\"));\n         }\n \n         // Split on the LAST '@': a skill id may not contain one, but rejecting on\n         // that basis is friendlier than silently splitting at the wrong place.\n         let (skill_id, version) = match tail.rsplit_once('@') {\n             Some((id, ver)) => (id, Some(ver)),\n",
+    "file": "crates/rcx-registry-skills/src/uri.rs",
+    "function": {
+      "function_name": "SkillUri::parse",
+      "return_type": "-> Result<Self, SkillsError>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 116
+        },
+        "start": {
+          "column": 5,
+          "line": 52
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "crates/rcx-registry-skills/src/uri.rs:73:79: replace == with != in SkillUri::parse",
+    "package": "rcx-registry-skills",
+    "replacement": "!=",
+    "span": {
+      "end": {
+        "column": 81,
+        "line": 73
+      },
+      "start": {
+        "column": 79,
+        "line": 73
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/uri.rs\n+++ replace || with && in SkillUri::parse\n@@ -82,17 +82,17 @@\n             None => (tail, None),\n         };\n \n         if skill_id.is_empty() {\n             return Err(bad(\"empty skill id\"));\n         }\n         // A '/' in the id would make the authority boundary ambiguous, and '..'\n         // is a traversal attempt against any store that maps ids onto paths.\n-        if skill_id.contains('/') || skill_id.contains(\"..\") {\n+        if skill_id.contains('/') && /* ~ changed by cargo-mutants ~ */ skill_id.contains(\"..\") {\n             return Err(bad(\"skill id may not contain '/' or '..'\"));\n         }\n         if skill_id.contains('@') {\n             return Err(bad(\"skill id may not contain '@'\"));\n         }\n \n         let version = match version {\n             None => None,\n",
+    "file": "crates/rcx-registry-skills/src/uri.rs",
+    "function": {
+      "function_name": "SkillUri::parse",
+      "return_type": "-> Result<Self, SkillsError>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 116
+        },
+        "start": {
+          "column": 5,
+          "line": 52
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "crates/rcx-registry-skills/src/uri.rs:90:35: replace || with && in SkillUri::parse",
+    "package": "rcx-registry-skills",
+    "replacement": "&&",
+    "span": {
+      "end": {
+        "column": 37,
+        "line": 90
+      },
+      "start": {
+        "column": 35,
+        "line": 90
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/uri.rs\n+++ replace match guard is_commit_id(v) with true in SkillUri::parse\n@@ -95,17 +95,17 @@\n         }\n \n         let version = match version {\n             None => None,\n             // Literal pattern rather than a guard: `\"\"` fails `is_commit_id` anyway,\n             // so a guard here reads as redundant, but the distinct message is worth\n             // keeping — \"empty version\" and \"not a commit id\" are different mistakes.\n             Some(\"\") => return Err(bad(\"empty version after '@'\")),\n-            Some(v) if is_commit_id(v) => Some(v.to_ascii_lowercase()),\n+            Some(v) if true /* ~ changed by cargo-mutants ~ */ => Some(v.to_ascii_lowercase()),\n             Some(_) => {\n                 return Err(bad(\n                     \"version must be a full 40-hex commit id — a mutable tag or semver cannot pin content\",\n                 ))\n             }\n         };\n \n         Ok(Self {\n",
+    "file": "crates/rcx-registry-skills/src/uri.rs",
+    "function": {
+      "function_name": "SkillUri::parse",
+      "return_type": "-> Result<Self, SkillsError>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 116
+        },
+        "start": {
+          "column": 5,
+          "line": 52
+        }
+      }
+    },
+    "genre": "MatchArmGuard",
+    "name": "crates/rcx-registry-skills/src/uri.rs:103:24: replace match guard is_commit_id(v) with true in SkillUri::parse",
+    "package": "rcx-registry-skills",
+    "replacement": "true",
+    "span": {
+      "end": {
+        "column": 39,
+        "line": 103
+      },
+      "start": {
+        "column": 24,
+        "line": 103
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/uri.rs\n+++ replace match guard is_commit_id(v) with false in SkillUri::parse\n@@ -95,17 +95,17 @@\n         }\n \n         let version = match version {\n             None => None,\n             // Literal pattern rather than a guard: `\"\"` fails `is_commit_id` anyway,\n             // so a guard here reads as redundant, but the distinct message is worth\n             // keeping — \"empty version\" and \"not a commit id\" are different mistakes.\n             Some(\"\") => return Err(bad(\"empty version after '@'\")),\n-            Some(v) if is_commit_id(v) => Some(v.to_ascii_lowercase()),\n+            Some(v) if false /* ~ changed by cargo-mutants ~ */ => Some(v.to_ascii_lowercase()),\n             Some(_) => {\n                 return Err(bad(\n                     \"version must be a full 40-hex commit id — a mutable tag or semver cannot pin content\",\n                 ))\n             }\n         };\n \n         Ok(Self {\n",
+    "file": "crates/rcx-registry-skills/src/uri.rs",
+    "function": {
+      "function_name": "SkillUri::parse",
+      "return_type": "-> Result<Self, SkillsError>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 116
+        },
+        "start": {
+          "column": 5,
+          "line": 52
+        }
+      }
+    },
+    "genre": "MatchArmGuard",
+    "name": "crates/rcx-registry-skills/src/uri.rs:103:24: replace match guard is_commit_id(v) with false in SkillUri::parse",
+    "package": "rcx-registry-skills",
+    "replacement": "false",
+    "span": {
+      "end": {
+        "column": 39,
+        "line": 103
+      },
+      "start": {
+        "column": 24,
+        "line": 103
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/uri.rs\n+++ replace SkillUri::is_pinned -> bool with true\n@@ -112,17 +112,17 @@\n             registry: registry.to_string(),\n             skill_id: skill_id.to_string(),\n             version,\n         })\n     }\n \n     /// True when this URI names an immutable object.\n     pub fn is_pinned(&self) -> bool {\n-        self.version.is_some()\n+        true /* ~ changed by cargo-mutants ~ */\n     }\n \n     /// Pin an unpinned URI to a commit.\n     pub fn pinned_to(&self, commit: &str) -> Self {\n         Self {\n             version: Some(commit.to_ascii_lowercase()),\n             ..self.clone()\n         }\n",
+    "file": "crates/rcx-registry-skills/src/uri.rs",
+    "function": {
+      "function_name": "SkillUri::is_pinned",
+      "return_type": "-> bool",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 121
+        },
+        "start": {
+          "column": 5,
+          "line": 118
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "crates/rcx-registry-skills/src/uri.rs:120:9: replace SkillUri::is_pinned -> bool with true",
+    "package": "rcx-registry-skills",
+    "replacement": "true",
+    "span": {
+      "end": {
+        "column": 31,
+        "line": 120
+      },
+      "start": {
+        "column": 9,
+        "line": 120
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/uri.rs\n+++ replace SkillUri::is_pinned -> bool with false\n@@ -112,17 +112,17 @@\n             registry: registry.to_string(),\n             skill_id: skill_id.to_string(),\n             version,\n         })\n     }\n \n     /// True when this URI names an immutable object.\n     pub fn is_pinned(&self) -> bool {\n-        self.version.is_some()\n+        false /* ~ changed by cargo-mutants ~ */\n     }\n \n     /// Pin an unpinned URI to a commit.\n     pub fn pinned_to(&self, commit: &str) -> Self {\n         Self {\n             version: Some(commit.to_ascii_lowercase()),\n             ..self.clone()\n         }\n",
+    "file": "crates/rcx-registry-skills/src/uri.rs",
+    "function": {
+      "function_name": "SkillUri::is_pinned",
+      "return_type": "-> bool",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 121
+        },
+        "start": {
+          "column": 5,
+          "line": 118
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "crates/rcx-registry-skills/src/uri.rs:120:9: replace SkillUri::is_pinned -> bool with false",
+    "package": "rcx-registry-skills",
+    "replacement": "false",
+    "span": {
+      "end": {
+        "column": 31,
+        "line": 120
+      },
+      "start": {
+        "column": 9,
+        "line": 120
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/uri.rs\n+++ replace SkillUri::pinned_to -> Self with Default::default()\n@@ -117,20 +117,17 @@\n \n     /// True when this URI names an immutable object.\n     pub fn is_pinned(&self) -> bool {\n         self.version.is_some()\n     }\n \n     /// Pin an unpinned URI to a commit.\n     pub fn pinned_to(&self, commit: &str) -> Self {\n-        Self {\n-            version: Some(commit.to_ascii_lowercase()),\n-            ..self.clone()\n-        }\n+        Default::default() /* ~ changed by cargo-mutants ~ */\n     }\n }\n \n impl fmt::Display for SkillUri {\n     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {\n         write!(f, \"{SCHEME}{}/{}\", self.registry, self.skill_id)?;\n         if let Some(version) = &self.version {\n             write!(f, \"@{version}\")?;\n",
+    "file": "crates/rcx-registry-skills/src/uri.rs",
+    "function": {
+      "function_name": "SkillUri::pinned_to",
+      "return_type": "-> Self",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 129
+        },
+        "start": {
+          "column": 5,
+          "line": 123
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "crates/rcx-registry-skills/src/uri.rs:125:9: replace SkillUri::pinned_to -> Self with Default::default()",
+    "package": "rcx-registry-skills",
+    "replacement": "Default::default()",
+    "span": {
+      "end": {
+        "column": 10,
+        "line": 128
+      },
+      "start": {
+        "column": 9,
+        "line": 125
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/uri.rs\n+++ delete field version from struct Self expression in SkillUri::pinned_to\n@@ -118,17 +118,17 @@\n     /// True when this URI names an immutable object.\n     pub fn is_pinned(&self) -> bool {\n         self.version.is_some()\n     }\n \n     /// Pin an unpinned URI to a commit.\n     pub fn pinned_to(&self, commit: &str) -> Self {\n         Self {\n-            version: Some(commit.to_ascii_lowercase()),\n+             /* ~ changed by cargo-mutants ~ */\n             ..self.clone()\n         }\n     }\n }\n \n impl fmt::Display for SkillUri {\n     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {\n         write!(f, \"{SCHEME}{}/{}\", self.registry, self.skill_id)?;\n",
+    "file": "crates/rcx-registry-skills/src/uri.rs",
+    "function": {
+      "function_name": "SkillUri::pinned_to",
+      "return_type": "-> Self",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 129
+        },
+        "start": {
+          "column": 5,
+          "line": 123
+        }
+      }
+    },
+    "genre": "StructField",
+    "name": "crates/rcx-registry-skills/src/uri.rs:126:13: delete field version from struct Self expression in SkillUri::pinned_to",
+    "package": "rcx-registry-skills",
+    "replacement": "",
+    "span": {
+      "end": {
+        "column": 56,
+        "line": 126
+      },
+      "start": {
+        "column": 13,
+        "line": 126
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/uri.rs\n+++ replace <impl fmt::Display for SkillUri>::fmt -> fmt::Result with Ok(Default::default())\n@@ -126,21 +126,17 @@\n             version: Some(commit.to_ascii_lowercase()),\n             ..self.clone()\n         }\n     }\n }\n \n impl fmt::Display for SkillUri {\n     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {\n-        write!(f, \"{SCHEME}{}/{}\", self.registry, self.skill_id)?;\n-        if let Some(version) = &self.version {\n-            write!(f, \"@{version}\")?;\n-        }\n-        Ok(())\n+        Ok(Default::default()) /* ~ changed by cargo-mutants ~ */\n     }\n }\n \n fn is_commit_id(s: &str) -> bool {\n     s.len() == 40 && s.bytes().all(|b| b.is_ascii_hexdigit())\n }\n \n /// How much a registry is trusted, which is also its search precedence.\n",
+    "file": "crates/rcx-registry-skills/src/uri.rs",
+    "function": {
+      "function_name": "<impl fmt::Display for SkillUri>::fmt",
+      "return_type": "-> fmt::Result",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 139
+        },
+        "start": {
+          "column": 5,
+          "line": 133
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "crates/rcx-registry-skills/src/uri.rs:134:9: replace <impl fmt::Display for SkillUri>::fmt -> fmt::Result with Ok(Default::default())",
+    "package": "rcx-registry-skills",
+    "replacement": "Ok(Default::default())",
+    "span": {
+      "end": {
+        "column": 15,
+        "line": 138
+      },
+      "start": {
+        "column": 9,
+        "line": 134
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/uri.rs\n+++ replace is_commit_id -> bool with true\n@@ -135,17 +135,17 @@\n         if let Some(version) = &self.version {\n             write!(f, \"@{version}\")?;\n         }\n         Ok(())\n     }\n }\n \n fn is_commit_id(s: &str) -> bool {\n-    s.len() == 40 && s.bytes().all(|b| b.is_ascii_hexdigit())\n+    true /* ~ changed by cargo-mutants ~ */\n }\n \n /// How much a registry is trusted, which is also its search precedence.\n #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]\n pub enum RegistryKind {\n     /// This node's own lockfile. Always answered first — a local pin must never be\n     /// silently overridden by a remote answer.\n     Local,\n",
+    "file": "crates/rcx-registry-skills/src/uri.rs",
+    "function": {
+      "function_name": "is_commit_id",
+      "return_type": "-> bool",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 144
+        },
+        "start": {
+          "column": 1,
+          "line": 142
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "crates/rcx-registry-skills/src/uri.rs:143:5: replace is_commit_id -> bool with true",
+    "package": "rcx-registry-skills",
+    "replacement": "true",
+    "span": {
+      "end": {
+        "column": 62,
+        "line": 143
+      },
+      "start": {
+        "column": 5,
+        "line": 143
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/uri.rs\n+++ replace is_commit_id -> bool with false\n@@ -135,17 +135,17 @@\n         if let Some(version) = &self.version {\n             write!(f, \"@{version}\")?;\n         }\n         Ok(())\n     }\n }\n \n fn is_commit_id(s: &str) -> bool {\n-    s.len() == 40 && s.bytes().all(|b| b.is_ascii_hexdigit())\n+    false /* ~ changed by cargo-mutants ~ */\n }\n \n /// How much a registry is trusted, which is also its search precedence.\n #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]\n pub enum RegistryKind {\n     /// This node's own lockfile. Always answered first — a local pin must never be\n     /// silently overridden by a remote answer.\n     Local,\n",
+    "file": "crates/rcx-registry-skills/src/uri.rs",
+    "function": {
+      "function_name": "is_commit_id",
+      "return_type": "-> bool",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 144
+        },
+        "start": {
+          "column": 1,
+          "line": 142
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "crates/rcx-registry-skills/src/uri.rs:143:5: replace is_commit_id -> bool with false",
+    "package": "rcx-registry-skills",
+    "replacement": "false",
+    "span": {
+      "end": {
+        "column": 62,
+        "line": 143
+      },
+      "start": {
+        "column": 5,
+        "line": 143
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/uri.rs\n+++ replace && with || in is_commit_id\n@@ -135,17 +135,17 @@\n         if let Some(version) = &self.version {\n             write!(f, \"@{version}\")?;\n         }\n         Ok(())\n     }\n }\n \n fn is_commit_id(s: &str) -> bool {\n-    s.len() == 40 && s.bytes().all(|b| b.is_ascii_hexdigit())\n+    s.len() == 40 || /* ~ changed by cargo-mutants ~ */ s.bytes().all(|b| b.is_ascii_hexdigit())\n }\n \n /// How much a registry is trusted, which is also its search precedence.\n #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]\n pub enum RegistryKind {\n     /// This node's own lockfile. Always answered first — a local pin must never be\n     /// silently overridden by a remote answer.\n     Local,\n",
+    "file": "crates/rcx-registry-skills/src/uri.rs",
+    "function": {
+      "function_name": "is_commit_id",
+      "return_type": "-> bool",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 144
+        },
+        "start": {
+          "column": 1,
+          "line": 142
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "crates/rcx-registry-skills/src/uri.rs:143:19: replace && with || in is_commit_id",
+    "package": "rcx-registry-skills",
+    "replacement": "||",
+    "span": {
+      "end": {
+        "column": 21,
+        "line": 143
+      },
+      "start": {
+        "column": 19,
+        "line": 143
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/uri.rs\n+++ replace == with != in is_commit_id\n@@ -135,17 +135,17 @@\n         if let Some(version) = &self.version {\n             write!(f, \"@{version}\")?;\n         }\n         Ok(())\n     }\n }\n \n fn is_commit_id(s: &str) -> bool {\n-    s.len() == 40 && s.bytes().all(|b| b.is_ascii_hexdigit())\n+    s.len() != /* ~ changed by cargo-mutants ~ */ 40 && s.bytes().all(|b| b.is_ascii_hexdigit())\n }\n \n /// How much a registry is trusted, which is also its search precedence.\n #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]\n pub enum RegistryKind {\n     /// This node's own lockfile. Always answered first — a local pin must never be\n     /// silently overridden by a remote answer.\n     Local,\n",
+    "file": "crates/rcx-registry-skills/src/uri.rs",
+    "function": {
+      "function_name": "is_commit_id",
+      "return_type": "-> bool",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 144
+        },
+        "start": {
+          "column": 1,
+          "line": 142
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "crates/rcx-registry-skills/src/uri.rs:143:13: replace == with != in is_commit_id",
+    "package": "rcx-registry-skills",
+    "replacement": "!=",
+    "span": {
+      "end": {
+        "column": 15,
+        "line": 143
+      },
+      "start": {
+        "column": 13,
+        "line": 143
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/uri.rs\n+++ replace resolution_order -> Vec<&Registry> with vec![]\n@@ -171,19 +171,17 @@\n     pub entry: &'a LockEntry,\n }\n \n /// Search precedence: local, then trusted remotes in configured order, then public.\n ///\n /// Stable within a kind, so the operator's configured order is preserved rather\n /// than re-sorted by host name.\n pub fn resolution_order(registries: &[Registry]) -> Vec<&Registry> {\n-    let mut ordered: Vec<&Registry> = registries.iter().collect();\n-    ordered.sort_by_key(|r| r.kind);\n-    ordered\n+    vec![] /* ~ changed by cargo-mutants ~ */\n }\n \n /// Resolve a `skill://` URI against a federation.\n ///\n /// The URI names its registry, so precedence does not apply — only the named\n /// registry may answer. Anything else would let a higher-precedence registry\n /// substitute content for a URI that explicitly asked elsewhere, which is the\n /// substitution attack the scheme exists to prevent.\n",
+    "file": "crates/rcx-registry-skills/src/uri.rs",
+    "function": {
+      "function_name": "resolution_order",
+      "return_type": "-> Vec<&Registry>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 182
+        },
+        "start": {
+          "column": 1,
+          "line": 174
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "crates/rcx-registry-skills/src/uri.rs:179:5: replace resolution_order -> Vec<&Registry> with vec![]",
+    "package": "rcx-registry-skills",
+    "replacement": "vec![]",
+    "span": {
+      "end": {
+        "column": 12,
+        "line": 181
+      },
+      "start": {
+        "column": 5,
+        "line": 179
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/uri.rs\n+++ replace resolution_order -> Vec<&Registry> with vec![Box::leak(Box::new(Default::default()))]\n@@ -171,19 +171,17 @@\n     pub entry: &'a LockEntry,\n }\n \n /// Search precedence: local, then trusted remotes in configured order, then public.\n ///\n /// Stable within a kind, so the operator's configured order is preserved rather\n /// than re-sorted by host name.\n pub fn resolution_order(registries: &[Registry]) -> Vec<&Registry> {\n-    let mut ordered: Vec<&Registry> = registries.iter().collect();\n-    ordered.sort_by_key(|r| r.kind);\n-    ordered\n+    vec![Box::leak(Box::new(Default::default()))] /* ~ changed by cargo-mutants ~ */\n }\n \n /// Resolve a `skill://` URI against a federation.\n ///\n /// The URI names its registry, so precedence does not apply — only the named\n /// registry may answer. Anything else would let a higher-precedence registry\n /// substitute content for a URI that explicitly asked elsewhere, which is the\n /// substitution attack the scheme exists to prevent.\n",
+    "file": "crates/rcx-registry-skills/src/uri.rs",
+    "function": {
+      "function_name": "resolution_order",
+      "return_type": "-> Vec<&Registry>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 182
+        },
+        "start": {
+          "column": 1,
+          "line": 174
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "crates/rcx-registry-skills/src/uri.rs:179:5: replace resolution_order -> Vec<&Registry> with vec![Box::leak(Box::new(Default::default()))]",
+    "package": "rcx-registry-skills",
+    "replacement": "vec![Box::leak(Box::new(Default::default()))]",
+    "span": {
+      "end": {
+        "column": 12,
+        "line": 181
+      },
+      "start": {
+        "column": 5,
+        "line": 179
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/uri.rs\n+++ replace resolve -> Option<Resolved<'a>> with None\n@@ -186,29 +186,17 @@\n /// The URI names its registry, so precedence does not apply — only the named\n /// registry may answer. Anything else would let a higher-precedence registry\n /// substitute content for a URI that explicitly asked elsewhere, which is the\n /// substitution attack the scheme exists to prevent.\n ///\n /// A pinned URI additionally requires the entry's commit to match. A registry that\n /// holds the skill at a *different* commit is not a match — it is a different object.\n pub fn resolve<'a>(uri: &SkillUri, registries: &'a [Registry]) -> Option<Resolved<'a>> {\n-    let registry = registries.iter().find(|r| r.host == uri.registry)?;\n-    let entry = registry.lock.skills.get(&uri.skill_id)?;\n-    if let Some(version) = &uri.version {\n-        if &entry.git_ref != version {\n-            return None;\n-        }\n-    }\n-    Some(Resolved {\n-        uri: uri.clone(),\n-        registry: &registry.host,\n-        kind: registry.kind,\n-        entry,\n-    })\n+    None /* ~ changed by cargo-mutants ~ */\n }\n \n /// Resolve a bare skill id with no registry named, honouring precedence.\n ///\n /// This is the search path — `skills_find_relevant` rather than a URI lookup — and\n /// it is where [`resolution_order`] matters.\n pub fn resolve_by_id<'a>(skill_id: &str, registries: &'a [Registry]) -> Option<Resolved<'a>> {\n     for registry in resolution_order(registries) {\n",
+    "file": "crates/rcx-registry-skills/src/uri.rs",
+    "function": {
+      "function_name": "resolve",
+      "return_type": "-> Option<Resolved<'a>>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 207
+        },
+        "start": {
+          "column": 1,
+          "line": 184
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "crates/rcx-registry-skills/src/uri.rs:194:5: replace resolve -> Option<Resolved<'a>> with None",
+    "package": "rcx-registry-skills",
+    "replacement": "None",
+    "span": {
+      "end": {
+        "column": 7,
+        "line": 206
+      },
+      "start": {
+        "column": 5,
+        "line": 194
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/uri.rs\n+++ replace resolve -> Option<Resolved<'a>> with Some(Default::default())\n@@ -186,29 +186,17 @@\n /// The URI names its registry, so precedence does not apply — only the named\n /// registry may answer. Anything else would let a higher-precedence registry\n /// substitute content for a URI that explicitly asked elsewhere, which is the\n /// substitution attack the scheme exists to prevent.\n ///\n /// A pinned URI additionally requires the entry's commit to match. A registry that\n /// holds the skill at a *different* commit is not a match — it is a different object.\n pub fn resolve<'a>(uri: &SkillUri, registries: &'a [Registry]) -> Option<Resolved<'a>> {\n-    let registry = registries.iter().find(|r| r.host == uri.registry)?;\n-    let entry = registry.lock.skills.get(&uri.skill_id)?;\n-    if let Some(version) = &uri.version {\n-        if &entry.git_ref != version {\n-            return None;\n-        }\n-    }\n-    Some(Resolved {\n-        uri: uri.clone(),\n-        registry: &registry.host,\n-        kind: registry.kind,\n-        entry,\n-    })\n+    Some(Default::default()) /* ~ changed by cargo-mutants ~ */\n }\n \n /// Resolve a bare skill id with no registry named, honouring precedence.\n ///\n /// This is the search path — `skills_find_relevant` rather than a URI lookup — and\n /// it is where [`resolution_order`] matters.\n pub fn resolve_by_id<'a>(skill_id: &str, registries: &'a [Registry]) -> Option<Resolved<'a>> {\n     for registry in resolution_order(registries) {\n",
+    "file": "crates/rcx-registry-skills/src/uri.rs",
+    "function": {
+      "function_name": "resolve",
+      "return_type": "-> Option<Resolved<'a>>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 207
+        },
+        "start": {
+          "column": 1,
+          "line": 184
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "crates/rcx-registry-skills/src/uri.rs:194:5: replace resolve -> Option<Resolved<'a>> with Some(Default::default())",
+    "package": "rcx-registry-skills",
+    "replacement": "Some(Default::default())",
+    "span": {
+      "end": {
+        "column": 7,
+        "line": 206
+      },
+      "start": {
+        "column": 5,
+        "line": 194
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/uri.rs\n+++ replace == with != in resolve\n@@ -186,17 +186,17 @@\n /// The URI names its registry, so precedence does not apply — only the named\n /// registry may answer. Anything else would let a higher-precedence registry\n /// substitute content for a URI that explicitly asked elsewhere, which is the\n /// substitution attack the scheme exists to prevent.\n ///\n /// A pinned URI additionally requires the entry's commit to match. A registry that\n /// holds the skill at a *different* commit is not a match — it is a different object.\n pub fn resolve<'a>(uri: &SkillUri, registries: &'a [Registry]) -> Option<Resolved<'a>> {\n-    let registry = registries.iter().find(|r| r.host == uri.registry)?;\n+    let registry = registries.iter().find(|r| r.host != /* ~ changed by cargo-mutants ~ */ uri.registry)?;\n     let entry = registry.lock.skills.get(&uri.skill_id)?;\n     if let Some(version) = &uri.version {\n         if &entry.git_ref != version {\n             return None;\n         }\n     }\n     Some(Resolved {\n         uri: uri.clone(),\n",
+    "file": "crates/rcx-registry-skills/src/uri.rs",
+    "function": {
+      "function_name": "resolve",
+      "return_type": "-> Option<Resolved<'a>>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 207
+        },
+        "start": {
+          "column": 1,
+          "line": 184
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "crates/rcx-registry-skills/src/uri.rs:194:54: replace == with != in resolve",
+    "package": "rcx-registry-skills",
+    "replacement": "!=",
+    "span": {
+      "end": {
+        "column": 56,
+        "line": 194
+      },
+      "start": {
+        "column": 54,
+        "line": 194
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/uri.rs\n+++ replace != with == in resolve\n@@ -189,17 +189,17 @@\n /// substitution attack the scheme exists to prevent.\n ///\n /// A pinned URI additionally requires the entry's commit to match. A registry that\n /// holds the skill at a *different* commit is not a match — it is a different object.\n pub fn resolve<'a>(uri: &SkillUri, registries: &'a [Registry]) -> Option<Resolved<'a>> {\n     let registry = registries.iter().find(|r| r.host == uri.registry)?;\n     let entry = registry.lock.skills.get(&uri.skill_id)?;\n     if let Some(version) = &uri.version {\n-        if &entry.git_ref != version {\n+        if &entry.git_ref == /* ~ changed by cargo-mutants ~ */ version {\n             return None;\n         }\n     }\n     Some(Resolved {\n         uri: uri.clone(),\n         registry: &registry.host,\n         kind: registry.kind,\n         entry,\n",
+    "file": "crates/rcx-registry-skills/src/uri.rs",
+    "function": {
+      "function_name": "resolve",
+      "return_type": "-> Option<Resolved<'a>>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 207
+        },
+        "start": {
+          "column": 1,
+          "line": 184
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "crates/rcx-registry-skills/src/uri.rs:197:27: replace != with == in resolve",
+    "package": "rcx-registry-skills",
+    "replacement": "==",
+    "span": {
+      "end": {
+        "column": 29,
+        "line": 197
+      },
+      "start": {
+        "column": 27,
+        "line": 197
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/uri.rs\n+++ replace resolve_by_id -> Option<Resolved<'a>> with None\n@@ -206,32 +206,17 @@\n     })\n }\n \n /// Resolve a bare skill id with no registry named, honouring precedence.\n ///\n /// This is the search path — `skills_find_relevant` rather than a URI lookup — and\n /// it is where [`resolution_order`] matters.\n pub fn resolve_by_id<'a>(skill_id: &str, registries: &'a [Registry]) -> Option<Resolved<'a>> {\n-    for registry in resolution_order(registries) {\n-        if let Some(entry) = registry.lock.skills.get(skill_id) {\n-            let uri = SkillUri {\n-                registry: registry.host.clone(),\n-                skill_id: skill_id.to_string(),\n-                version: (!entry.git_ref.is_empty()).then(|| entry.git_ref.clone()),\n-            };\n-            return Some(Resolved {\n-                uri,\n-                registry: &registry.host,\n-                kind: registry.kind,\n-                entry,\n-            });\n-        }\n-    }\n-    None\n+    None /* ~ changed by cargo-mutants ~ */\n }\n \n /// Every skill in `lock`, addressed under `authority`.\n ///\n /// Entries with no commit are emitted unpinned: a v1 lockfile can still be browsed,\n /// it just cannot hand out stable identifiers.\n pub fn uris_for(lock: &SkillLock, authority: &str) -> Vec<SkillUri> {\n     lock.skills\n",
+    "file": "crates/rcx-registry-skills/src/uri.rs",
+    "function": {
+      "function_name": "resolve_by_id",
+      "return_type": "-> Option<Resolved<'a>>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 230
+        },
+        "start": {
+          "column": 1,
+          "line": 209
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "crates/rcx-registry-skills/src/uri.rs:214:5: replace resolve_by_id -> Option<Resolved<'a>> with None",
+    "package": "rcx-registry-skills",
+    "replacement": "None",
+    "span": {
+      "end": {
+        "column": 9,
+        "line": 229
+      },
+      "start": {
+        "column": 5,
+        "line": 214
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/uri.rs\n+++ replace resolve_by_id -> Option<Resolved<'a>> with Some(Default::default())\n@@ -206,32 +206,17 @@\n     })\n }\n \n /// Resolve a bare skill id with no registry named, honouring precedence.\n ///\n /// This is the search path — `skills_find_relevant` rather than a URI lookup — and\n /// it is where [`resolution_order`] matters.\n pub fn resolve_by_id<'a>(skill_id: &str, registries: &'a [Registry]) -> Option<Resolved<'a>> {\n-    for registry in resolution_order(registries) {\n-        if let Some(entry) = registry.lock.skills.get(skill_id) {\n-            let uri = SkillUri {\n-                registry: registry.host.clone(),\n-                skill_id: skill_id.to_string(),\n-                version: (!entry.git_ref.is_empty()).then(|| entry.git_ref.clone()),\n-            };\n-            return Some(Resolved {\n-                uri,\n-                registry: &registry.host,\n-                kind: registry.kind,\n-                entry,\n-            });\n-        }\n-    }\n-    None\n+    Some(Default::default()) /* ~ changed by cargo-mutants ~ */\n }\n \n /// Every skill in `lock`, addressed under `authority`.\n ///\n /// Entries with no commit are emitted unpinned: a v1 lockfile can still be browsed,\n /// it just cannot hand out stable identifiers.\n pub fn uris_for(lock: &SkillLock, authority: &str) -> Vec<SkillUri> {\n     lock.skills\n",
+    "file": "crates/rcx-registry-skills/src/uri.rs",
+    "function": {
+      "function_name": "resolve_by_id",
+      "return_type": "-> Option<Resolved<'a>>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 230
+        },
+        "start": {
+          "column": 1,
+          "line": 209
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "crates/rcx-registry-skills/src/uri.rs:214:5: replace resolve_by_id -> Option<Resolved<'a>> with Some(Default::default())",
+    "package": "rcx-registry-skills",
+    "replacement": "Some(Default::default())",
+    "span": {
+      "end": {
+        "column": 9,
+        "line": 229
+      },
+      "start": {
+        "column": 5,
+        "line": 214
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/uri.rs\n+++ delete ! in resolve_by_id\n@@ -211,17 +211,17 @@\n /// This is the search path — `skills_find_relevant` rather than a URI lookup — and\n /// it is where [`resolution_order`] matters.\n pub fn resolve_by_id<'a>(skill_id: &str, registries: &'a [Registry]) -> Option<Resolved<'a>> {\n     for registry in resolution_order(registries) {\n         if let Some(entry) = registry.lock.skills.get(skill_id) {\n             let uri = SkillUri {\n                 registry: registry.host.clone(),\n                 skill_id: skill_id.to_string(),\n-                version: (!entry.git_ref.is_empty()).then(|| entry.git_ref.clone()),\n+                version: ( /* ~ changed by cargo-mutants ~ */entry.git_ref.is_empty()).then(|| entry.git_ref.clone()),\n             };\n             return Some(Resolved {\n                 uri,\n                 registry: &registry.host,\n                 kind: registry.kind,\n                 entry,\n             });\n         }\n",
+    "file": "crates/rcx-registry-skills/src/uri.rs",
+    "function": {
+      "function_name": "resolve_by_id",
+      "return_type": "-> Option<Resolved<'a>>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 230
+        },
+        "start": {
+          "column": 1,
+          "line": 209
+        }
+      }
+    },
+    "genre": "UnaryOperator",
+    "name": "crates/rcx-registry-skills/src/uri.rs:219:27: delete ! in resolve_by_id",
+    "package": "rcx-registry-skills",
+    "replacement": "",
+    "span": {
+      "end": {
+        "column": 28,
+        "line": 219
+      },
+      "start": {
+        "column": 27,
+        "line": 219
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/uri.rs\n+++ replace uris_for -> Vec<SkillUri> with vec![]\n@@ -229,17 +229,10 @@\n     None\n }\n \n /// Every skill in `lock`, addressed under `authority`.\n ///\n /// Entries with no commit are emitted unpinned: a v1 lockfile can still be browsed,\n /// it just cannot hand out stable identifiers.\n pub fn uris_for(lock: &SkillLock, authority: &str) -> Vec<SkillUri> {\n-    lock.skills\n-        .iter()\n-        .map(|(name, entry)| SkillUri {\n-            registry: authority.to_string(),\n-            skill_id: name.clone(),\n-            version: (!entry.git_ref.is_empty()).then(|| entry.git_ref.clone()),\n-        })\n-        .collect()\n+    vec![] /* ~ changed by cargo-mutants ~ */\n }\n",
+    "file": "crates/rcx-registry-skills/src/uri.rs",
+    "function": {
+      "function_name": "uris_for",
+      "return_type": "-> Vec<SkillUri>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 245
+        },
+        "start": {
+          "column": 1,
+          "line": 232
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "crates/rcx-registry-skills/src/uri.rs:237:5: replace uris_for -> Vec<SkillUri> with vec![]",
+    "package": "rcx-registry-skills",
+    "replacement": "vec![]",
+    "span": {
+      "end": {
+        "column": 19,
+        "line": 244
+      },
+      "start": {
+        "column": 5,
+        "line": 237
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/uri.rs\n+++ replace uris_for -> Vec<SkillUri> with vec![Default::default()]\n@@ -229,17 +229,10 @@\n     None\n }\n \n /// Every skill in `lock`, addressed under `authority`.\n ///\n /// Entries with no commit are emitted unpinned: a v1 lockfile can still be browsed,\n /// it just cannot hand out stable identifiers.\n pub fn uris_for(lock: &SkillLock, authority: &str) -> Vec<SkillUri> {\n-    lock.skills\n-        .iter()\n-        .map(|(name, entry)| SkillUri {\n-            registry: authority.to_string(),\n-            skill_id: name.clone(),\n-            version: (!entry.git_ref.is_empty()).then(|| entry.git_ref.clone()),\n-        })\n-        .collect()\n+    vec![Default::default()] /* ~ changed by cargo-mutants ~ */\n }\n",
+    "file": "crates/rcx-registry-skills/src/uri.rs",
+    "function": {
+      "function_name": "uris_for",
+      "return_type": "-> Vec<SkillUri>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 245
+        },
+        "start": {
+          "column": 1,
+          "line": 232
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "crates/rcx-registry-skills/src/uri.rs:237:5: replace uris_for -> Vec<SkillUri> with vec![Default::default()]",
+    "package": "rcx-registry-skills",
+    "replacement": "vec![Default::default()]",
+    "span": {
+      "end": {
+        "column": 19,
+        "line": 244
+      },
+      "start": {
+        "column": 5,
+        "line": 237
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/uri.rs\n+++ delete ! in uris_for\n@@ -234,12 +234,12 @@\n /// Entries with no commit are emitted unpinned: a v1 lockfile can still be browsed,\n /// it just cannot hand out stable identifiers.\n pub fn uris_for(lock: &SkillLock, authority: &str) -> Vec<SkillUri> {\n     lock.skills\n         .iter()\n         .map(|(name, entry)| SkillUri {\n             registry: authority.to_string(),\n             skill_id: name.clone(),\n-            version: (!entry.git_ref.is_empty()).then(|| entry.git_ref.clone()),\n+            version: ( /* ~ changed by cargo-mutants ~ */entry.git_ref.is_empty()).then(|| entry.git_ref.clone()),\n         })\n         .collect()\n }\n",
+    "file": "crates/rcx-registry-skills/src/uri.rs",
+    "function": {
+      "function_name": "uris_for",
+      "return_type": "-> Vec<SkillUri>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 245
+        },
+        "start": {
+          "column": 1,
+          "line": 232
+        }
+      }
+    },
+    "genre": "UnaryOperator",
+    "name": "crates/rcx-registry-skills/src/uri.rs:242:23: delete ! in uris_for",
+    "package": "rcx-registry-skills",
+    "replacement": "",
+    "span": {
+      "end": {
+        "column": 24,
+        "line": 242
+      },
+      "start": {
+        "column": 23,
+        "line": 242
       }
     }
   }
