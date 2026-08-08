@@ -1,6 +1,6 @@
 --- crates/rcx-registry-skills/src/uri.rs
 +++ replace SkillUri::parse -> Result<Self, SkillsError> with Ok(Default::default())
-@@ -48,73 +48,17 @@
+@@ -48,76 +48,17 @@
      pub version: Option<String>,
  }
  
@@ -52,8 +52,11 @@
 -
 -        let version = match version {
 -            None => None,
+-            // Literal pattern rather than a guard: `""` fails `is_commit_id` anyway,
+-            // so a guard here reads as redundant, but the distinct message is worth
+-            // keeping — "empty version" and "not a commit id" are different mistakes.
+-            Some("") => return Err(bad("empty version after '@'")),
 -            Some(v) if is_commit_id(v) => Some(v.to_ascii_lowercase()),
--            Some(v) if v.is_empty() => return Err(bad("empty version after '@'")),
 -            Some(_) => {
 -                return Err(bad(
 -                    "version must be a full 40-hex commit id — a mutable tag or semver cannot pin content",

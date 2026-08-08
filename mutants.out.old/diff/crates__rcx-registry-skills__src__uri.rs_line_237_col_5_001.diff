@@ -1,0 +1,21 @@
+--- crates/rcx-registry-skills/src/uri.rs
++++ replace uris_for -> Vec<SkillUri> with vec![Default::default()]
+@@ -229,17 +229,10 @@
+     None
+ }
+ 
+ /// Every skill in `lock`, addressed under `authority`.
+ ///
+ /// Entries with no commit are emitted unpinned: a v1 lockfile can still be browsed,
+ /// it just cannot hand out stable identifiers.
+ pub fn uris_for(lock: &SkillLock, authority: &str) -> Vec<SkillUri> {
+-    lock.skills
+-        .iter()
+-        .map(|(name, entry)| SkillUri {
+-            registry: authority.to_string(),
+-            skill_id: name.clone(),
+-            version: (!entry.git_ref.is_empty()).then(|| entry.git_ref.clone()),
+-        })
+-        .collect()
++    vec![Default::default()] /* ~ changed by cargo-mutants ~ */
+ }

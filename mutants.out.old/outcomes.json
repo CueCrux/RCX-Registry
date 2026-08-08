@@ -8,7 +8,7 @@
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 6.410744195,
+          "duration": 7.111208746,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -20,7 +20,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.100697495,
+          "duration": 0.150927517,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -72,7 +72,7 @@
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.651435979,
+          "duration": 0.651515729,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -84,7 +84,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.100586373,
+          "duration": 0.151047966,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -136,7 +136,7 @@
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.551022037,
+          "duration": 0.601442098,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -148,7 +148,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.100591503,
+          "duration": 0.150772317,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -200,7 +200,7 @@
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.651376066,
+          "duration": 0.701688165,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -212,7 +212,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.100638656,
+          "duration": 0.10080321,
           "process_status": {
             "Failure": 101
           },
@@ -266,7 +266,7 @@
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.150568914,
+          "duration": 0.201122879,
           "process_status": {
             "Failure": 101
           },
@@ -320,7 +320,7 @@
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.150524568,
+          "duration": 0.201107536,
           "process_status": {
             "Failure": 101
           },
@@ -374,7 +374,7 @@
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.601067768,
+          "duration": 0.752130777,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -386,7 +386,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.100589115,
+          "duration": 0.251050357,
           "process_status": {
             "Failure": 101
           },
@@ -440,7 +440,7 @@
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.601088094,
+          "duration": 1.203382719,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -452,7 +452,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.100575477,
+          "duration": 0.203294141,
           "process_status": {
             "Failure": 101
           },
@@ -506,7 +506,7 @@
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.651088711,
+          "duration": 1.35405332,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -518,7 +518,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.100549218,
+          "duration": 0.200952881,
           "process_status": {
             "Failure": 101
           },
@@ -572,7 +572,7 @@
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.552056347,
+          "duration": 1.052830458,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -584,7 +584,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.100568937,
+          "duration": 0.100717307,
           "process_status": {
             "Failure": 101
           },
@@ -638,7 +638,7 @@
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.200646713,
+          "duration": 0.250923508,
           "process_status": {
             "Failure": 101
           },
@@ -692,7 +692,7 @@
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.60108757,
+          "duration": 1.002351158,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -704,7 +704,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.100596879,
+          "duration": 0.150839947,
           "process_status": {
             "Failure": 101
           },
@@ -758,7 +758,7 @@
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.551061755,
+          "duration": 0.751865265,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -770,7 +770,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.100676222,
+          "duration": 0.100723137,
           "process_status": {
             "Failure": 101
           },
@@ -824,7 +824,7 @@
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.60168005,
+          "duration": 0.701281534,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -836,7 +836,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.100679617,
+          "duration": 0.100770659,
           "process_status": {
             "Failure": 101
           },
@@ -890,7 +890,7 @@
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.551154043,
+          "duration": 0.701539033,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -902,7 +902,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.100606627,
+          "duration": 0.100636543,
           "process_status": {
             "Failure": 101
           },
@@ -956,7 +956,7 @@
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.751623826,
+          "duration": 0.95205803,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -968,7 +968,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.100752752,
+          "duration": 0.150704067,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -1020,7 +1020,7 @@
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.70145107,
+          "duration": 0.901346004,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -1032,7 +1032,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.100690411,
+          "duration": 0.150712539,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -1084,7 +1084,7 @@
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.55101432,
+          "duration": 0.701452516,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -1096,7 +1096,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.100828493,
+          "duration": 0.15092715,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -1148,7 +1148,7 @@
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.701498675,
+          "duration": 0.852237883,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -1160,7 +1160,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.10077477,
+          "duration": 0.150773049,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -1212,7 +1212,7 @@
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.55111138,
+          "duration": 0.65125522,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -1224,7 +1224,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.100600989,
+          "duration": 0.1005862,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -1276,7 +1276,7 @@
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.551142254,
+          "duration": 0.651457778,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -1288,7 +1288,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.100686804,
+          "duration": 0.100570224,
           "process_status": {
             "Failure": 101
           },
@@ -1342,7 +1342,7 @@
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.550979186,
+          "duration": 0.651327789,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -1354,7 +1354,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.100734064,
+          "duration": 0.100631038,
           "process_status": {
             "Failure": 101
           },
@@ -1408,7 +1408,7 @@
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.551296826,
+          "duration": 0.651269181,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -1420,7 +1420,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.100644635,
+          "duration": 0.100818135,
           "process_status": {
             "Failure": 101
           },
@@ -1474,7 +1474,7 @@
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.601492885,
+          "duration": 0.701986848,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -1486,7 +1486,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.100841405,
+          "duration": 0.100678774,
           "process_status": {
             "Failure": 101
           },
@@ -1540,7 +1540,7 @@
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.551036551,
+          "duration": 0.701816494,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -1552,7 +1552,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.100675986,
+          "duration": 0.100724007,
           "process_status": {
             "Failure": 101
           },
@@ -1606,7 +1606,7 @@
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.551260229,
+          "duration": 0.651695988,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -1618,7 +1618,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.100689948,
+          "duration": 0.100600991,
           "process_status": {
             "Failure": 101
           },
@@ -1672,7 +1672,7 @@
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.651430846,
+          "duration": 0.751221732,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -1684,7 +1684,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.100866489,
+          "duration": 0.10063166,
           "process_status": {
             "Failure": 101
           },
@@ -1738,7 +1738,7 @@
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.651138523,
+          "duration": 0.751789214,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -1750,7 +1750,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.100559017,
+          "duration": 0.100793046,
           "process_status": {
             "Failure": 101
           },
@@ -1804,7 +1804,7 @@
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.651083885,
+          "duration": 0.801578672,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -1816,7 +1816,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.100744681,
+          "duration": 0.10071149,
           "process_status": {
             "Failure": 101
           },
@@ -1870,7 +1870,7 @@
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.551375663,
+          "duration": 0.651206316,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -1882,7 +1882,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.10057495,
+          "duration": 0.100826364,
           "process_status": {
             "Failure": 101
           },
@@ -1936,7 +1936,7 @@
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.801398439,
+          "duration": 0.901859434,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -1948,7 +1948,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.150796014,
+          "duration": 0.150839762,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -2000,7 +2000,7 @@
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.801212612,
+          "duration": 0.801713491,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -2012,7 +2012,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.150573018,
+          "duration": 0.150803761,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -2064,7 +2064,7 @@
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.65112241,
+          "duration": 0.701477838,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -2076,7 +2076,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.150533156,
+          "duration": 0.150912027,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -2128,7 +2128,7 @@
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.651438671,
+          "duration": 0.651194582,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -2140,7 +2140,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.150744656,
+          "duration": 0.150753588,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -2192,7 +2192,7 @@
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.651115098,
+          "duration": 0.651362003,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -2204,7 +2204,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.100524819,
+          "duration": 0.150724224,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -2212,6 +2212,388 @@
             "--verbose",
             "--package=rcx-registry-skills@0.1.0",
             "--all-targets"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/rcx-registry-skills/src/index.rs:58:5: replace indexed_text -> String with String::new()",
+          "package": "rcx-registry-skills",
+          "file": "crates/rcx-registry-skills/src/index.rs",
+          "function": {
+            "function_name": "indexed_text",
+            "return_type": "-> String",
+            "span": {
+              "start": {
+                "line": 52,
+                "column": 1
+              },
+              "end": {
+                "line": 65,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 58,
+              "column": 5
+            },
+            "end": {
+              "line": 64,
+              "column": 9
+            }
+          },
+          "replacement": "String::new()",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/crates__rcx-registry-skills__src__index.rs_line_58_col_5.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__index.rs_line_58_col_5.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.80177161,
+          "process_status": "Success",
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.10077646,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0",
+            "--all-targets"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/rcx-registry-skills/src/index.rs:58:5: replace indexed_text -> String with \"xyzzy\".into()",
+          "package": "rcx-registry-skills",
+          "file": "crates/rcx-registry-skills/src/index.rs",
+          "function": {
+            "function_name": "indexed_text",
+            "return_type": "-> String",
+            "span": {
+              "start": {
+                "line": 52,
+                "column": 1
+              },
+              "end": {
+                "line": 65,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 58,
+              "column": 5
+            },
+            "end": {
+              "line": 64,
+              "column": 9
+            }
+          },
+          "replacement": "\"xyzzy\".into()",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/crates__rcx-registry-skills__src__index.rs_line_58_col_5_001.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__index.rs_line_58_col_5_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.651249916,
+          "process_status": "Success",
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.10068104,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0",
+            "--all-targets"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/rcx-registry-skills/src/index.rs:71:5: replace tags_of -> Vec<String> with vec![]",
+          "package": "rcx-registry-skills",
+          "file": "crates/rcx-registry-skills/src/index.rs",
+          "function": {
+            "function_name": "tags_of",
+            "return_type": "-> Vec<String>",
+            "span": {
+              "start": {
+                "line": 67,
+                "column": 1
+              },
+              "end": {
+                "line": 82,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 71,
+              "column": 5
+            },
+            "end": {
+              "line": 81,
+              "column": 29
+            }
+          },
+          "replacement": "vec![]",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "MissedMutant",
+      "log_path": "log/crates__rcx-registry-skills__src__index.rs_line_71_col_5.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__index.rs_line_71_col_5.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.801977111,
+          "process_status": "Success",
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.150745936,
+          "process_status": "Success",
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0",
+            "--all-targets"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/rcx-registry-skills/src/index.rs:71:5: replace tags_of -> Vec<String> with vec![String::new()]",
+          "package": "rcx-registry-skills",
+          "file": "crates/rcx-registry-skills/src/index.rs",
+          "function": {
+            "function_name": "tags_of",
+            "return_type": "-> Vec<String>",
+            "span": {
+              "start": {
+                "line": 67,
+                "column": 1
+              },
+              "end": {
+                "line": 82,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 71,
+              "column": 5
+            },
+            "end": {
+              "line": 81,
+              "column": 29
+            }
+          },
+          "replacement": "vec![String::new()]",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/crates__rcx-registry-skills__src__index.rs_line_71_col_5_001.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__index.rs_line_71_col_5_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.65158086,
+          "process_status": "Success",
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.100741073,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0",
+            "--all-targets"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/rcx-registry-skills/src/index.rs:71:5: replace tags_of -> Vec<String> with vec![\"xyzzy\".into()]",
+          "package": "rcx-registry-skills",
+          "file": "crates/rcx-registry-skills/src/index.rs",
+          "function": {
+            "function_name": "tags_of",
+            "return_type": "-> Vec<String>",
+            "span": {
+              "start": {
+                "line": 67,
+                "column": 1
+              },
+              "end": {
+                "line": 82,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 71,
+              "column": 5
+            },
+            "end": {
+              "line": 81,
+              "column": 29
+            }
+          },
+          "replacement": "vec![\"xyzzy\".into()]",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/crates__rcx-registry-skills__src__index.rs_line_71_col_5_002.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__index.rs_line_71_col_5_002.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.651398576,
+          "process_status": "Success",
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.100775218,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0",
+            "--all-targets"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/rcx-registry-skills/src/index.rs:93:5: replace ingest_body -> IngestBody with Default::default()",
+          "package": "rcx-registry-skills",
+          "file": "crates/rcx-registry-skills/src/index.rs",
+          "function": {
+            "function_name": "ingest_body",
+            "return_type": "-> IngestBody",
+            "span": {
+              "start": {
+                "line": 84,
+                "column": 1
+              },
+              "end": {
+                "line": 117,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 93,
+              "column": 5
+            },
+            "end": {
+              "line": 116,
+              "column": 6
+            }
+          },
+          "replacement": "Default::default()",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "Unviable",
+      "log_path": "log/crates__rcx-registry-skills__src__index.rs_line_93_col_5.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__index.rs_line_93_col_5.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.200727558,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0"
           ]
         }
       ]
@@ -2256,7 +2638,7 @@
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.200647816,
+          "duration": 0.200744149,
           "process_status": {
             "Failure": 101
           },
@@ -2310,7 +2692,7 @@
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.651204465,
+          "duration": 0.902084733,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -2322,7 +2704,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.100634264,
+          "duration": 0.100784354,
           "process_status": {
             "Failure": 101
           },
@@ -2376,7 +2758,7 @@
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.550986082,
+          "duration": 0.702186743,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -2388,7 +2770,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.100680058,
+          "duration": 0.201083566,
           "process_status": {
             "Failure": 101
           },
@@ -2442,7 +2824,7 @@
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.601098207,
+          "duration": 0.802685303,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -2454,7 +2836,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.100732519,
+          "duration": 0.100837279,
           "process_status": {
             "Failure": 101
           },
@@ -2508,7 +2890,7 @@
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.551337859,
+          "duration": 0.752089906,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -2520,7 +2902,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.100806548,
+          "duration": 0.10082869,
           "process_status": {
             "Failure": 101
           },
@@ -2574,7 +2956,7 @@
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.551027105,
+          "duration": 0.702744195,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -2586,7 +2968,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.100619959,
+          "duration": 0.100919921,
           "process_status": {
             "Failure": 101
           },
@@ -2640,7 +3022,7 @@
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.601451967,
+          "duration": 0.751543592,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -2652,7 +3034,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.100706869,
+          "duration": 0.100720668,
           "process_status": {
             "Failure": 101
           },
@@ -2706,7 +3088,7 @@
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.55116569,
+          "duration": 0.701745673,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -2718,7 +3100,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.100640504,
+          "duration": 0.100613357,
           "process_status": {
             "Failure": 101
           },
@@ -2772,7 +3154,7 @@
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.55115233,
+          "duration": 0.601294954,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -2784,7 +3166,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.100628998,
+          "duration": 0.15071239,
           "process_status": {
             "Failure": 101
           },
@@ -2838,7 +3220,7 @@
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.551423981,
+          "duration": 0.651261878,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -2850,7 +3232,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.100664976,
+          "duration": 0.150636007,
           "process_status": {
             "Failure": 101
           },
@@ -2904,7 +3286,7 @@
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.551162631,
+          "duration": 0.651688611,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -2916,7 +3298,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.100652704,
+          "duration": 0.100743117,
           "process_status": {
             "Failure": 101
           },
@@ -2970,7 +3352,7 @@
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.551399897,
+          "duration": 0.65155855,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -2982,7 +3364,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.100990187,
+          "duration": 0.10067641,
           "process_status": {
             "Failure": 101
           },
@@ -3036,7 +3418,7 @@
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.551699279,
+          "duration": 0.601492772,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -3048,7 +3430,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.10090178,
+          "duration": 0.100706011,
           "process_status": {
             "Failure": 101
           },
@@ -3102,7 +3484,7 @@
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.601399484,
+          "duration": 0.651540967,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -3114,7 +3496,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.100695013,
+          "duration": 0.10109809,
           "process_status": {
             "Failure": 101
           },
@@ -3168,7 +3550,7 @@
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.551225676,
+          "duration": 0.601593792,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -3180,7 +3562,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.100791906,
+          "duration": 0.100603115,
           "process_status": {
             "Failure": 101
           },
@@ -3234,7 +3616,7 @@
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.551105915,
+          "duration": 0.601401756,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -3246,7 +3628,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.100757488,
+          "duration": 0.100877588,
           "process_status": {
             "Failure": 101
           },
@@ -3300,7 +3682,7 @@
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.551591765,
+          "duration": 0.601272281,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -3312,7 +3694,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.10073777,
+          "duration": 0.100790116,
           "process_status": {
             "Failure": 101
           },
@@ -3366,7 +3748,7 @@
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.551035863,
+          "duration": 0.651502725,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -3378,7 +3760,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.100674608,
+          "duration": 0.100664678,
           "process_status": {
             "Failure": 101
           },
@@ -3432,7 +3814,7 @@
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.551218003,
+          "duration": 0.601448673,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -3444,7 +3826,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.100720924,
+          "duration": 0.100810583,
           "process_status": {
             "Failure": 101
           },
@@ -3498,7 +3880,7 @@
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.551151045,
+          "duration": 0.609585521,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -3510,7 +3892,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.100705116,
+          "duration": 0.100657293,
           "process_status": {
             "Failure": 101
           },
@@ -3564,7 +3946,7 @@
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.551346793,
+          "duration": 0.651276025,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -3576,7 +3958,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.10064813,
+          "duration": 0.100627048,
           "process_status": {
             "Failure": 101
           },
@@ -3630,7 +4012,7 @@
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.601202857,
+          "duration": 0.651117356,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -3642,7 +4024,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.100696969,
+          "duration": 0.100743221,
           "process_status": {
             "Failure": 101
           },
@@ -3696,7 +4078,7 @@
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.801931257,
+          "duration": 0.601390669,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -3708,7 +4090,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.150974284,
+          "duration": 0.10064519,
           "process_status": {
             "Failure": 101
           },
@@ -3762,7 +4144,7 @@
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.551574557,
+          "duration": 0.651490263,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -3774,7 +4156,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.101025579,
+          "duration": 0.100689787,
           "process_status": {
             "Failure": 101
           },
@@ -3828,7 +4210,7 @@
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.651231878,
+          "duration": 0.751239851,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -3840,7 +4222,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.100724582,
+          "duration": 0.100679285,
           "process_status": {
             "Failure": 101
           },
@@ -3894,7 +4276,7 @@
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.150795057,
+          "duration": 0.200765196,
           "process_status": {
             "Failure": 101
           },
@@ -3948,7 +4330,7 @@
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.701281509,
+          "duration": 0.801452438,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -3960,7 +4342,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.100707428,
+          "duration": 0.100610017,
           "process_status": {
             "Failure": 101
           },
@@ -4014,7 +4396,7 @@
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.501187763,
+          "duration": 0.601233996,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -4026,7 +4408,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.100752369,
+          "duration": 0.1007433,
           "process_status": {
             "Failure": 101
           },
@@ -4080,7 +4462,7 @@
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.150684366,
+          "duration": 0.200853608,
           "process_status": {
             "Failure": 101
           },
@@ -4134,7 +4516,7 @@
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.701252709,
+          "duration": 0.801555328,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -4146,7 +4528,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.100593603,
+          "duration": 0.100635544,
           "process_status": {
             "Failure": 101
           },
@@ -4200,7 +4582,7 @@
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.551334753,
+          "duration": 0.601031895,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -4212,7 +4594,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.100635643,
+          "duration": 0.100605804,
           "process_status": {
             "Failure": 101
           },
@@ -4266,7 +4648,7 @@
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.551178073,
+          "duration": 0.601284786,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -4278,7 +4660,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.100737314,
+          "duration": 0.100685573,
           "process_status": {
             "Failure": 101
           },
@@ -4332,7 +4714,7 @@
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.601348738,
+          "duration": 0.601233907,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -4344,7 +4726,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.100721583,
+          "duration": 0.10062927,
           "process_status": {
             "Failure": 101
           },
@@ -4398,7 +4780,7 @@
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.651271001,
+          "duration": 0.751372534,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -4410,7 +4792,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.100646181,
+          "duration": 0.100733896,
           "process_status": {
             "Failure": 101
           },
@@ -4464,7 +4846,7 @@
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.651349191,
+          "duration": 0.751430433,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -4476,7 +4858,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.100699351,
+          "duration": 0.100778569,
           "process_status": {
             "Failure": 101
           },
@@ -4530,7 +4912,7 @@
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.601330389,
+          "duration": 0.65114331,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -4542,7 +4924,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.100773996,
+          "duration": 0.100685743,
           "process_status": {
             "Failure": 101
           },
@@ -4596,7 +4978,7 @@
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.551193181,
+          "duration": 0.601362107,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -4608,7 +4990,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.100723931,
+          "duration": 0.100705583,
           "process_status": {
             "Failure": 101
           },
@@ -4662,7 +5044,7 @@
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.200882943,
+          "duration": 0.200786287,
           "process_status": {
             "Failure": 101
           },
@@ -4716,7 +5098,7 @@
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.601793517,
+          "duration": 0.651334659,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -4728,7 +5110,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.100674909,
+          "duration": 0.100735201,
           "process_status": {
             "Failure": 101
           },
@@ -4782,7 +5164,7 @@
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.651923518,
+          "duration": 0.651231153,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -4794,7 +5176,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.10092495,
+          "duration": 0.100787972,
           "process_status": {
             "Failure": 101
           },
@@ -4848,7 +5230,7 @@
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.651347328,
+          "duration": 0.701614677,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -4860,7 +5242,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.10071472,
+          "duration": 0.150800481,
           "process_status": {
             "Failure": 101
           },
@@ -4914,7 +5296,7 @@
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.601398824,
+          "duration": 1.510968214,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -4926,7 +5308,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.100874075,
+          "duration": 0.204938875,
           "process_status": {
             "Failure": 101
           },
@@ -4980,7 +5362,7 @@
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.601237416,
+          "duration": 1.459749975,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -4992,7 +5374,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.100661925,
+          "duration": 0.151033843,
           "process_status": {
             "Failure": 101
           },
@@ -5046,7 +5428,7 @@
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.501494429,
+          "duration": 1.054176349,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -5058,7 +5440,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.100791525,
+          "duration": 0.201285306,
           "process_status": {
             "Failure": 101
           },
@@ -5112,7 +5494,7 @@
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.613457771,
+          "duration": 1.422439827,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -5124,7 +5506,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.100789514,
+          "duration": 0.256849031,
           "process_status": {
             "Failure": 101
           },
@@ -5178,7 +5560,7 @@
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.651414016,
+          "duration": 1.612470903,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -5190,7 +5572,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.100806599,
+          "duration": 0.152512018,
           "process_status": {
             "Failure": 101
           },
@@ -5244,7 +5626,7 @@
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.55106685,
+          "duration": 1.405345571,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -5256,7 +5638,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.100640562,
+          "duration": 0.150965173,
           "process_status": {
             "Failure": 101
           },
@@ -5310,7 +5692,7 @@
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.551358092,
+          "duration": 0.851790017,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -5322,7 +5704,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.100749077,
+          "duration": 0.100582776,
           "process_status": {
             "Failure": 101
           },
@@ -5376,7 +5758,7 @@
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.60135706,
+          "duration": 0.702422133,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -5388,7 +5770,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.100770502,
+          "duration": 0.100758371,
           "process_status": {
             "Failure": 101
           },
@@ -5442,7 +5824,7 @@
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.80178799,
+          "duration": 0.701326008,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -5454,7 +5836,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.101970457,
+          "duration": 0.100739692,
           "process_status": {
             "Failure": 101
           },
@@ -5483,7 +5865,7 @@
                 "column": 5
               },
               "end": {
-                "line": 113,
+                "line": 116,
                 "column": 6
               }
             }
@@ -5494,7 +5876,7 @@
               "column": 9
             },
             "end": {
-              "line": 112,
+              "line": 115,
               "column": 11
             }
           },
@@ -5508,7 +5890,7 @@
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.200796625,
+          "duration": 0.20090374,
           "process_status": {
             "Failure": 101
           },
@@ -5537,7 +5919,7 @@
                 "column": 5
               },
               "end": {
-                "line": 113,
+                "line": 116,
                 "column": 6
               }
             }
@@ -5562,7 +5944,7 @@
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.601271108,
+          "duration": 0.701122585,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -5574,7 +5956,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.150679772,
+          "duration": 0.150710428,
           "process_status": {
             "Failure": 101
           },
@@ -5603,7 +5985,7 @@
                 "column": 5
               },
               "end": {
-                "line": 113,
+                "line": 116,
                 "column": 6
               }
             }
@@ -5628,7 +6010,7 @@
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.602581192,
+          "duration": 0.701952598,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -5640,7 +6022,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.150873418,
+          "duration": 0.150741247,
           "process_status": {
             "Failure": 101
           },
@@ -5669,7 +6051,7 @@
                 "column": 5
               },
               "end": {
-                "line": 113,
+                "line": 116,
                 "column": 6
               }
             }
@@ -5694,7 +6076,7 @@
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.551429169,
+          "duration": 0.651276809,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -5706,7 +6088,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.150771951,
+          "duration": 0.150758807,
           "process_status": {
             "Failure": 101
           },
@@ -5735,7 +6117,7 @@
                 "column": 5
               },
               "end": {
-                "line": 113,
+                "line": 116,
                 "column": 6
               }
             }
@@ -5760,7 +6142,7 @@
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.551065491,
+          "duration": 0.701567987,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -5772,7 +6154,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.150600763,
+          "duration": 0.1508477,
           "process_status": {
             "Failure": 101
           },
@@ -5801,7 +6183,7 @@
                 "column": 5
               },
               "end": {
-                "line": 113,
+                "line": 116,
                 "column": 6
               }
             }
@@ -5826,7 +6208,7 @@
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.55138993,
+          "duration": 0.701653986,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -5838,7 +6220,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.10062108,
+          "duration": 0.150872665,
           "process_status": {
             "Failure": 101
           },
@@ -5867,7 +6249,7 @@
                 "column": 5
               },
               "end": {
-                "line": 113,
+                "line": 116,
                 "column": 6
               }
             }
@@ -5892,7 +6274,7 @@
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.551212412,
+          "duration": 0.701303766,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -5904,7 +6286,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.15076027,
+          "duration": 0.15077862,
           "process_status": {
             "Failure": 101
           },
@@ -5933,7 +6315,7 @@
                 "column": 5
               },
               "end": {
-                "line": 113,
+                "line": 116,
                 "column": 6
               }
             }
@@ -5958,7 +6340,7 @@
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.551056953,
+          "duration": 0.651101722,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -5970,7 +6352,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.100706049,
+          "duration": 0.150685444,
           "process_status": {
             "Failure": 101
           },
@@ -5999,7 +6381,7 @@
                 "column": 5
               },
               "end": {
-                "line": 113,
+                "line": 116,
                 "column": 6
               }
             }
@@ -6024,7 +6406,7 @@
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.551024204,
+          "duration": 0.651623899,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -6036,7 +6418,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.10063272,
+          "duration": 0.150916394,
           "process_status": {
             "Failure": 101
           },
@@ -6053,7 +6435,7 @@
     {
       "scenario": {
         "Mutant": {
-          "name": "crates/rcx-registry-skills/src/uri.rs:99:24: replace match guard is_commit_id(v) with true in SkillUri::parse",
+          "name": "crates/rcx-registry-skills/src/uri.rs:103:24: replace match guard is_commit_id(v) with true in SkillUri::parse",
           "package": "rcx-registry-skills",
           "file": "crates/rcx-registry-skills/src/uri.rs",
           "function": {
@@ -6065,18 +6447,18 @@
                 "column": 5
               },
               "end": {
-                "line": 113,
+                "line": 116,
                 "column": 6
               }
             }
           },
           "span": {
             "start": {
-              "line": 99,
+              "line": 103,
               "column": 24
             },
             "end": {
-              "line": 99,
+              "line": 103,
               "column": 39
             }
           },
@@ -6085,12 +6467,12 @@
         }
       },
       "summary": "CaughtMutant",
-      "log_path": "log/crates__rcx-registry-skills__src__uri.rs_line_99_col_24.log",
-      "diff_path": "diff/crates__rcx-registry-skills__src__uri.rs_line_99_col_24.diff",
+      "log_path": "log/crates__rcx-registry-skills__src__uri.rs_line_103_col_24.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__uri.rs_line_103_col_24.diff",
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.601278222,
+          "duration": 0.65138957,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -6102,7 +6484,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.150835424,
+          "duration": 0.150812124,
           "process_status": {
             "Failure": 101
           },
@@ -6119,7 +6501,7 @@
     {
       "scenario": {
         "Mutant": {
-          "name": "crates/rcx-registry-skills/src/uri.rs:99:24: replace match guard is_commit_id(v) with false in SkillUri::parse",
+          "name": "crates/rcx-registry-skills/src/uri.rs:103:24: replace match guard is_commit_id(v) with false in SkillUri::parse",
           "package": "rcx-registry-skills",
           "file": "crates/rcx-registry-skills/src/uri.rs",
           "function": {
@@ -6131,18 +6513,18 @@
                 "column": 5
               },
               "end": {
-                "line": 113,
+                "line": 116,
                 "column": 6
               }
             }
           },
           "span": {
             "start": {
-              "line": 99,
+              "line": 103,
               "column": 24
             },
             "end": {
-              "line": 99,
+              "line": 103,
               "column": 39
             }
           },
@@ -6151,12 +6533,12 @@
         }
       },
       "summary": "CaughtMutant",
-      "log_path": "log/crates__rcx-registry-skills__src__uri.rs_line_99_col_24_001.log",
-      "diff_path": "diff/crates__rcx-registry-skills__src__uri.rs_line_99_col_24_001.diff",
+      "log_path": "log/crates__rcx-registry-skills__src__uri.rs_line_103_col_24_001.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__uri.rs_line_103_col_24_001.diff",
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.551376907,
+          "duration": 0.651250657,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -6168,7 +6550,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.150714056,
+          "duration": 0.150773978,
           "process_status": {
             "Failure": 101
           },
@@ -6185,135 +6567,7 @@
     {
       "scenario": {
         "Mutant": {
-          "name": "crates/rcx-registry-skills/src/uri.rs:100:24: replace match guard v.is_empty() with true in SkillUri::parse",
-          "package": "rcx-registry-skills",
-          "file": "crates/rcx-registry-skills/src/uri.rs",
-          "function": {
-            "function_name": "SkillUri::parse",
-            "return_type": "-> Result<Self, SkillsError>",
-            "span": {
-              "start": {
-                "line": 52,
-                "column": 5
-              },
-              "end": {
-                "line": 113,
-                "column": 6
-              }
-            }
-          },
-          "span": {
-            "start": {
-              "line": 100,
-              "column": 24
-            },
-            "end": {
-              "line": 100,
-              "column": 36
-            }
-          },
-          "replacement": "true",
-          "genre": "MatchArmGuard"
-        }
-      },
-      "summary": "MissedMutant",
-      "log_path": "log/crates__rcx-registry-skills__src__uri.rs_line_100_col_24.log",
-      "diff_path": "diff/crates__rcx-registry-skills__src__uri.rs_line_100_col_24.diff",
-      "phase_results": [
-        {
-          "phase": "Build",
-          "duration": 0.551159608,
-          "process_status": "Success",
-          "argv": [
-            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
-            "test",
-            "--no-run",
-            "--verbose",
-            "--package=rcx-registry-skills@0.1.0"
-          ]
-        },
-        {
-          "phase": "Test",
-          "duration": 0.10067856,
-          "process_status": "Success",
-          "argv": [
-            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
-            "test",
-            "--verbose",
-            "--package=rcx-registry-skills@0.1.0",
-            "--all-targets"
-          ]
-        }
-      ]
-    },
-    {
-      "scenario": {
-        "Mutant": {
-          "name": "crates/rcx-registry-skills/src/uri.rs:100:24: replace match guard v.is_empty() with false in SkillUri::parse",
-          "package": "rcx-registry-skills",
-          "file": "crates/rcx-registry-skills/src/uri.rs",
-          "function": {
-            "function_name": "SkillUri::parse",
-            "return_type": "-> Result<Self, SkillsError>",
-            "span": {
-              "start": {
-                "line": 52,
-                "column": 5
-              },
-              "end": {
-                "line": 113,
-                "column": 6
-              }
-            }
-          },
-          "span": {
-            "start": {
-              "line": 100,
-              "column": 24
-            },
-            "end": {
-              "line": 100,
-              "column": 36
-            }
-          },
-          "replacement": "false",
-          "genre": "MatchArmGuard"
-        }
-      },
-      "summary": "MissedMutant",
-      "log_path": "log/crates__rcx-registry-skills__src__uri.rs_line_100_col_24_001.log",
-      "diff_path": "diff/crates__rcx-registry-skills__src__uri.rs_line_100_col_24_001.diff",
-      "phase_results": [
-        {
-          "phase": "Build",
-          "duration": 0.551335293,
-          "process_status": "Success",
-          "argv": [
-            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
-            "test",
-            "--no-run",
-            "--verbose",
-            "--package=rcx-registry-skills@0.1.0"
-          ]
-        },
-        {
-          "phase": "Test",
-          "duration": 0.150846138,
-          "process_status": "Success",
-          "argv": [
-            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
-            "test",
-            "--verbose",
-            "--package=rcx-registry-skills@0.1.0",
-            "--all-targets"
-          ]
-        }
-      ]
-    },
-    {
-      "scenario": {
-        "Mutant": {
-          "name": "crates/rcx-registry-skills/src/uri.rs:117:9: replace SkillUri::is_pinned -> bool with true",
+          "name": "crates/rcx-registry-skills/src/uri.rs:120:9: replace SkillUri::is_pinned -> bool with true",
           "package": "rcx-registry-skills",
           "file": "crates/rcx-registry-skills/src/uri.rs",
           "function": {
@@ -6321,22 +6575,22 @@
             "return_type": "-> bool",
             "span": {
               "start": {
-                "line": 115,
+                "line": 118,
                 "column": 5
               },
               "end": {
-                "line": 118,
+                "line": 121,
                 "column": 6
               }
             }
           },
           "span": {
             "start": {
-              "line": 117,
+              "line": 120,
               "column": 9
             },
             "end": {
-              "line": 117,
+              "line": 120,
               "column": 31
             }
           },
@@ -6345,12 +6599,12 @@
         }
       },
       "summary": "CaughtMutant",
-      "log_path": "log/crates__rcx-registry-skills__src__uri.rs_line_117_col_9.log",
-      "diff_path": "diff/crates__rcx-registry-skills__src__uri.rs_line_117_col_9.diff",
+      "log_path": "log/crates__rcx-registry-skills__src__uri.rs_line_120_col_9.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__uri.rs_line_120_col_9.diff",
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.551402012,
+          "duration": 0.651248882,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -6362,7 +6616,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.150663075,
+          "duration": 0.100998892,
           "process_status": {
             "Failure": 101
           },
@@ -6379,7 +6633,7 @@
     {
       "scenario": {
         "Mutant": {
-          "name": "crates/rcx-registry-skills/src/uri.rs:117:9: replace SkillUri::is_pinned -> bool with false",
+          "name": "crates/rcx-registry-skills/src/uri.rs:120:9: replace SkillUri::is_pinned -> bool with false",
           "package": "rcx-registry-skills",
           "file": "crates/rcx-registry-skills/src/uri.rs",
           "function": {
@@ -6387,22 +6641,22 @@
             "return_type": "-> bool",
             "span": {
               "start": {
-                "line": 115,
+                "line": 118,
                 "column": 5
               },
               "end": {
-                "line": 118,
+                "line": 121,
                 "column": 6
               }
             }
           },
           "span": {
             "start": {
-              "line": 117,
+              "line": 120,
               "column": 9
             },
             "end": {
-              "line": 117,
+              "line": 120,
               "column": 31
             }
           },
@@ -6411,12 +6665,12 @@
         }
       },
       "summary": "CaughtMutant",
-      "log_path": "log/crates__rcx-registry-skills__src__uri.rs_line_117_col_9_001.log",
-      "diff_path": "diff/crates__rcx-registry-skills__src__uri.rs_line_117_col_9_001.diff",
+      "log_path": "log/crates__rcx-registry-skills__src__uri.rs_line_120_col_9_001.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__uri.rs_line_120_col_9_001.diff",
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.551511982,
+          "duration": 0.651409775,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -6428,7 +6682,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.150690286,
+          "duration": 0.150988215,
           "process_status": {
             "Failure": 101
           },
@@ -6445,7 +6699,7 @@
     {
       "scenario": {
         "Mutant": {
-          "name": "crates/rcx-registry-skills/src/uri.rs:122:9: replace SkillUri::pinned_to -> Self with Default::default()",
+          "name": "crates/rcx-registry-skills/src/uri.rs:125:9: replace SkillUri::pinned_to -> Self with Default::default()",
           "package": "rcx-registry-skills",
           "file": "crates/rcx-registry-skills/src/uri.rs",
           "function": {
@@ -6453,22 +6707,22 @@
             "return_type": "-> Self",
             "span": {
               "start": {
-                "line": 120,
+                "line": 123,
                 "column": 5
               },
               "end": {
-                "line": 126,
+                "line": 129,
                 "column": 6
               }
             }
           },
           "span": {
             "start": {
-              "line": 122,
+              "line": 125,
               "column": 9
             },
             "end": {
-              "line": 125,
+              "line": 128,
               "column": 10
             }
           },
@@ -6477,12 +6731,12 @@
         }
       },
       "summary": "Unviable",
-      "log_path": "log/crates__rcx-registry-skills__src__uri.rs_line_122_col_9.log",
-      "diff_path": "diff/crates__rcx-registry-skills__src__uri.rs_line_122_col_9.diff",
+      "log_path": "log/crates__rcx-registry-skills__src__uri.rs_line_125_col_9.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__uri.rs_line_125_col_9.diff",
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.200672353,
+          "duration": 0.200918979,
           "process_status": {
             "Failure": 101
           },
@@ -6499,7 +6753,7 @@
     {
       "scenario": {
         "Mutant": {
-          "name": "crates/rcx-registry-skills/src/uri.rs:123:13: delete field version from struct Self expression in SkillUri::pinned_to",
+          "name": "crates/rcx-registry-skills/src/uri.rs:126:13: delete field version from struct Self expression in SkillUri::pinned_to",
           "package": "rcx-registry-skills",
           "file": "crates/rcx-registry-skills/src/uri.rs",
           "function": {
@@ -6507,22 +6761,22 @@
             "return_type": "-> Self",
             "span": {
               "start": {
-                "line": 120,
+                "line": 123,
                 "column": 5
               },
               "end": {
-                "line": 126,
+                "line": 129,
                 "column": 6
               }
             }
           },
           "span": {
             "start": {
-              "line": 123,
+              "line": 126,
               "column": 13
             },
             "end": {
-              "line": 123,
+              "line": 126,
               "column": 56
             }
           },
@@ -6531,12 +6785,12 @@
         }
       },
       "summary": "CaughtMutant",
-      "log_path": "log/crates__rcx-registry-skills__src__uri.rs_line_123_col_13.log",
-      "diff_path": "diff/crates__rcx-registry-skills__src__uri.rs_line_123_col_13.diff",
+      "log_path": "log/crates__rcx-registry-skills__src__uri.rs_line_126_col_13.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__uri.rs_line_126_col_13.diff",
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.551403011,
+          "duration": 0.60118481,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -6548,7 +6802,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.150857945,
+          "duration": 0.150619767,
           "process_status": {
             "Failure": 101
           },
@@ -6565,7 +6819,7 @@
     {
       "scenario": {
         "Mutant": {
-          "name": "crates/rcx-registry-skills/src/uri.rs:131:9: replace <impl fmt::Display for SkillUri>::fmt -> fmt::Result with Ok(Default::default())",
+          "name": "crates/rcx-registry-skills/src/uri.rs:134:9: replace <impl fmt::Display for SkillUri>::fmt -> fmt::Result with Ok(Default::default())",
           "package": "rcx-registry-skills",
           "file": "crates/rcx-registry-skills/src/uri.rs",
           "function": {
@@ -6573,22 +6827,22 @@
             "return_type": "-> fmt::Result",
             "span": {
               "start": {
-                "line": 130,
+                "line": 133,
                 "column": 5
               },
               "end": {
-                "line": 136,
+                "line": 139,
                 "column": 6
               }
             }
           },
           "span": {
             "start": {
-              "line": 131,
+              "line": 134,
               "column": 9
             },
             "end": {
-              "line": 135,
+              "line": 138,
               "column": 15
             }
           },
@@ -6597,12 +6851,12 @@
         }
       },
       "summary": "CaughtMutant",
-      "log_path": "log/crates__rcx-registry-skills__src__uri.rs_line_131_col_9.log",
-      "diff_path": "diff/crates__rcx-registry-skills__src__uri.rs_line_131_col_9.diff",
+      "log_path": "log/crates__rcx-registry-skills__src__uri.rs_line_134_col_9.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__uri.rs_line_134_col_9.diff",
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.601200359,
+          "duration": 0.701883107,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -6614,7 +6868,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.150752326,
+          "duration": 0.150860189,
           "process_status": {
             "Failure": 101
           },
@@ -6631,7 +6885,7 @@
     {
       "scenario": {
         "Mutant": {
-          "name": "crates/rcx-registry-skills/src/uri.rs:140:5: replace is_commit_id -> bool with true",
+          "name": "crates/rcx-registry-skills/src/uri.rs:143:5: replace is_commit_id -> bool with true",
           "package": "rcx-registry-skills",
           "file": "crates/rcx-registry-skills/src/uri.rs",
           "function": {
@@ -6639,22 +6893,22 @@
             "return_type": "-> bool",
             "span": {
               "start": {
-                "line": 139,
+                "line": 142,
                 "column": 1
               },
               "end": {
-                "line": 141,
+                "line": 144,
                 "column": 2
               }
             }
           },
           "span": {
             "start": {
-              "line": 140,
+              "line": 143,
               "column": 5
             },
             "end": {
-              "line": 140,
+              "line": 143,
               "column": 62
             }
           },
@@ -6663,12 +6917,12 @@
         }
       },
       "summary": "CaughtMutant",
-      "log_path": "log/crates__rcx-registry-skills__src__uri.rs_line_140_col_5.log",
-      "diff_path": "diff/crates__rcx-registry-skills__src__uri.rs_line_140_col_5.diff",
+      "log_path": "log/crates__rcx-registry-skills__src__uri.rs_line_143_col_5.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__uri.rs_line_143_col_5.diff",
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.601068199,
+          "duration": 0.701701818,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -6680,7 +6934,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.100679082,
+          "duration": 0.150880852,
           "process_status": {
             "Failure": 101
           },
@@ -6697,7 +6951,7 @@
     {
       "scenario": {
         "Mutant": {
-          "name": "crates/rcx-registry-skills/src/uri.rs:140:5: replace is_commit_id -> bool with false",
+          "name": "crates/rcx-registry-skills/src/uri.rs:143:5: replace is_commit_id -> bool with false",
           "package": "rcx-registry-skills",
           "file": "crates/rcx-registry-skills/src/uri.rs",
           "function": {
@@ -6705,22 +6959,22 @@
             "return_type": "-> bool",
             "span": {
               "start": {
-                "line": 139,
+                "line": 142,
                 "column": 1
               },
               "end": {
-                "line": 141,
+                "line": 144,
                 "column": 2
               }
             }
           },
           "span": {
             "start": {
-              "line": 140,
+              "line": 143,
               "column": 5
             },
             "end": {
-              "line": 140,
+              "line": 143,
               "column": 62
             }
           },
@@ -6729,12 +6983,12 @@
         }
       },
       "summary": "CaughtMutant",
-      "log_path": "log/crates__rcx-registry-skills__src__uri.rs_line_140_col_5_001.log",
-      "diff_path": "diff/crates__rcx-registry-skills__src__uri.rs_line_140_col_5_001.diff",
+      "log_path": "log/crates__rcx-registry-skills__src__uri.rs_line_143_col_5_001.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__uri.rs_line_143_col_5_001.diff",
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.551192012,
+          "duration": 0.600962962,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -6746,7 +7000,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.150844957,
+          "duration": 0.150914799,
           "process_status": {
             "Failure": 101
           },
@@ -6763,7 +7017,7 @@
     {
       "scenario": {
         "Mutant": {
-          "name": "crates/rcx-registry-skills/src/uri.rs:140:19: replace && with || in is_commit_id",
+          "name": "crates/rcx-registry-skills/src/uri.rs:143:19: replace && with || in is_commit_id",
           "package": "rcx-registry-skills",
           "file": "crates/rcx-registry-skills/src/uri.rs",
           "function": {
@@ -6771,22 +7025,22 @@
             "return_type": "-> bool",
             "span": {
               "start": {
-                "line": 139,
+                "line": 142,
                 "column": 1
               },
               "end": {
-                "line": 141,
+                "line": 144,
                 "column": 2
               }
             }
           },
           "span": {
             "start": {
-              "line": 140,
+              "line": 143,
               "column": 19
             },
             "end": {
-              "line": 140,
+              "line": 143,
               "column": 21
             }
           },
@@ -6795,12 +7049,12 @@
         }
       },
       "summary": "CaughtMutant",
-      "log_path": "log/crates__rcx-registry-skills__src__uri.rs_line_140_col_19.log",
-      "diff_path": "diff/crates__rcx-registry-skills__src__uri.rs_line_140_col_19.diff",
+      "log_path": "log/crates__rcx-registry-skills__src__uri.rs_line_143_col_19.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__uri.rs_line_143_col_19.diff",
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.551062102,
+          "duration": 0.651482929,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -6812,7 +7066,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.150983802,
+          "duration": 0.150866086,
           "process_status": {
             "Failure": 101
           },
@@ -6829,7 +7083,7 @@
     {
       "scenario": {
         "Mutant": {
-          "name": "crates/rcx-registry-skills/src/uri.rs:140:13: replace == with != in is_commit_id",
+          "name": "crates/rcx-registry-skills/src/uri.rs:143:13: replace == with != in is_commit_id",
           "package": "rcx-registry-skills",
           "file": "crates/rcx-registry-skills/src/uri.rs",
           "function": {
@@ -6837,22 +7091,22 @@
             "return_type": "-> bool",
             "span": {
               "start": {
-                "line": 139,
+                "line": 142,
                 "column": 1
               },
               "end": {
-                "line": 141,
+                "line": 144,
                 "column": 2
               }
             }
           },
           "span": {
             "start": {
-              "line": 140,
+              "line": 143,
               "column": 13
             },
             "end": {
-              "line": 140,
+              "line": 143,
               "column": 15
             }
           },
@@ -6861,12 +7115,12 @@
         }
       },
       "summary": "CaughtMutant",
-      "log_path": "log/crates__rcx-registry-skills__src__uri.rs_line_140_col_13.log",
-      "diff_path": "diff/crates__rcx-registry-skills__src__uri.rs_line_140_col_13.diff",
+      "log_path": "log/crates__rcx-registry-skills__src__uri.rs_line_143_col_13.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__uri.rs_line_143_col_13.diff",
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.601421834,
+          "duration": 0.651383953,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -6878,7 +7132,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.150665711,
+          "duration": 0.150801238,
           "process_status": {
             "Failure": 101
           },
@@ -6895,7 +7149,7 @@
     {
       "scenario": {
         "Mutant": {
-          "name": "crates/rcx-registry-skills/src/uri.rs:176:5: replace resolution_order -> Vec<&Registry> with vec![]",
+          "name": "crates/rcx-registry-skills/src/uri.rs:179:5: replace resolution_order -> Vec<&Registry> with vec![]",
           "package": "rcx-registry-skills",
           "file": "crates/rcx-registry-skills/src/uri.rs",
           "function": {
@@ -6903,22 +7157,22 @@
             "return_type": "-> Vec<&Registry>",
             "span": {
               "start": {
-                "line": 171,
+                "line": 174,
                 "column": 1
               },
               "end": {
-                "line": 179,
+                "line": 182,
                 "column": 2
               }
             }
           },
           "span": {
             "start": {
-              "line": 176,
+              "line": 179,
               "column": 5
             },
             "end": {
-              "line": 178,
+              "line": 181,
               "column": 12
             }
           },
@@ -6927,12 +7181,12 @@
         }
       },
       "summary": "CaughtMutant",
-      "log_path": "log/crates__rcx-registry-skills__src__uri.rs_line_176_col_5.log",
-      "diff_path": "diff/crates__rcx-registry-skills__src__uri.rs_line_176_col_5.diff",
+      "log_path": "log/crates__rcx-registry-skills__src__uri.rs_line_179_col_5.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__uri.rs_line_179_col_5.diff",
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.702453326,
+          "duration": 0.801573247,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -6944,7 +7198,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.150767582,
+          "duration": 0.150738418,
           "process_status": {
             "Failure": 101
           },
@@ -6961,7 +7215,7 @@
     {
       "scenario": {
         "Mutant": {
-          "name": "crates/rcx-registry-skills/src/uri.rs:176:5: replace resolution_order -> Vec<&Registry> with vec![Box::leak(Box::new(Default::default()))]",
+          "name": "crates/rcx-registry-skills/src/uri.rs:179:5: replace resolution_order -> Vec<&Registry> with vec![Box::leak(Box::new(Default::default()))]",
           "package": "rcx-registry-skills",
           "file": "crates/rcx-registry-skills/src/uri.rs",
           "function": {
@@ -6969,22 +7223,22 @@
             "return_type": "-> Vec<&Registry>",
             "span": {
               "start": {
-                "line": 171,
+                "line": 174,
                 "column": 1
               },
               "end": {
-                "line": 179,
+                "line": 182,
                 "column": 2
               }
             }
           },
           "span": {
             "start": {
-              "line": 176,
+              "line": 179,
               "column": 5
             },
             "end": {
-              "line": 178,
+              "line": 181,
               "column": 12
             }
           },
@@ -6993,12 +7247,12 @@
         }
       },
       "summary": "Unviable",
-      "log_path": "log/crates__rcx-registry-skills__src__uri.rs_line_176_col_5_001.log",
-      "diff_path": "diff/crates__rcx-registry-skills__src__uri.rs_line_176_col_5_001.diff",
+      "log_path": "log/crates__rcx-registry-skills__src__uri.rs_line_179_col_5_001.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__uri.rs_line_179_col_5_001.diff",
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.150706095,
+          "duration": 0.200755399,
           "process_status": {
             "Failure": 101
           },
@@ -7015,7 +7269,7 @@
     {
       "scenario": {
         "Mutant": {
-          "name": "crates/rcx-registry-skills/src/uri.rs:191:5: replace resolve -> Option<Resolved<'a>> with None",
+          "name": "crates/rcx-registry-skills/src/uri.rs:194:5: replace resolve -> Option<Resolved<'a>> with None",
           "package": "rcx-registry-skills",
           "file": "crates/rcx-registry-skills/src/uri.rs",
           "function": {
@@ -7023,22 +7277,22 @@
             "return_type": "-> Option<Resolved<'a>>",
             "span": {
               "start": {
-                "line": 181,
+                "line": 184,
                 "column": 1
               },
               "end": {
-                "line": 204,
+                "line": 207,
                 "column": 2
               }
             }
           },
           "span": {
             "start": {
-              "line": 191,
+              "line": 194,
               "column": 5
             },
             "end": {
-              "line": 203,
+              "line": 206,
               "column": 7
             }
           },
@@ -7047,12 +7301,12 @@
         }
       },
       "summary": "CaughtMutant",
-      "log_path": "log/crates__rcx-registry-skills__src__uri.rs_line_191_col_5.log",
-      "diff_path": "diff/crates__rcx-registry-skills__src__uri.rs_line_191_col_5.diff",
+      "log_path": "log/crates__rcx-registry-skills__src__uri.rs_line_194_col_5.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__uri.rs_line_194_col_5.diff",
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.701523453,
+          "duration": 0.801260394,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -7064,7 +7318,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.150662825,
+          "duration": 0.150774688,
           "process_status": {
             "Failure": 101
           },
@@ -7081,7 +7335,7 @@
     {
       "scenario": {
         "Mutant": {
-          "name": "crates/rcx-registry-skills/src/uri.rs:191:5: replace resolve -> Option<Resolved<'a>> with Some(Default::default())",
+          "name": "crates/rcx-registry-skills/src/uri.rs:194:5: replace resolve -> Option<Resolved<'a>> with Some(Default::default())",
           "package": "rcx-registry-skills",
           "file": "crates/rcx-registry-skills/src/uri.rs",
           "function": {
@@ -7089,22 +7343,22 @@
             "return_type": "-> Option<Resolved<'a>>",
             "span": {
               "start": {
-                "line": 181,
+                "line": 184,
                 "column": 1
               },
               "end": {
-                "line": 204,
+                "line": 207,
                 "column": 2
               }
             }
           },
           "span": {
             "start": {
-              "line": 191,
+              "line": 194,
               "column": 5
             },
             "end": {
-              "line": 203,
+              "line": 206,
               "column": 7
             }
           },
@@ -7113,12 +7367,12 @@
         }
       },
       "summary": "Unviable",
-      "log_path": "log/crates__rcx-registry-skills__src__uri.rs_line_191_col_5_001.log",
-      "diff_path": "diff/crates__rcx-registry-skills__src__uri.rs_line_191_col_5_001.diff",
+      "log_path": "log/crates__rcx-registry-skills__src__uri.rs_line_194_col_5_001.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__uri.rs_line_194_col_5_001.diff",
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.150730375,
+          "duration": 0.200792912,
           "process_status": {
             "Failure": 101
           },
@@ -7135,7 +7389,7 @@
     {
       "scenario": {
         "Mutant": {
-          "name": "crates/rcx-registry-skills/src/uri.rs:191:54: replace == with != in resolve",
+          "name": "crates/rcx-registry-skills/src/uri.rs:194:54: replace == with != in resolve",
           "package": "rcx-registry-skills",
           "file": "crates/rcx-registry-skills/src/uri.rs",
           "function": {
@@ -7143,22 +7397,22 @@
             "return_type": "-> Option<Resolved<'a>>",
             "span": {
               "start": {
-                "line": 181,
+                "line": 184,
                 "column": 1
               },
               "end": {
-                "line": 204,
+                "line": 207,
                 "column": 2
               }
             }
           },
           "span": {
             "start": {
-              "line": 191,
+              "line": 194,
               "column": 54
             },
             "end": {
-              "line": 191,
+              "line": 194,
               "column": 56
             }
           },
@@ -7167,12 +7421,12 @@
         }
       },
       "summary": "CaughtMutant",
-      "log_path": "log/crates__rcx-registry-skills__src__uri.rs_line_191_col_54.log",
-      "diff_path": "diff/crates__rcx-registry-skills__src__uri.rs_line_191_col_54.diff",
+      "log_path": "log/crates__rcx-registry-skills__src__uri.rs_line_194_col_54.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__uri.rs_line_194_col_54.diff",
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.601855704,
+          "duration": 0.701509783,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -7184,7 +7438,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.150705004,
+          "duration": 0.151000806,
           "process_status": {
             "Failure": 101
           },
@@ -7201,7 +7455,7 @@
     {
       "scenario": {
         "Mutant": {
-          "name": "crates/rcx-registry-skills/src/uri.rs:194:27: replace != with == in resolve",
+          "name": "crates/rcx-registry-skills/src/uri.rs:197:27: replace != with == in resolve",
           "package": "rcx-registry-skills",
           "file": "crates/rcx-registry-skills/src/uri.rs",
           "function": {
@@ -7209,22 +7463,22 @@
             "return_type": "-> Option<Resolved<'a>>",
             "span": {
               "start": {
-                "line": 181,
+                "line": 184,
                 "column": 1
               },
               "end": {
-                "line": 204,
+                "line": 207,
                 "column": 2
               }
             }
           },
           "span": {
             "start": {
-              "line": 194,
+              "line": 197,
               "column": 27
             },
             "end": {
-              "line": 194,
+              "line": 197,
               "column": 29
             }
           },
@@ -7233,12 +7487,12 @@
         }
       },
       "summary": "CaughtMutant",
-      "log_path": "log/crates__rcx-registry-skills__src__uri.rs_line_194_col_27.log",
-      "diff_path": "diff/crates__rcx-registry-skills__src__uri.rs_line_194_col_27.diff",
+      "log_path": "log/crates__rcx-registry-skills__src__uri.rs_line_197_col_27.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__uri.rs_line_197_col_27.diff",
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.551404055,
+          "duration": 0.651317591,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -7250,7 +7504,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.150683396,
+          "duration": 0.150758661,
           "process_status": {
             "Failure": 101
           },
@@ -7267,7 +7521,7 @@
     {
       "scenario": {
         "Mutant": {
-          "name": "crates/rcx-registry-skills/src/uri.rs:211:5: replace resolve_by_id -> Option<Resolved<'a>> with None",
+          "name": "crates/rcx-registry-skills/src/uri.rs:214:5: replace resolve_by_id -> Option<Resolved<'a>> with None",
           "package": "rcx-registry-skills",
           "file": "crates/rcx-registry-skills/src/uri.rs",
           "function": {
@@ -7275,22 +7529,22 @@
             "return_type": "-> Option<Resolved<'a>>",
             "span": {
               "start": {
-                "line": 206,
+                "line": 209,
                 "column": 1
               },
               "end": {
-                "line": 227,
+                "line": 230,
                 "column": 2
               }
             }
           },
           "span": {
             "start": {
-              "line": 211,
+              "line": 214,
               "column": 5
             },
             "end": {
-              "line": 226,
+              "line": 229,
               "column": 9
             }
           },
@@ -7299,12 +7553,12 @@
         }
       },
       "summary": "CaughtMutant",
-      "log_path": "log/crates__rcx-registry-skills__src__uri.rs_line_211_col_5.log",
-      "diff_path": "diff/crates__rcx-registry-skills__src__uri.rs_line_211_col_5.diff",
+      "log_path": "log/crates__rcx-registry-skills__src__uri.rs_line_214_col_5.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__uri.rs_line_214_col_5.diff",
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.701097893,
+          "duration": 0.801628654,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -7316,7 +7570,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.150780353,
+          "duration": 0.150719958,
           "process_status": {
             "Failure": 101
           },
@@ -7333,7 +7587,7 @@
     {
       "scenario": {
         "Mutant": {
-          "name": "crates/rcx-registry-skills/src/uri.rs:211:5: replace resolve_by_id -> Option<Resolved<'a>> with Some(Default::default())",
+          "name": "crates/rcx-registry-skills/src/uri.rs:214:5: replace resolve_by_id -> Option<Resolved<'a>> with Some(Default::default())",
           "package": "rcx-registry-skills",
           "file": "crates/rcx-registry-skills/src/uri.rs",
           "function": {
@@ -7341,22 +7595,22 @@
             "return_type": "-> Option<Resolved<'a>>",
             "span": {
               "start": {
-                "line": 206,
+                "line": 209,
                 "column": 1
               },
               "end": {
-                "line": 227,
+                "line": 230,
                 "column": 2
               }
             }
           },
           "span": {
             "start": {
-              "line": 211,
+              "line": 214,
               "column": 5
             },
             "end": {
-              "line": 226,
+              "line": 229,
               "column": 9
             }
           },
@@ -7365,12 +7619,12 @@
         }
       },
       "summary": "Unviable",
-      "log_path": "log/crates__rcx-registry-skills__src__uri.rs_line_211_col_5_001.log",
-      "diff_path": "diff/crates__rcx-registry-skills__src__uri.rs_line_211_col_5_001.diff",
+      "log_path": "log/crates__rcx-registry-skills__src__uri.rs_line_214_col_5_001.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__uri.rs_line_214_col_5_001.diff",
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.150735344,
+          "duration": 0.200931673,
           "process_status": {
             "Failure": 101
           },
@@ -7387,7 +7641,7 @@
     {
       "scenario": {
         "Mutant": {
-          "name": "crates/rcx-registry-skills/src/uri.rs:216:27: delete ! in resolve_by_id",
+          "name": "crates/rcx-registry-skills/src/uri.rs:219:27: delete ! in resolve_by_id",
           "package": "rcx-registry-skills",
           "file": "crates/rcx-registry-skills/src/uri.rs",
           "function": {
@@ -7395,22 +7649,22 @@
             "return_type": "-> Option<Resolved<'a>>",
             "span": {
               "start": {
-                "line": 206,
+                "line": 209,
                 "column": 1
               },
               "end": {
-                "line": 227,
+                "line": 230,
                 "column": 2
               }
             }
           },
           "span": {
             "start": {
-              "line": 216,
+              "line": 219,
               "column": 27
             },
             "end": {
-              "line": 216,
+              "line": 219,
               "column": 28
             }
           },
@@ -7419,12 +7673,12 @@
         }
       },
       "summary": "CaughtMutant",
-      "log_path": "log/crates__rcx-registry-skills__src__uri.rs_line_216_col_27.log",
-      "diff_path": "diff/crates__rcx-registry-skills__src__uri.rs_line_216_col_27.diff",
+      "log_path": "log/crates__rcx-registry-skills__src__uri.rs_line_219_col_27.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__uri.rs_line_219_col_27.diff",
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.701462118,
+          "duration": 0.751493063,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -7436,7 +7690,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.150799489,
+          "duration": 0.150640575,
           "process_status": {
             "Failure": 101
           },
@@ -7453,7 +7707,7 @@
     {
       "scenario": {
         "Mutant": {
-          "name": "crates/rcx-registry-skills/src/uri.rs:234:5: replace uris_for -> Vec<SkillUri> with vec![]",
+          "name": "crates/rcx-registry-skills/src/uri.rs:237:5: replace uris_for -> Vec<SkillUri> with vec![]",
           "package": "rcx-registry-skills",
           "file": "crates/rcx-registry-skills/src/uri.rs",
           "function": {
@@ -7461,22 +7715,22 @@
             "return_type": "-> Vec<SkillUri>",
             "span": {
               "start": {
-                "line": 229,
+                "line": 232,
                 "column": 1
               },
               "end": {
-                "line": 242,
+                "line": 245,
                 "column": 2
               }
             }
           },
           "span": {
             "start": {
-              "line": 234,
+              "line": 237,
               "column": 5
             },
             "end": {
-              "line": 241,
+              "line": 244,
               "column": 19
             }
           },
@@ -7485,12 +7739,12 @@
         }
       },
       "summary": "CaughtMutant",
-      "log_path": "log/crates__rcx-registry-skills__src__uri.rs_line_234_col_5.log",
-      "diff_path": "diff/crates__rcx-registry-skills__src__uri.rs_line_234_col_5.diff",
+      "log_path": "log/crates__rcx-registry-skills__src__uri.rs_line_237_col_5.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__uri.rs_line_237_col_5.diff",
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.65124705,
+          "duration": 0.751333495,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -7502,7 +7756,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.150796005,
+          "duration": 0.150747024,
           "process_status": {
             "Failure": 101
           },
@@ -7519,7 +7773,7 @@
     {
       "scenario": {
         "Mutant": {
-          "name": "crates/rcx-registry-skills/src/uri.rs:234:5: replace uris_for -> Vec<SkillUri> with vec![Default::default()]",
+          "name": "crates/rcx-registry-skills/src/uri.rs:237:5: replace uris_for -> Vec<SkillUri> with vec![Default::default()]",
           "package": "rcx-registry-skills",
           "file": "crates/rcx-registry-skills/src/uri.rs",
           "function": {
@@ -7527,22 +7781,22 @@
             "return_type": "-> Vec<SkillUri>",
             "span": {
               "start": {
-                "line": 229,
+                "line": 232,
                 "column": 1
               },
               "end": {
-                "line": 242,
+                "line": 245,
                 "column": 2
               }
             }
           },
           "span": {
             "start": {
-              "line": 234,
+              "line": 237,
               "column": 5
             },
             "end": {
-              "line": 241,
+              "line": 244,
               "column": 19
             }
           },
@@ -7551,12 +7805,12 @@
         }
       },
       "summary": "Unviable",
-      "log_path": "log/crates__rcx-registry-skills__src__uri.rs_line_234_col_5_001.log",
-      "diff_path": "diff/crates__rcx-registry-skills__src__uri.rs_line_234_col_5_001.diff",
+      "log_path": "log/crates__rcx-registry-skills__src__uri.rs_line_237_col_5_001.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__uri.rs_line_237_col_5_001.diff",
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.150751647,
+          "duration": 0.20079558,
           "process_status": {
             "Failure": 101
           },
@@ -7573,7 +7827,7 @@
     {
       "scenario": {
         "Mutant": {
-          "name": "crates/rcx-registry-skills/src/uri.rs:239:23: delete ! in uris_for",
+          "name": "crates/rcx-registry-skills/src/uri.rs:242:23: delete ! in uris_for",
           "package": "rcx-registry-skills",
           "file": "crates/rcx-registry-skills/src/uri.rs",
           "function": {
@@ -7581,22 +7835,22 @@
             "return_type": "-> Vec<SkillUri>",
             "span": {
               "start": {
-                "line": 229,
+                "line": 232,
                 "column": 1
               },
               "end": {
-                "line": 242,
+                "line": 245,
                 "column": 2
               }
             }
           },
           "span": {
             "start": {
-              "line": 239,
+              "line": 242,
               "column": 23
             },
             "end": {
-              "line": 239,
+              "line": 242,
               "column": 24
             }
           },
@@ -7605,12 +7859,12 @@
         }
       },
       "summary": "CaughtMutant",
-      "log_path": "log/crates__rcx-registry-skills__src__uri.rs_line_239_col_23.log",
-      "diff_path": "diff/crates__rcx-registry-skills__src__uri.rs_line_239_col_23.diff",
+      "log_path": "log/crates__rcx-registry-skills__src__uri.rs_line_242_col_23.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__uri.rs_line_242_col_23.diff",
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.751690443,
+          "duration": 0.705389873,
           "process_status": "Success",
           "argv": [
             "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
@@ -7622,7 +7876,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.100780831,
+          "duration": 0.150769087,
           "process_status": {
             "Failure": 101
           },
@@ -7637,13 +7891,13 @@
       ]
     }
   ],
-  "total_mutants": 118,
-  "missed": 14,
-  "caught": 91,
+  "total_mutants": 122,
+  "missed": 13,
+  "caught": 95,
   "timeout": 0,
-  "unviable": 13,
+  "unviable": 14,
   "success": 0,
-  "start_time": "2026-08-08T20:09:36.118165772Z",
-  "end_time": "2026-08-08T20:11:08.18740306Z",
+  "start_time": "2026-08-08T21:02:28.879167686Z",
+  "end_time": "2026-08-08T21:04:22.692004019Z",
   "cargo_mutants_version": "27.1.0"
 }

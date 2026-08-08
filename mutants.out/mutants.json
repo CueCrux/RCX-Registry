@@ -1088,6 +1088,198 @@
     }
   },
   {
+    "diff": "--- crates/rcx-registry-skills/src/index.rs\n+++ replace indexed_text -> String with String::new()\n@@ -50,23 +50,17 @@\n }\n \n /// The text a skill is retrievable by: name, description, and tags.\n ///\n /// Exactly the fields an agent sees before it decides to load a skill. Tags are\n /// included because they carry vocabulary a description often omits (\"bugs\",\n /// \"security\") without adding prose the agent will not see.\n pub fn indexed_text(doc: &SkillDocument) -> String {\n-    let fm = &doc.front_matter;\n-    let mut text = format!(\"{}\\n{}\", fm.name, fm.description);\n-    for tag in tags_of(doc) {\n-        text.push(' ');\n-        text.push_str(&tag);\n-    }\n-    text\n+    String::new() /* ~ changed by cargo-mutants ~ */\n }\n \n /// Tags from `metadata.tags`, which is where the Agent Skills corpora in the wild\n /// put them. Absent or malformed metadata yields none rather than an error — a\n /// skill without tags is still perfectly indexable.\n fn tags_of(doc: &SkillDocument) -> Vec<String> {\n     doc.front_matter\n         .extra\n",
+    "file": "crates/rcx-registry-skills/src/index.rs",
+    "function": {
+      "function_name": "indexed_text",
+      "return_type": "-> String",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 65
+        },
+        "start": {
+          "column": 1,
+          "line": 52
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "crates/rcx-registry-skills/src/index.rs:58:5: replace indexed_text -> String with String::new()",
+    "package": "rcx-registry-skills",
+    "replacement": "String::new()",
+    "span": {
+      "end": {
+        "column": 9,
+        "line": 64
+      },
+      "start": {
+        "column": 5,
+        "line": 58
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/index.rs\n+++ replace indexed_text -> String with \"xyzzy\".into()\n@@ -50,23 +50,17 @@\n }\n \n /// The text a skill is retrievable by: name, description, and tags.\n ///\n /// Exactly the fields an agent sees before it decides to load a skill. Tags are\n /// included because they carry vocabulary a description often omits (\"bugs\",\n /// \"security\") without adding prose the agent will not see.\n pub fn indexed_text(doc: &SkillDocument) -> String {\n-    let fm = &doc.front_matter;\n-    let mut text = format!(\"{}\\n{}\", fm.name, fm.description);\n-    for tag in tags_of(doc) {\n-        text.push(' ');\n-        text.push_str(&tag);\n-    }\n-    text\n+    \"xyzzy\".into() /* ~ changed by cargo-mutants ~ */\n }\n \n /// Tags from `metadata.tags`, which is where the Agent Skills corpora in the wild\n /// put them. Absent or malformed metadata yields none rather than an error — a\n /// skill without tags is still perfectly indexable.\n fn tags_of(doc: &SkillDocument) -> Vec<String> {\n     doc.front_matter\n         .extra\n",
+    "file": "crates/rcx-registry-skills/src/index.rs",
+    "function": {
+      "function_name": "indexed_text",
+      "return_type": "-> String",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 65
+        },
+        "start": {
+          "column": 1,
+          "line": 52
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "crates/rcx-registry-skills/src/index.rs:58:5: replace indexed_text -> String with \"xyzzy\".into()",
+    "package": "rcx-registry-skills",
+    "replacement": "\"xyzzy\".into()",
+    "span": {
+      "end": {
+        "column": 9,
+        "line": 64
+      },
+      "start": {
+        "column": 5,
+        "line": 58
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/index.rs\n+++ replace tags_of -> Vec<String> with vec![]\n@@ -63,27 +63,17 @@\n     }\n     text\n }\n \n /// Tags from `metadata.tags`, which is where the Agent Skills corpora in the wild\n /// put them. Absent or malformed metadata yields none rather than an error — a\n /// skill without tags is still perfectly indexable.\n fn tags_of(doc: &SkillDocument) -> Vec<String> {\n-    doc.front_matter\n-        .extra\n-        .get(\"metadata\")\n-        .and_then(|m| m.get(\"tags\"))\n-        .and_then(|t| t.as_sequence())\n-        .map(|seq| {\n-            seq.iter()\n-                .filter_map(|v| v.as_str().map(str::to_string))\n-                .collect()\n-        })\n-        .unwrap_or_default()\n+    vec![] /* ~ changed by cargo-mutants ~ */\n }\n \n /// Build an ingest payload for a set of `(skill_id, document, uri)` triples.\n ///\n /// One chunk per skill: the indexed surface is a couple of hundred characters, so\n /// splitting it would only dilute the term statistics that make BM25 work.\n pub fn ingest_body(\n     tenant_id: &str,\n",
+    "file": "crates/rcx-registry-skills/src/index.rs",
+    "function": {
+      "function_name": "tags_of",
+      "return_type": "-> Vec<String>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 82
+        },
+        "start": {
+          "column": 1,
+          "line": 67
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "crates/rcx-registry-skills/src/index.rs:71:5: replace tags_of -> Vec<String> with vec![]",
+    "package": "rcx-registry-skills",
+    "replacement": "vec![]",
+    "span": {
+      "end": {
+        "column": 29,
+        "line": 81
+      },
+      "start": {
+        "column": 5,
+        "line": 71
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/index.rs\n+++ replace tags_of -> Vec<String> with vec![String::new()]\n@@ -63,27 +63,17 @@\n     }\n     text\n }\n \n /// Tags from `metadata.tags`, which is where the Agent Skills corpora in the wild\n /// put them. Absent or malformed metadata yields none rather than an error — a\n /// skill without tags is still perfectly indexable.\n fn tags_of(doc: &SkillDocument) -> Vec<String> {\n-    doc.front_matter\n-        .extra\n-        .get(\"metadata\")\n-        .and_then(|m| m.get(\"tags\"))\n-        .and_then(|t| t.as_sequence())\n-        .map(|seq| {\n-            seq.iter()\n-                .filter_map(|v| v.as_str().map(str::to_string))\n-                .collect()\n-        })\n-        .unwrap_or_default()\n+    vec![String::new()] /* ~ changed by cargo-mutants ~ */\n }\n \n /// Build an ingest payload for a set of `(skill_id, document, uri)` triples.\n ///\n /// One chunk per skill: the indexed surface is a couple of hundred characters, so\n /// splitting it would only dilute the term statistics that make BM25 work.\n pub fn ingest_body(\n     tenant_id: &str,\n",
+    "file": "crates/rcx-registry-skills/src/index.rs",
+    "function": {
+      "function_name": "tags_of",
+      "return_type": "-> Vec<String>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 82
+        },
+        "start": {
+          "column": 1,
+          "line": 67
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "crates/rcx-registry-skills/src/index.rs:71:5: replace tags_of -> Vec<String> with vec![String::new()]",
+    "package": "rcx-registry-skills",
+    "replacement": "vec![String::new()]",
+    "span": {
+      "end": {
+        "column": 29,
+        "line": 81
+      },
+      "start": {
+        "column": 5,
+        "line": 71
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/index.rs\n+++ replace tags_of -> Vec<String> with vec![\"xyzzy\".into()]\n@@ -63,27 +63,17 @@\n     }\n     text\n }\n \n /// Tags from `metadata.tags`, which is where the Agent Skills corpora in the wild\n /// put them. Absent or malformed metadata yields none rather than an error — a\n /// skill without tags is still perfectly indexable.\n fn tags_of(doc: &SkillDocument) -> Vec<String> {\n-    doc.front_matter\n-        .extra\n-        .get(\"metadata\")\n-        .and_then(|m| m.get(\"tags\"))\n-        .and_then(|t| t.as_sequence())\n-        .map(|seq| {\n-            seq.iter()\n-                .filter_map(|v| v.as_str().map(str::to_string))\n-                .collect()\n-        })\n-        .unwrap_or_default()\n+    vec![\"xyzzy\".into()] /* ~ changed by cargo-mutants ~ */\n }\n \n /// Build an ingest payload for a set of `(skill_id, document, uri)` triples.\n ///\n /// One chunk per skill: the indexed surface is a couple of hundred characters, so\n /// splitting it would only dilute the term statistics that make BM25 work.\n pub fn ingest_body(\n     tenant_id: &str,\n",
+    "file": "crates/rcx-registry-skills/src/index.rs",
+    "function": {
+      "function_name": "tags_of",
+      "return_type": "-> Vec<String>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 82
+        },
+        "start": {
+          "column": 1,
+          "line": 67
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "crates/rcx-registry-skills/src/index.rs:71:5: replace tags_of -> Vec<String> with vec![\"xyzzy\".into()]",
+    "package": "rcx-registry-skills",
+    "replacement": "vec![\"xyzzy\".into()]",
+    "span": {
+      "end": {
+        "column": 29,
+        "line": 81
+      },
+      "start": {
+        "column": 5,
+        "line": 71
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/index.rs\n+++ replace ingest_body -> IngestBody with Default::default()\n@@ -85,40 +85,17 @@\n ///\n /// One chunk per skill: the indexed surface is a couple of hundred characters, so\n /// splitting it would only dilute the term statistics that make BM25 work.\n pub fn ingest_body(\n     tenant_id: &str,\n     corpus_id: &str,\n     skills: &[(String, SkillDocument, Option<String>)],\n ) -> IngestBody {\n-    let documents = skills\n-        .iter()\n-        .map(|(id, doc, uri)| IngestDocument {\n-            doc_id: id.clone(),\n-            title: Some(doc.front_matter.name.clone()),\n-            url: uri.clone(),\n-            chunks: vec![IngestChunk {\n-                chunk_id: format!(\"{id}#frontmatter\"),\n-                text: indexed_text(doc),\n-                chunk_index: 0,\n-                metadata: Some(serde_json::json!({\n-                    \"skill_id\": id,\n-                    \"license\": doc.front_matter.license,\n-                    \"tags\": tags_of(doc),\n-                })),\n-            }],\n-        })\n-        .collect();\n-\n-    IngestBody {\n-        tenant_id: tenant_id.to_string(),\n-        corpus_id: corpus_id.to_string(),\n-        documents,\n-    }\n+    Default::default() /* ~ changed by cargo-mutants ~ */\n }\n \n #[cfg(test)]\n mod tests {\n     use super::*;\n \n     // `premergesentinel` is a tag and appears in no other field, so an assertion on\n     // it proves tags reached the index. Asserting on a word the description already\n",
+    "file": "crates/rcx-registry-skills/src/index.rs",
+    "function": {
+      "function_name": "ingest_body",
+      "return_type": "-> IngestBody",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 117
+        },
+        "start": {
+          "column": 1,
+          "line": 84
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "crates/rcx-registry-skills/src/index.rs:93:5: replace ingest_body -> IngestBody with Default::default()",
+    "package": "rcx-registry-skills",
+    "replacement": "Default::default()",
+    "span": {
+      "end": {
+        "column": 6,
+        "line": 116
+      },
+      "start": {
+        "column": 5,
+        "line": 93
+      }
+    }
+  },
+  {
     "diff": "--- crates/rcx-registry-skills/src/lock.rs\n+++ replace SkillLock::from_json -> Result<Self, SkillsError> with Ok(Default::default())\n@@ -61,19 +61,17 @@\n     pub computed_hash: String,\n }\n \n impl SkillLock {\n     /// Parse and validate. Validation is not optional here — an entry whose hash is\n     /// malformed can never match a real digest, so accepting it would push a\n     /// guaranteed failure to fetch time and report it as a content mismatch.\n     pub fn from_json(raw: &str) -> Result<Self, SkillsError> {\n-        let lock: Self = serde_json::from_str(raw)?;\n-        lock.validate()?;\n-        Ok(lock)\n+        Ok(Default::default()) /* ~ changed by cargo-mutants ~ */\n     }\n \n     /// Serialise in the canonical on-disk form: 2-space indent, sorted keys,\n     /// trailing newline.\n     pub fn to_json(&self) -> Result<String, SkillsError> {\n         let mut out = serde_json::to_string_pretty(self)?;\n         out.push('\\n');\n         Ok(out)\n",
     "file": "crates/rcx-registry-skills/src/lock.rs",
     "function": {

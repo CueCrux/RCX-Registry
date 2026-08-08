@@ -1,0 +1,24 @@
+--- crates/rcx-registry-skills/src/uri.rs
++++ replace SkillUri::pinned_to -> Self with Default::default()
+@@ -117,20 +117,17 @@
+ 
+     /// True when this URI names an immutable object.
+     pub fn is_pinned(&self) -> bool {
+         self.version.is_some()
+     }
+ 
+     /// Pin an unpinned URI to a commit.
+     pub fn pinned_to(&self, commit: &str) -> Self {
+-        Self {
+-            version: Some(commit.to_ascii_lowercase()),
+-            ..self.clone()
+-        }
++        Default::default() /* ~ changed by cargo-mutants ~ */
+     }
+ }
+ 
+ impl fmt::Display for SkillUri {
+     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+         write!(f, "{SCHEME}{}/{}", self.registry, self.skill_id)?;
+         if let Some(version) = &self.version {
+             write!(f, "@{version}")?;

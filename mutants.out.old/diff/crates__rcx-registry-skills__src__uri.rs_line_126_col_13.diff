@@ -1,0 +1,21 @@
+--- crates/rcx-registry-skills/src/uri.rs
++++ delete field version from struct Self expression in SkillUri::pinned_to
+@@ -118,17 +118,17 @@
+     /// True when this URI names an immutable object.
+     pub fn is_pinned(&self) -> bool {
+         self.version.is_some()
+     }
+ 
+     /// Pin an unpinned URI to a commit.
+     pub fn pinned_to(&self, commit: &str) -> Self {
+         Self {
+-            version: Some(commit.to_ascii_lowercase()),
++             /* ~ changed by cargo-mutants ~ */
+             ..self.clone()
+         }
+     }
+ }
+ 
+ impl fmt::Display for SkillUri {
+     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+         write!(f, "{SCHEME}{}/{}", self.registry, self.skill_id)?;

@@ -20,6 +20,7 @@
 
 mod error;
 pub mod fetch;
+pub mod index;
 pub mod lock;
 pub mod sign;
 pub mod skill;
@@ -27,6 +28,7 @@ pub mod uri;
 
 pub use error::SkillsError;
 pub use fetch::{fetch_locked, FetchOutcome, Fetched, Mismatch};
+pub use index::{indexed_text, ingest_body, IngestBody, IngestChunk, IngestDocument};
 pub use lock::{LockEntry, SkillLock, LOCK_VERSION, MIN_SIGNABLE_LOCK_VERSION};
 pub use sign::{
     lock_merkle_root, prepare_receipt, sign_receipt, signing_preimage, verify_lock_receipt,
