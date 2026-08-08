@@ -1,0 +1,21 @@
+--- crates/rcx-registry-skills/src/sign.rs
++++ replace != with == in verify_lock_receipt
+@@ -163,17 +163,17 @@
+     if u64::from(lock.version) != receipt.lock_version {
+         return Err(SkillsError::NotSignable {
+             reason: format!(
+                 "receipt describes lock version {} but this lockfile is version {}",
+                 receipt.lock_version, lock.version
+             ),
+         });
+     }
+-    if lock.len() as u64 != receipt.skill_count {
++    if lock.len() as u64 == /* ~ changed by cargo-mutants ~ */ receipt.skill_count {
+         return Err(SkillsError::NotSignable {
+             reason: format!(
+                 "receipt describes {} skills but this lockfile has {}",
+                 receipt.skill_count,
+                 lock.len()
+             ),
+         });
+     }

@@ -1,0 +1,36 @@
+--- crates/rcx-registry-skills/src/skill.rs
++++ replace SkillDocument::parse -> Result<Self, SkillsError> with Ok(Default::default())
+@@ -42,32 +42,17 @@
+ 
+ impl SkillDocument {
+     /// Parse a `SKILL.md`.
+     ///
+     /// A leading UTF-8 BOM is stripped and CRLF is accepted — both turn up in
+     /// skills authored on Windows, and a BOM would otherwise push the opening fence
+     /// off byte zero and read as "no frontmatter".
+     pub fn parse(raw: &str) -> Result<Self, SkillsError> {
+-        let text = raw
+-            .strip_prefix('\u{feff}')
+-            .unwrap_or(raw)
+-            .replace("\r\n", "\n");
+-        let rest = text
+-            .strip_prefix(&format!("{FENCE}\n"))
+-            .ok_or(SkillsError::MalformedFrontMatter)?;
+-
+-        // The closing fence is a `---` alone on its line. Searching for "\n---\n"
+-        // would miss a file whose frontmatter ends at EOF with no trailing newline.
+-        let (yaml, body) = split_at_closing_fence(rest).ok_or(SkillsError::MalformedFrontMatter)?;
+-
+-        Ok(Self {
+-            front_matter: serde_yaml::from_str(yaml)?,
+-            body: body.trim_start_matches('\n').to_string(),
+-        })
++        Ok(Default::default()) /* ~ changed by cargo-mutants ~ */
+     }
+ 
+     /// Description as agents see it at discovery time.
+     ///
+     /// Claude Code truncates each description to 250 characters in its skill index
+     /// and caps the whole index at 1% of the context window, so a long description
+     /// does not merely get cut — it crowds out other skills' descriptions too.
+     pub fn discovery_description(&self, limit: usize) -> &str {

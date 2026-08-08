@@ -1,0 +1,45 @@
+--- crates/rcx-registry-skills/src/lock.rs
++++ replace SkillLock::signable -> Result<(), SkillsError> with Ok(())
+@@ -99,41 +99,17 @@
+ 
+     /// Check this lockfile may be signed, or say precisely why not.
+     ///
+     /// Separate from [`Self::validate`] on purpose: a v1 lockfile is a legitimate
+     /// thing to parse, fetch from, and relock. It is only signing that must refuse
+     /// it, because a signature over refless entries would look like a guarantee and
+     /// carry none.
+     pub fn signable(&self) -> Result<(), SkillsError> {
+-        if self.version < MIN_SIGNABLE_LOCK_VERSION {
+-            return Err(SkillsError::NotSignable {
+-                reason: format!(
+-                    "lockfile version {} is below the minimum signable version {MIN_SIGNABLE_LOCK_VERSION} (no `ref` field, so a digest mismatch cannot be attributed)",
+-                    self.version
+-                ),
+-            });
+-        }
+-        if self.skills.is_empty() {
+-            return Err(SkillsError::NotSignable {
+-                reason: "refusing to sign an empty lockfile — an empty Merkle root attests nothing"
+-                    .to_string(),
+-            });
+-        }
+-        for (name, entry) in &self.skills {
+-            if !is_git_sha_hex(&entry.git_ref) {
+-                return Err(SkillsError::NotSignable {
+-                    reason: format!(
+-                        "entry `{name}` has ref {:?}; a full 40-hex commit id is required",
+-                        entry.git_ref
+-                    ),
+-                });
+-            }
+-        }
+-        Ok(())
++        Ok(()) /* ~ changed by cargo-mutants ~ */
+     }
+ 
+     pub fn len(&self) -> usize {
+         self.skills.len()
+     }
+ 
+     pub fn is_empty(&self) -> bool {
+         self.skills.is_empty()

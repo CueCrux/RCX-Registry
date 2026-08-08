@@ -1,0 +1,21 @@
+--- crates/rcx-registry-skills/src/lock.rs
++++ replace != with == in SkillLock::validate
+@@ -82,17 +82,17 @@
+     pub fn validate(&self) -> Result<(), SkillsError> {
+         for (name, entry) in &self.skills {
+             if !is_sha256_hex(&entry.computed_hash) {
+                 return Err(SkillsError::BadHash {
+                     name: name.clone(),
+                     got: entry.computed_hash.clone(),
+                 });
+             }
+-            if entry.source_type != "github" {
++            if entry.source_type == /* ~ changed by cargo-mutants ~ */ "github" {
+                 return Err(SkillsError::UnsupportedSource {
+                     name: name.clone(),
+                     source_type: entry.source_type.clone(),
+                 });
+             }
+         }
+         Ok(())
+     }

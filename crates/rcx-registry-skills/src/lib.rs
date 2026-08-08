@@ -21,9 +21,14 @@
 mod error;
 pub mod fetch;
 pub mod lock;
+pub mod sign;
 pub mod skill;
 
 pub use error::SkillsError;
 pub use fetch::{fetch_locked, FetchOutcome, Fetched, Mismatch};
-pub use lock::{LockEntry, SkillLock};
+pub use lock::{LockEntry, SkillLock, LOCK_VERSION, MIN_SIGNABLE_LOCK_VERSION};
+pub use sign::{
+    lock_merkle_root, prepare_receipt, sign_receipt, signing_preimage, verify_lock_receipt,
+    ReceiptDraft,
+};
 pub use skill::{SkillDocument, SkillFrontMatter};

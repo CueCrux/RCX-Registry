@@ -1,0 +1,22 @@
+--- crates/rcx-registry-skills/src/fetch.rs
++++ replace fetch_one -> Result<Vec<u8>, SkillsError> with Ok(vec![])
+@@ -294,18 +294,17 @@
+     }
+     outcome
+ }
+ 
+ fn fetch_one(
+     entry: &LockEntry,
+     client: &reqwest::blocking::Client,
+ ) -> Result<Vec<u8>, SkillsError> {
+-    let response = client.get(raw_url(entry)).send()?.error_for_status()?;
+-    Ok(response.bytes()?.to_vec())
++    Ok(vec![]) /* ~ changed by cargo-mutants ~ */
+ }
+ 
+ #[cfg(test)]
+ mod tests {
+     use super::*;
+ 
+     // sha256("hello world")
+     const HELLO: &str = "b94d27b9934d3e08a52e52d7da7dabfac484efe37a5380ee9088f7ace2efcde9";

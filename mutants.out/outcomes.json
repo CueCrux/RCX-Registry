@@ -1,0 +1,5481 @@
+{
+  "outcomes": [
+    {
+      "scenario": "Baseline",
+      "summary": "Success",
+      "log_path": "log/baseline.log",
+      "diff_path": null,
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 6.663784371,
+          "process_status": "Success",
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.100857779,
+          "process_status": "Success",
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0",
+            "--all-targets"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/rcx-registry-skills/src/fetch.rs:45:9: replace Mismatch::name -> &str with \"\"",
+          "package": "rcx-registry-skills",
+          "file": "crates/rcx-registry-skills/src/fetch.rs",
+          "function": {
+            "function_name": "Mismatch::name",
+            "return_type": "-> &str",
+            "span": {
+              "start": {
+                "line": 44,
+                "column": 5
+              },
+              "end": {
+                "line": 48,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 45,
+              "column": 9
+            },
+            "end": {
+              "line": 47,
+              "column": 10
+            }
+          },
+          "replacement": "\"\"",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "MissedMutant",
+      "log_path": "log/crates__rcx-registry-skills__src__fetch.rs_line_45_col_9.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__fetch.rs_line_45_col_9.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.651547848,
+          "process_status": "Success",
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.100776093,
+          "process_status": "Success",
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0",
+            "--all-targets"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/rcx-registry-skills/src/fetch.rs:45:9: replace Mismatch::name -> &str with \"xyzzy\"",
+          "package": "rcx-registry-skills",
+          "file": "crates/rcx-registry-skills/src/fetch.rs",
+          "function": {
+            "function_name": "Mismatch::name",
+            "return_type": "-> &str",
+            "span": {
+              "start": {
+                "line": 44,
+                "column": 5
+              },
+              "end": {
+                "line": 48,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 45,
+              "column": 9
+            },
+            "end": {
+              "line": 47,
+              "column": 10
+            }
+          },
+          "replacement": "\"xyzzy\"",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "MissedMutant",
+      "log_path": "log/crates__rcx-registry-skills__src__fetch.rs_line_45_col_9_001.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__fetch.rs_line_45_col_9_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.55138919,
+          "process_status": "Success",
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.100807073,
+          "process_status": "Success",
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0",
+            "--all-targets"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/rcx-registry-skills/src/fetch.rs:78:9: replace FetchOutcome::verified -> impl Iterator<Item =(&String, &Fetched)> with ::std::iter::empty()",
+          "package": "rcx-registry-skills",
+          "file": "crates/rcx-registry-skills/src/fetch.rs",
+          "function": {
+            "function_name": "FetchOutcome::verified",
+            "return_type": "-> impl Iterator<Item =(&String, &Fetched)>",
+            "span": {
+              "start": {
+                "line": 76,
+                "column": 5
+              },
+              "end": {
+                "line": 79,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 78,
+              "column": 9
+            },
+            "end": {
+              "line": 78,
+              "column": 60
+            }
+          },
+          "replacement": "::std::iter::empty()",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/crates__rcx-registry-skills__src__fetch.rs_line_78_col_9.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__fetch.rs_line_78_col_9.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.601411151,
+          "process_status": "Success",
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.100718939,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0",
+            "--all-targets"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/rcx-registry-skills/src/fetch.rs:78:9: replace FetchOutcome::verified -> impl Iterator<Item =(&String, &Fetched)> with ::std::iter::once((Box::leak(Box::new(String::new())), Box::leak(Box::new(Default::default()))))",
+          "package": "rcx-registry-skills",
+          "file": "crates/rcx-registry-skills/src/fetch.rs",
+          "function": {
+            "function_name": "FetchOutcome::verified",
+            "return_type": "-> impl Iterator<Item =(&String, &Fetched)>",
+            "span": {
+              "start": {
+                "line": 76,
+                "column": 5
+              },
+              "end": {
+                "line": 79,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 78,
+              "column": 9
+            },
+            "end": {
+              "line": 78,
+              "column": 60
+            }
+          },
+          "replacement": "::std::iter::once((Box::leak(Box::new(String::new())), Box::leak(Box::new(Default::default()))))",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "Unviable",
+      "log_path": "log/crates__rcx-registry-skills__src__fetch.rs_line_78_col_9_001.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__fetch.rs_line_78_col_9_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.150680716,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/rcx-registry-skills/src/fetch.rs:78:9: replace FetchOutcome::verified -> impl Iterator<Item =(&String, &Fetched)> with ::std::iter::once((Box::leak(Box::new(\"xyzzy\".into())), Box::leak(Box::new(Default::default()))))",
+          "package": "rcx-registry-skills",
+          "file": "crates/rcx-registry-skills/src/fetch.rs",
+          "function": {
+            "function_name": "FetchOutcome::verified",
+            "return_type": "-> impl Iterator<Item =(&String, &Fetched)>",
+            "span": {
+              "start": {
+                "line": 76,
+                "column": 5
+              },
+              "end": {
+                "line": 79,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 78,
+              "column": 9
+            },
+            "end": {
+              "line": 78,
+              "column": 60
+            }
+          },
+          "replacement": "::std::iter::once((Box::leak(Box::new(\"xyzzy\".into())), Box::leak(Box::new(Default::default()))))",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "Unviable",
+      "log_path": "log/crates__rcx-registry-skills__src__fetch.rs_line_78_col_9_002.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__fetch.rs_line_78_col_9_002.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.150611899,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/rcx-registry-skills/src/fetch.rs:82:9: replace FetchOutcome::verified_count -> usize with 0",
+          "package": "rcx-registry-skills",
+          "file": "crates/rcx-registry-skills/src/fetch.rs",
+          "function": {
+            "function_name": "FetchOutcome::verified_count",
+            "return_type": "-> usize",
+            "span": {
+              "start": {
+                "line": 81,
+                "column": 5
+              },
+              "end": {
+                "line": 83,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 82,
+              "column": 9
+            },
+            "end": {
+              "line": 82,
+              "column": 32
+            }
+          },
+          "replacement": "0",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/crates__rcx-registry-skills__src__fetch.rs_line_82_col_9.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__fetch.rs_line_82_col_9.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.551273289,
+          "process_status": "Success",
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.100667607,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0",
+            "--all-targets"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/rcx-registry-skills/src/fetch.rs:82:9: replace FetchOutcome::verified_count -> usize with 1",
+          "package": "rcx-registry-skills",
+          "file": "crates/rcx-registry-skills/src/fetch.rs",
+          "function": {
+            "function_name": "FetchOutcome::verified_count",
+            "return_type": "-> usize",
+            "span": {
+              "start": {
+                "line": 81,
+                "column": 5
+              },
+              "end": {
+                "line": 83,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 82,
+              "column": 9
+            },
+            "end": {
+              "line": 82,
+              "column": 32
+            }
+          },
+          "replacement": "1",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/crates__rcx-registry-skills__src__fetch.rs_line_82_col_9_001.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__fetch.rs_line_82_col_9_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.551536335,
+          "process_status": "Success",
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.100931894,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0",
+            "--all-targets"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/rcx-registry-skills/src/fetch.rs:86:9: replace FetchOutcome::is_clean -> bool with true",
+          "package": "rcx-registry-skills",
+          "file": "crates/rcx-registry-skills/src/fetch.rs",
+          "function": {
+            "function_name": "FetchOutcome::is_clean",
+            "return_type": "-> bool",
+            "span": {
+              "start": {
+                "line": 85,
+                "column": 5
+              },
+              "end": {
+                "line": 87,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 86,
+              "column": 9
+            },
+            "end": {
+              "line": 86,
+              "column": 35
+            }
+          },
+          "replacement": "true",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/crates__rcx-registry-skills__src__fetch.rs_line_86_col_9.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__fetch.rs_line_86_col_9.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.651637193,
+          "process_status": "Success",
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.100791473,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0",
+            "--all-targets"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/rcx-registry-skills/src/fetch.rs:86:9: replace FetchOutcome::is_clean -> bool with false",
+          "package": "rcx-registry-skills",
+          "file": "crates/rcx-registry-skills/src/fetch.rs",
+          "function": {
+            "function_name": "FetchOutcome::is_clean",
+            "return_type": "-> bool",
+            "span": {
+              "start": {
+                "line": 85,
+                "column": 5
+              },
+              "end": {
+                "line": 87,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 86,
+              "column": 9
+            },
+            "end": {
+              "line": 86,
+              "column": 35
+            }
+          },
+          "replacement": "false",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/crates__rcx-registry-skills__src__fetch.rs_line_86_col_9_001.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__fetch.rs_line_86_col_9_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.551168725,
+          "process_status": "Success",
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.10082694,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0",
+            "--all-targets"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/rcx-registry-skills/src/fetch.rs:103:9: replace FetchOutcome::relock -> SkillLock with Default::default()",
+          "package": "rcx-registry-skills",
+          "file": "crates/rcx-registry-skills/src/fetch.rs",
+          "function": {
+            "function_name": "FetchOutcome::relock",
+            "return_type": "-> SkillLock",
+            "span": {
+              "start": {
+                "line": 89,
+                "column": 5
+              },
+              "end": {
+                "line": 126,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 103,
+              "column": 9
+            },
+            "end": {
+              "line": 125,
+              "column": 10
+            }
+          },
+          "replacement": "Default::default()",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "Unviable",
+      "log_path": "log/crates__rcx-registry-skills__src__fetch.rs_line_103_col_9.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__fetch.rs_line_103_col_9.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.200845026,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/rcx-registry-skills/src/fetch.rs:111:25: delete field computed_hash from struct LockEntry expression in FetchOutcome::relock",
+          "package": "rcx-registry-skills",
+          "file": "crates/rcx-registry-skills/src/fetch.rs",
+          "function": {
+            "function_name": "FetchOutcome::relock",
+            "return_type": "-> SkillLock",
+            "span": {
+              "start": {
+                "line": 89,
+                "column": 5
+              },
+              "end": {
+                "line": 126,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 111,
+              "column": 25
+            },
+            "end": {
+              "line": 111,
+              "column": 57
+            }
+          },
+          "replacement": "",
+          "genre": "StructField"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/crates__rcx-registry-skills__src__fetch.rs_line_111_col_25.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__fetch.rs_line_111_col_25.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.601529582,
+          "process_status": "Success",
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.100709122,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0",
+            "--all-targets"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/rcx-registry-skills/src/fetch.rs:112:25: delete field git_ref from struct LockEntry expression in FetchOutcome::relock",
+          "package": "rcx-registry-skills",
+          "file": "crates/rcx-registry-skills/src/fetch.rs",
+          "function": {
+            "function_name": "FetchOutcome::relock",
+            "return_type": "-> SkillLock",
+            "span": {
+              "start": {
+                "line": 89,
+                "column": 5
+              },
+              "end": {
+                "line": 126,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 112,
+              "column": 25
+            },
+            "end": {
+              "line": 112,
+              "column": 52
+            }
+          },
+          "replacement": "",
+          "genre": "StructField"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/crates__rcx-registry-skills__src__fetch.rs_line_112_col_25.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__fetch.rs_line_112_col_25.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.551426838,
+          "process_status": "Success",
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.100806087,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0",
+            "--all-targets"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/rcx-registry-skills/src/fetch.rs:135:5: replace raw_url -> String with String::new()",
+          "package": "rcx-registry-skills",
+          "file": "crates/rcx-registry-skills/src/fetch.rs",
+          "function": {
+            "function_name": "raw_url",
+            "return_type": "-> String",
+            "span": {
+              "start": {
+                "line": 129,
+                "column": 1
+              },
+              "end": {
+                "line": 144,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 135,
+              "column": 5
+            },
+            "end": {
+              "line": 143,
+              "column": 6
+            }
+          },
+          "replacement": "String::new()",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/crates__rcx-registry-skills__src__fetch.rs_line_135_col_5.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__fetch.rs_line_135_col_5.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.601549473,
+          "process_status": "Success",
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.10076284,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0",
+            "--all-targets"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/rcx-registry-skills/src/fetch.rs:135:5: replace raw_url -> String with \"xyzzy\".into()",
+          "package": "rcx-registry-skills",
+          "file": "crates/rcx-registry-skills/src/fetch.rs",
+          "function": {
+            "function_name": "raw_url",
+            "return_type": "-> String",
+            "span": {
+              "start": {
+                "line": 129,
+                "column": 1
+              },
+              "end": {
+                "line": 144,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 135,
+              "column": 5
+            },
+            "end": {
+              "line": 143,
+              "column": 6
+            }
+          },
+          "replacement": "\"xyzzy\".into()",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/crates__rcx-registry-skills__src__fetch.rs_line_135_col_5_001.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__fetch.rs_line_135_col_5_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.55133375,
+          "process_status": "Success",
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.100686145,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0",
+            "--all-targets"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/rcx-registry-skills/src/fetch.rs:160:5: replace pin_refs -> Result<(), SkillsError> with Ok(())",
+          "package": "rcx-registry-skills",
+          "file": "crates/rcx-registry-skills/src/fetch.rs",
+          "function": {
+            "function_name": "pin_refs",
+            "return_type": "-> Result<(), SkillsError>",
+            "span": {
+              "start": {
+                "line": 146,
+                "column": 1
+              },
+              "end": {
+                "line": 173,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 160,
+              "column": 5
+            },
+            "end": {
+              "line": 172,
+              "column": 11
+            }
+          },
+          "replacement": "Ok(())",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "MissedMutant",
+      "log_path": "log/crates__rcx-registry-skills__src__fetch.rs_line_160_col_5.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__fetch.rs_line_160_col_5.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.751632191,
+          "process_status": "Success",
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.100828834,
+          "process_status": "Success",
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0",
+            "--all-targets"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/rcx-registry-skills/src/fetch.rs:179:5: replace resolve_head_commit -> Result<String, SkillsError> with Ok(String::new())",
+          "package": "rcx-registry-skills",
+          "file": "crates/rcx-registry-skills/src/fetch.rs",
+          "function": {
+            "function_name": "resolve_head_commit",
+            "return_type": "-> Result<String, SkillsError>",
+            "span": {
+              "start": {
+                "line": 175,
+                "column": 1
+              },
+              "end": {
+                "line": 210,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 179,
+              "column": 5
+            },
+            "end": {
+              "line": 209,
+              "column": 7
+            }
+          },
+          "replacement": "Ok(String::new())",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "MissedMutant",
+      "log_path": "log/crates__rcx-registry-skills__src__fetch.rs_line_179_col_5.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__fetch.rs_line_179_col_5.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.751315295,
+          "process_status": "Success",
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.100789608,
+          "process_status": "Success",
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0",
+            "--all-targets"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/rcx-registry-skills/src/fetch.rs:179:5: replace resolve_head_commit -> Result<String, SkillsError> with Ok(\"xyzzy\".into())",
+          "package": "rcx-registry-skills",
+          "file": "crates/rcx-registry-skills/src/fetch.rs",
+          "function": {
+            "function_name": "resolve_head_commit",
+            "return_type": "-> Result<String, SkillsError>",
+            "span": {
+              "start": {
+                "line": 175,
+                "column": 1
+              },
+              "end": {
+                "line": 210,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 179,
+              "column": 5
+            },
+            "end": {
+              "line": 209,
+              "column": 7
+            }
+          },
+          "replacement": "Ok(\"xyzzy\".into())",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "MissedMutant",
+      "log_path": "log/crates__rcx-registry-skills__src__fetch.rs_line_179_col_5_001.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__fetch.rs_line_179_col_5_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.551512416,
+          "process_status": "Success",
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.100783185,
+          "process_status": "Success",
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0",
+            "--all-targets"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/rcx-registry-skills/src/fetch.rs:184:12: delete ! in resolve_head_commit",
+          "package": "rcx-registry-skills",
+          "file": "crates/rcx-registry-skills/src/fetch.rs",
+          "function": {
+            "function_name": "resolve_head_commit",
+            "return_type": "-> Result<String, SkillsError>",
+            "span": {
+              "start": {
+                "line": 175,
+                "column": 1
+              },
+              "end": {
+                "line": 210,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 184,
+              "column": 12
+            },
+            "end": {
+              "line": 184,
+              "column": 13
+            }
+          },
+          "replacement": "",
+          "genre": "UnaryOperator"
+        }
+      },
+      "summary": "MissedMutant",
+      "log_path": "log/crates__rcx-registry-skills__src__fetch.rs_line_184_col_12.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__fetch.rs_line_184_col_12.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.701859083,
+          "process_status": "Success",
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.100711768,
+          "process_status": "Success",
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0",
+            "--all-targets"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/rcx-registry-skills/src/fetch.rs:194:8: delete ! in resolve_head_commit",
+          "package": "rcx-registry-skills",
+          "file": "crates/rcx-registry-skills/src/fetch.rs",
+          "function": {
+            "function_name": "resolve_head_commit",
+            "return_type": "-> Result<String, SkillsError>",
+            "span": {
+              "start": {
+                "line": 175,
+                "column": 1
+              },
+              "end": {
+                "line": 210,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 194,
+              "column": 8
+            },
+            "end": {
+              "line": 194,
+              "column": 9
+            }
+          },
+          "replacement": "",
+          "genre": "UnaryOperator"
+        }
+      },
+      "summary": "MissedMutant",
+      "log_path": "log/crates__rcx-registry-skills__src__fetch.rs_line_194_col_8.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__fetch.rs_line_194_col_8.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.55129873,
+          "process_status": "Success",
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.100854087,
+          "process_status": "Success",
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0",
+            "--all-targets"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/rcx-registry-skills/src/fetch.rs:221:5: replace parse_commit_sha -> Option<String> with None",
+          "package": "rcx-registry-skills",
+          "file": "crates/rcx-registry-skills/src/fetch.rs",
+          "function": {
+            "function_name": "parse_commit_sha",
+            "return_type": "-> Option<String>",
+            "span": {
+              "start": {
+                "line": 212,
+                "column": 1
+              },
+              "end": {
+                "line": 226,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 221,
+              "column": 5
+            },
+            "end": {
+              "line": 225,
+              "column": 35
+            }
+          },
+          "replacement": "None",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/crates__rcx-registry-skills__src__fetch.rs_line_221_col_5.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__fetch.rs_line_221_col_5.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.551327344,
+          "process_status": "Success",
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.100706201,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0",
+            "--all-targets"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/rcx-registry-skills/src/fetch.rs:221:5: replace parse_commit_sha -> Option<String> with Some(String::new())",
+          "package": "rcx-registry-skills",
+          "file": "crates/rcx-registry-skills/src/fetch.rs",
+          "function": {
+            "function_name": "parse_commit_sha",
+            "return_type": "-> Option<String>",
+            "span": {
+              "start": {
+                "line": 212,
+                "column": 1
+              },
+              "end": {
+                "line": 226,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 221,
+              "column": 5
+            },
+            "end": {
+              "line": 225,
+              "column": 35
+            }
+          },
+          "replacement": "Some(String::new())",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/crates__rcx-registry-skills__src__fetch.rs_line_221_col_5_001.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__fetch.rs_line_221_col_5_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.551274411,
+          "process_status": "Success",
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.100749227,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0",
+            "--all-targets"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/rcx-registry-skills/src/fetch.rs:221:5: replace parse_commit_sha -> Option<String> with Some(\"xyzzy\".into())",
+          "package": "rcx-registry-skills",
+          "file": "crates/rcx-registry-skills/src/fetch.rs",
+          "function": {
+            "function_name": "parse_commit_sha",
+            "return_type": "-> Option<String>",
+            "span": {
+              "start": {
+                "line": 212,
+                "column": 1
+              },
+              "end": {
+                "line": 226,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 221,
+              "column": 5
+            },
+            "end": {
+              "line": 225,
+              "column": 35
+            }
+          },
+          "replacement": "Some(\"xyzzy\".into())",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/crates__rcx-registry-skills__src__fetch.rs_line_221_col_5_002.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__fetch.rs_line_221_col_5_002.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.501391451,
+          "process_status": "Success",
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.100792139,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0",
+            "--all-targets"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/rcx-registry-skills/src/fetch.rs:222:24: replace || with && in parse_commit_sha",
+          "package": "rcx-registry-skills",
+          "file": "crates/rcx-registry-skills/src/fetch.rs",
+          "function": {
+            "function_name": "parse_commit_sha",
+            "return_type": "-> Option<String>",
+            "span": {
+              "start": {
+                "line": 212,
+                "column": 1
+              },
+              "end": {
+                "line": 226,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 222,
+              "column": 24
+            },
+            "end": {
+              "line": 222,
+              "column": 26
+            }
+          },
+          "replacement": "&&",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/crates__rcx-registry-skills__src__fetch.rs_line_222_col_24.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__fetch.rs_line_222_col_24.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.551450651,
+          "process_status": "Success",
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.100812572,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0",
+            "--all-targets"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/rcx-registry-skills/src/fetch.rs:222:18: replace != with == in parse_commit_sha",
+          "package": "rcx-registry-skills",
+          "file": "crates/rcx-registry-skills/src/fetch.rs",
+          "function": {
+            "function_name": "parse_commit_sha",
+            "return_type": "-> Option<String>",
+            "span": {
+              "start": {
+                "line": 212,
+                "column": 1
+              },
+              "end": {
+                "line": 226,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 222,
+              "column": 18
+            },
+            "end": {
+              "line": 222,
+              "column": 20
+            }
+          },
+          "replacement": "==",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/crates__rcx-registry-skills__src__fetch.rs_line_222_col_18.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__fetch.rs_line_222_col_18.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.501297686,
+          "process_status": "Success",
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.100884633,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0",
+            "--all-targets"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/rcx-registry-skills/src/fetch.rs:222:27: delete ! in parse_commit_sha",
+          "package": "rcx-registry-skills",
+          "file": "crates/rcx-registry-skills/src/fetch.rs",
+          "function": {
+            "function_name": "parse_commit_sha",
+            "return_type": "-> Option<String>",
+            "span": {
+              "start": {
+                "line": 212,
+                "column": 1
+              },
+              "end": {
+                "line": 226,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 222,
+              "column": 27
+            },
+            "end": {
+              "line": 222,
+              "column": 28
+            }
+          },
+          "replacement": "",
+          "genre": "UnaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/crates__rcx-registry-skills__src__fetch.rs_line_222_col_27.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__fetch.rs_line_222_col_27.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.501179274,
+          "process_status": "Success",
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.100671595,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0",
+            "--all-targets"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/rcx-registry-skills/src/fetch.rs:234:5: replace verify_bytes -> Result<(), String> with Ok(())",
+          "package": "rcx-registry-skills",
+          "file": "crates/rcx-registry-skills/src/fetch.rs",
+          "function": {
+            "function_name": "verify_bytes",
+            "return_type": "-> Result<(), String>",
+            "span": {
+              "start": {
+                "line": 228,
+                "column": 1
+              },
+              "end": {
+                "line": 240,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 234,
+              "column": 5
+            },
+            "end": {
+              "line": 239,
+              "column": 6
+            }
+          },
+          "replacement": "Ok(())",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/crates__rcx-registry-skills__src__fetch.rs_line_234_col_5.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__fetch.rs_line_234_col_5.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.651349045,
+          "process_status": "Success",
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.100706658,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0",
+            "--all-targets"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/rcx-registry-skills/src/fetch.rs:235:15: replace == with != in verify_bytes",
+          "package": "rcx-registry-skills",
+          "file": "crates/rcx-registry-skills/src/fetch.rs",
+          "function": {
+            "function_name": "verify_bytes",
+            "return_type": "-> Result<(), String>",
+            "span": {
+              "start": {
+                "line": 228,
+                "column": 1
+              },
+              "end": {
+                "line": 240,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 235,
+              "column": 15
+            },
+            "end": {
+              "line": 235,
+              "column": 17
+            }
+          },
+          "replacement": "!=",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/crates__rcx-registry-skills__src__fetch.rs_line_235_col_15.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__fetch.rs_line_235_col_15.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.651457625,
+          "process_status": "Success",
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.100738371,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0",
+            "--all-targets"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/rcx-registry-skills/src/fetch.rs:243:5: replace hex_digest -> String with String::new()",
+          "package": "rcx-registry-skills",
+          "file": "crates/rcx-registry-skills/src/fetch.rs",
+          "function": {
+            "function_name": "hex_digest",
+            "return_type": "-> String",
+            "span": {
+              "start": {
+                "line": 242,
+                "column": 1
+              },
+              "end": {
+                "line": 250,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 243,
+              "column": 5
+            },
+            "end": {
+              "line": 249,
+              "column": 8
+            }
+          },
+          "replacement": "String::new()",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/crates__rcx-registry-skills__src__fetch.rs_line_243_col_5.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__fetch.rs_line_243_col_5.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.60146288,
+          "process_status": "Success",
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.100653931,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0",
+            "--all-targets"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/rcx-registry-skills/src/fetch.rs:243:5: replace hex_digest -> String with \"xyzzy\".into()",
+          "package": "rcx-registry-skills",
+          "file": "crates/rcx-registry-skills/src/fetch.rs",
+          "function": {
+            "function_name": "hex_digest",
+            "return_type": "-> String",
+            "span": {
+              "start": {
+                "line": 242,
+                "column": 1
+              },
+              "end": {
+                "line": 250,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 243,
+              "column": 5
+            },
+            "end": {
+              "line": 249,
+              "column": 8
+            }
+          },
+          "replacement": "\"xyzzy\".into()",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/crates__rcx-registry-skills__src__fetch.rs_line_243_col_5_001.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__fetch.rs_line_243_col_5_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.551387293,
+          "process_status": "Success",
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.100658525,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0",
+            "--all-targets"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/rcx-registry-skills/src/fetch.rs:258:5: replace fetch_locked -> FetchOutcome with Default::default()",
+          "package": "rcx-registry-skills",
+          "file": "crates/rcx-registry-skills/src/fetch.rs",
+          "function": {
+            "function_name": "fetch_locked",
+            "return_type": "-> FetchOutcome",
+            "span": {
+              "start": {
+                "line": 252,
+                "column": 1
+              },
+              "end": {
+                "line": 296,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 258,
+              "column": 5
+            },
+            "end": {
+              "line": 295,
+              "column": 12
+            }
+          },
+          "replacement": "Default::default()",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "MissedMutant",
+      "log_path": "log/crates__rcx-registry-skills__src__fetch.rs_line_258_col_5.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__fetch.rs_line_258_col_5.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.701616672,
+          "process_status": "Success",
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.100667015,
+          "process_status": "Success",
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0",
+            "--all-targets"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/rcx-registry-skills/src/fetch.rs:270:20: delete ! in fetch_locked",
+          "package": "rcx-registry-skills",
+          "file": "crates/rcx-registry-skills/src/fetch.rs",
+          "function": {
+            "function_name": "fetch_locked",
+            "return_type": "-> FetchOutcome",
+            "span": {
+              "start": {
+                "line": 252,
+                "column": 1
+              },
+              "end": {
+                "line": 296,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 270,
+              "column": 20
+            },
+            "end": {
+              "line": 270,
+              "column": 21
+            }
+          },
+          "replacement": "",
+          "genre": "UnaryOperator"
+        }
+      },
+      "summary": "MissedMutant",
+      "log_path": "log/crates__rcx-registry-skills__src__fetch.rs_line_270_col_20.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__fetch.rs_line_270_col_20.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.651741249,
+          "process_status": "Success",
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.100641179,
+          "process_status": "Success",
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0",
+            "--all-targets"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/rcx-registry-skills/src/fetch.rs:302:5: replace fetch_one -> Result<Vec<u8>, SkillsError> with Ok(vec![])",
+          "package": "rcx-registry-skills",
+          "file": "crates/rcx-registry-skills/src/fetch.rs",
+          "function": {
+            "function_name": "fetch_one",
+            "return_type": "-> Result<Vec<u8>, SkillsError>",
+            "span": {
+              "start": {
+                "line": 298,
+                "column": 1
+              },
+              "end": {
+                "line": 304,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 302,
+              "column": 5
+            },
+            "end": {
+              "line": 303,
+              "column": 35
+            }
+          },
+          "replacement": "Ok(vec![])",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "MissedMutant",
+      "log_path": "log/crates__rcx-registry-skills__src__fetch.rs_line_302_col_5.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__fetch.rs_line_302_col_5.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.5515577,
+          "process_status": "Success",
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.100674483,
+          "process_status": "Success",
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0",
+            "--all-targets"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/rcx-registry-skills/src/fetch.rs:302:5: replace fetch_one -> Result<Vec<u8>, SkillsError> with Ok(vec![0])",
+          "package": "rcx-registry-skills",
+          "file": "crates/rcx-registry-skills/src/fetch.rs",
+          "function": {
+            "function_name": "fetch_one",
+            "return_type": "-> Result<Vec<u8>, SkillsError>",
+            "span": {
+              "start": {
+                "line": 298,
+                "column": 1
+              },
+              "end": {
+                "line": 304,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 302,
+              "column": 5
+            },
+            "end": {
+              "line": 303,
+              "column": 35
+            }
+          },
+          "replacement": "Ok(vec![0])",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "MissedMutant",
+      "log_path": "log/crates__rcx-registry-skills__src__fetch.rs_line_302_col_5_001.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__fetch.rs_line_302_col_5_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.551381893,
+          "process_status": "Success",
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.100747896,
+          "process_status": "Success",
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0",
+            "--all-targets"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/rcx-registry-skills/src/fetch.rs:302:5: replace fetch_one -> Result<Vec<u8>, SkillsError> with Ok(vec![1])",
+          "package": "rcx-registry-skills",
+          "file": "crates/rcx-registry-skills/src/fetch.rs",
+          "function": {
+            "function_name": "fetch_one",
+            "return_type": "-> Result<Vec<u8>, SkillsError>",
+            "span": {
+              "start": {
+                "line": 298,
+                "column": 1
+              },
+              "end": {
+                "line": 304,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 302,
+              "column": 5
+            },
+            "end": {
+              "line": 303,
+              "column": 35
+            }
+          },
+          "replacement": "Ok(vec![1])",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "MissedMutant",
+      "log_path": "log/crates__rcx-registry-skills__src__fetch.rs_line_302_col_5_002.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__fetch.rs_line_302_col_5_002.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.551437493,
+          "process_status": "Success",
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.100835681,
+          "process_status": "Success",
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0",
+            "--all-targets"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/rcx-registry-skills/src/lock.rs:69:9: replace SkillLock::from_json -> Result<Self, SkillsError> with Ok(Default::default())",
+          "package": "rcx-registry-skills",
+          "file": "crates/rcx-registry-skills/src/lock.rs",
+          "function": {
+            "function_name": "SkillLock::from_json",
+            "return_type": "-> Result<Self, SkillsError>",
+            "span": {
+              "start": {
+                "line": 65,
+                "column": 5
+              },
+              "end": {
+                "line": 72,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 69,
+              "column": 9
+            },
+            "end": {
+              "line": 71,
+              "column": 17
+            }
+          },
+          "replacement": "Ok(Default::default())",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "Unviable",
+      "log_path": "log/crates__rcx-registry-skills__src__lock.rs_line_69_col_9.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__lock.rs_line_69_col_9.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.200885554,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/rcx-registry-skills/src/lock.rs:77:9: replace SkillLock::to_json -> Result<String, SkillsError> with Ok(String::new())",
+          "package": "rcx-registry-skills",
+          "file": "crates/rcx-registry-skills/src/lock.rs",
+          "function": {
+            "function_name": "SkillLock::to_json",
+            "return_type": "-> Result<String, SkillsError>",
+            "span": {
+              "start": {
+                "line": 74,
+                "column": 5
+              },
+              "end": {
+                "line": 80,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 77,
+              "column": 9
+            },
+            "end": {
+              "line": 79,
+              "column": 16
+            }
+          },
+          "replacement": "Ok(String::new())",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/crates__rcx-registry-skills__src__lock.rs_line_77_col_9.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__lock.rs_line_77_col_9.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.701578239,
+          "process_status": "Success",
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.101132429,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0",
+            "--all-targets"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/rcx-registry-skills/src/lock.rs:77:9: replace SkillLock::to_json -> Result<String, SkillsError> with Ok(\"xyzzy\".into())",
+          "package": "rcx-registry-skills",
+          "file": "crates/rcx-registry-skills/src/lock.rs",
+          "function": {
+            "function_name": "SkillLock::to_json",
+            "return_type": "-> Result<String, SkillsError>",
+            "span": {
+              "start": {
+                "line": 74,
+                "column": 5
+              },
+              "end": {
+                "line": 80,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 77,
+              "column": 9
+            },
+            "end": {
+              "line": 79,
+              "column": 16
+            }
+          },
+          "replacement": "Ok(\"xyzzy\".into())",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/crates__rcx-registry-skills__src__lock.rs_line_77_col_9_001.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__lock.rs_line_77_col_9_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.551645373,
+          "process_status": "Success",
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.100795592,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0",
+            "--all-targets"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/rcx-registry-skills/src/lock.rs:83:9: replace SkillLock::validate -> Result<(), SkillsError> with Ok(())",
+          "package": "rcx-registry-skills",
+          "file": "crates/rcx-registry-skills/src/lock.rs",
+          "function": {
+            "function_name": "SkillLock::validate",
+            "return_type": "-> Result<(), SkillsError>",
+            "span": {
+              "start": {
+                "line": 82,
+                "column": 5
+              },
+              "end": {
+                "line": 98,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 83,
+              "column": 9
+            },
+            "end": {
+              "line": 97,
+              "column": 15
+            }
+          },
+          "replacement": "Ok(())",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/crates__rcx-registry-skills__src__lock.rs_line_83_col_9.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__lock.rs_line_83_col_9.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.551632082,
+          "process_status": "Success",
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.100723005,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0",
+            "--all-targets"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/rcx-registry-skills/src/lock.rs:84:16: delete ! in SkillLock::validate",
+          "package": "rcx-registry-skills",
+          "file": "crates/rcx-registry-skills/src/lock.rs",
+          "function": {
+            "function_name": "SkillLock::validate",
+            "return_type": "-> Result<(), SkillsError>",
+            "span": {
+              "start": {
+                "line": 82,
+                "column": 5
+              },
+              "end": {
+                "line": 98,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 84,
+              "column": 16
+            },
+            "end": {
+              "line": 84,
+              "column": 17
+            }
+          },
+          "replacement": "",
+          "genre": "UnaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/crates__rcx-registry-skills__src__lock.rs_line_84_col_16.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__lock.rs_line_84_col_16.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.551279779,
+          "process_status": "Success",
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.100726818,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0",
+            "--all-targets"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/rcx-registry-skills/src/lock.rs:90:34: replace != with == in SkillLock::validate",
+          "package": "rcx-registry-skills",
+          "file": "crates/rcx-registry-skills/src/lock.rs",
+          "function": {
+            "function_name": "SkillLock::validate",
+            "return_type": "-> Result<(), SkillsError>",
+            "span": {
+              "start": {
+                "line": 82,
+                "column": 5
+              },
+              "end": {
+                "line": 98,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 90,
+              "column": 34
+            },
+            "end": {
+              "line": 90,
+              "column": 36
+            }
+          },
+          "replacement": "==",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/crates__rcx-registry-skills__src__lock.rs_line_90_col_34.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__lock.rs_line_90_col_34.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.501339597,
+          "process_status": "Success",
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.10079028,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0",
+            "--all-targets"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/rcx-registry-skills/src/lock.rs:107:9: replace SkillLock::signable -> Result<(), SkillsError> with Ok(())",
+          "package": "rcx-registry-skills",
+          "file": "crates/rcx-registry-skills/src/lock.rs",
+          "function": {
+            "function_name": "SkillLock::signable",
+            "return_type": "-> Result<(), SkillsError>",
+            "span": {
+              "start": {
+                "line": 100,
+                "column": 5
+              },
+              "end": {
+                "line": 132,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 107,
+              "column": 9
+            },
+            "end": {
+              "line": 131,
+              "column": 15
+            }
+          },
+          "replacement": "Ok(())",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/crates__rcx-registry-skills__src__lock.rs_line_107_col_9.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__lock.rs_line_107_col_9.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.55141174,
+          "process_status": "Success",
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.100962835,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0",
+            "--all-targets"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/rcx-registry-skills/src/lock.rs:107:25: replace < with == in SkillLock::signable",
+          "package": "rcx-registry-skills",
+          "file": "crates/rcx-registry-skills/src/lock.rs",
+          "function": {
+            "function_name": "SkillLock::signable",
+            "return_type": "-> Result<(), SkillsError>",
+            "span": {
+              "start": {
+                "line": 100,
+                "column": 5
+              },
+              "end": {
+                "line": 132,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 107,
+              "column": 25
+            },
+            "end": {
+              "line": 107,
+              "column": 26
+            }
+          },
+          "replacement": "==",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/crates__rcx-registry-skills__src__lock.rs_line_107_col_25.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__lock.rs_line_107_col_25.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.551386818,
+          "process_status": "Success",
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.100679269,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0",
+            "--all-targets"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/rcx-registry-skills/src/lock.rs:107:25: replace < with > in SkillLock::signable",
+          "package": "rcx-registry-skills",
+          "file": "crates/rcx-registry-skills/src/lock.rs",
+          "function": {
+            "function_name": "SkillLock::signable",
+            "return_type": "-> Result<(), SkillsError>",
+            "span": {
+              "start": {
+                "line": 100,
+                "column": 5
+              },
+              "end": {
+                "line": 132,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 107,
+              "column": 25
+            },
+            "end": {
+              "line": 107,
+              "column": 26
+            }
+          },
+          "replacement": ">",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/crates__rcx-registry-skills__src__lock.rs_line_107_col_25_001.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__lock.rs_line_107_col_25_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.501182027,
+          "process_status": "Success",
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.100738534,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0",
+            "--all-targets"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/rcx-registry-skills/src/lock.rs:107:25: replace < with <= in SkillLock::signable",
+          "package": "rcx-registry-skills",
+          "file": "crates/rcx-registry-skills/src/lock.rs",
+          "function": {
+            "function_name": "SkillLock::signable",
+            "return_type": "-> Result<(), SkillsError>",
+            "span": {
+              "start": {
+                "line": 100,
+                "column": 5
+              },
+              "end": {
+                "line": 132,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 107,
+              "column": 25
+            },
+            "end": {
+              "line": 107,
+              "column": 26
+            }
+          },
+          "replacement": "<=",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/crates__rcx-registry-skills__src__lock.rs_line_107_col_25_002.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__lock.rs_line_107_col_25_002.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.501269203,
+          "process_status": "Success",
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.100835334,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0",
+            "--all-targets"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/rcx-registry-skills/src/lock.rs:122:16: delete ! in SkillLock::signable",
+          "package": "rcx-registry-skills",
+          "file": "crates/rcx-registry-skills/src/lock.rs",
+          "function": {
+            "function_name": "SkillLock::signable",
+            "return_type": "-> Result<(), SkillsError>",
+            "span": {
+              "start": {
+                "line": 100,
+                "column": 5
+              },
+              "end": {
+                "line": 132,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 122,
+              "column": 16
+            },
+            "end": {
+              "line": 122,
+              "column": 17
+            }
+          },
+          "replacement": "",
+          "genre": "UnaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/crates__rcx-registry-skills__src__lock.rs_line_122_col_16.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__lock.rs_line_122_col_16.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.551452406,
+          "process_status": "Success",
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.100832876,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0",
+            "--all-targets"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/rcx-registry-skills/src/lock.rs:135:9: replace SkillLock::len -> usize with 0",
+          "package": "rcx-registry-skills",
+          "file": "crates/rcx-registry-skills/src/lock.rs",
+          "function": {
+            "function_name": "SkillLock::len",
+            "return_type": "-> usize",
+            "span": {
+              "start": {
+                "line": 134,
+                "column": 5
+              },
+              "end": {
+                "line": 136,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 135,
+              "column": 9
+            },
+            "end": {
+              "line": 135,
+              "column": 26
+            }
+          },
+          "replacement": "0",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/crates__rcx-registry-skills__src__lock.rs_line_135_col_9.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__lock.rs_line_135_col_9.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.601143627,
+          "process_status": "Success",
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.100653779,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0",
+            "--all-targets"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/rcx-registry-skills/src/lock.rs:135:9: replace SkillLock::len -> usize with 1",
+          "package": "rcx-registry-skills",
+          "file": "crates/rcx-registry-skills/src/lock.rs",
+          "function": {
+            "function_name": "SkillLock::len",
+            "return_type": "-> usize",
+            "span": {
+              "start": {
+                "line": 134,
+                "column": 5
+              },
+              "end": {
+                "line": 136,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 135,
+              "column": 9
+            },
+            "end": {
+              "line": 135,
+              "column": 26
+            }
+          },
+          "replacement": "1",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/crates__rcx-registry-skills__src__lock.rs_line_135_col_9_001.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__lock.rs_line_135_col_9_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.551761468,
+          "process_status": "Success",
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.100842856,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0",
+            "--all-targets"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/rcx-registry-skills/src/lock.rs:139:9: replace SkillLock::is_empty -> bool with true",
+          "package": "rcx-registry-skills",
+          "file": "crates/rcx-registry-skills/src/lock.rs",
+          "function": {
+            "function_name": "SkillLock::is_empty",
+            "return_type": "-> bool",
+            "span": {
+              "start": {
+                "line": 138,
+                "column": 5
+              },
+              "end": {
+                "line": 140,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 139,
+              "column": 9
+            },
+            "end": {
+              "line": 139,
+              "column": 31
+            }
+          },
+          "replacement": "true",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/crates__rcx-registry-skills__src__lock.rs_line_139_col_9.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__lock.rs_line_139_col_9.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.601939119,
+          "process_status": "Success",
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.101056224,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0",
+            "--all-targets"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/rcx-registry-skills/src/lock.rs:139:9: replace SkillLock::is_empty -> bool with false",
+          "package": "rcx-registry-skills",
+          "file": "crates/rcx-registry-skills/src/lock.rs",
+          "function": {
+            "function_name": "SkillLock::is_empty",
+            "return_type": "-> bool",
+            "span": {
+              "start": {
+                "line": 138,
+                "column": 5
+              },
+              "end": {
+                "line": 140,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 139,
+              "column": 9
+            },
+            "end": {
+              "line": 139,
+              "column": 31
+            }
+          },
+          "replacement": "false",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/crates__rcx-registry-skills__src__lock.rs_line_139_col_9_001.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__lock.rs_line_139_col_9_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.551717758,
+          "process_status": "Success",
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.100865125,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0",
+            "--all-targets"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/rcx-registry-skills/src/lock.rs:146:5: replace is_sha256_hex -> bool with true",
+          "package": "rcx-registry-skills",
+          "file": "crates/rcx-registry-skills/src/lock.rs",
+          "function": {
+            "function_name": "is_sha256_hex",
+            "return_type": "-> bool",
+            "span": {
+              "start": {
+                "line": 143,
+                "column": 1
+              },
+              "end": {
+                "line": 147,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 146,
+              "column": 5
+            },
+            "end": {
+              "line": 146,
+              "column": 24
+            }
+          },
+          "replacement": "true",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/crates__rcx-registry-skills__src__lock.rs_line_146_col_5.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__lock.rs_line_146_col_5.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.501607293,
+          "process_status": "Success",
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.100907397,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0",
+            "--all-targets"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/rcx-registry-skills/src/lock.rs:146:5: replace is_sha256_hex -> bool with false",
+          "package": "rcx-registry-skills",
+          "file": "crates/rcx-registry-skills/src/lock.rs",
+          "function": {
+            "function_name": "is_sha256_hex",
+            "return_type": "-> bool",
+            "span": {
+              "start": {
+                "line": 143,
+                "column": 1
+              },
+              "end": {
+                "line": 147,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 146,
+              "column": 5
+            },
+            "end": {
+              "line": 146,
+              "column": 24
+            }
+          },
+          "replacement": "false",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/crates__rcx-registry-skills__src__lock.rs_line_146_col_5_001.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__lock.rs_line_146_col_5_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.551793675,
+          "process_status": "Success",
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.100808968,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0",
+            "--all-targets"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/rcx-registry-skills/src/lock.rs:152:5: replace is_git_sha_hex -> bool with true",
+          "package": "rcx-registry-skills",
+          "file": "crates/rcx-registry-skills/src/lock.rs",
+          "function": {
+            "function_name": "is_git_sha_hex",
+            "return_type": "-> bool",
+            "span": {
+              "start": {
+                "line": 149,
+                "column": 1
+              },
+              "end": {
+                "line": 153,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 152,
+              "column": 5
+            },
+            "end": {
+              "line": 152,
+              "column": 24
+            }
+          },
+          "replacement": "true",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/crates__rcx-registry-skills__src__lock.rs_line_152_col_5.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__lock.rs_line_152_col_5.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.501172984,
+          "process_status": "Success",
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.100617067,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0",
+            "--all-targets"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/rcx-registry-skills/src/lock.rs:152:5: replace is_git_sha_hex -> bool with false",
+          "package": "rcx-registry-skills",
+          "file": "crates/rcx-registry-skills/src/lock.rs",
+          "function": {
+            "function_name": "is_git_sha_hex",
+            "return_type": "-> bool",
+            "span": {
+              "start": {
+                "line": 149,
+                "column": 1
+              },
+              "end": {
+                "line": 153,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 152,
+              "column": 5
+            },
+            "end": {
+              "line": 152,
+              "column": 24
+            }
+          },
+          "replacement": "false",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/crates__rcx-registry-skills__src__lock.rs_line_152_col_5_001.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__lock.rs_line_152_col_5_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.501372398,
+          "process_status": "Success",
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.100725936,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0",
+            "--all-targets"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/rcx-registry-skills/src/lock.rs:156:5: replace is_lower_hex -> bool with true",
+          "package": "rcx-registry-skills",
+          "file": "crates/rcx-registry-skills/src/lock.rs",
+          "function": {
+            "function_name": "is_lower_hex",
+            "return_type": "-> bool",
+            "span": {
+              "start": {
+                "line": 155,
+                "column": 1
+              },
+              "end": {
+                "line": 159,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 156,
+              "column": 5
+            },
+            "end": {
+              "line": 158,
+              "column": 71
+            }
+          },
+          "replacement": "true",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/crates__rcx-registry-skills__src__lock.rs_line_156_col_5.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__lock.rs_line_156_col_5.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.551461473,
+          "process_status": "Success",
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.100740299,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0",
+            "--all-targets"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/rcx-registry-skills/src/lock.rs:156:5: replace is_lower_hex -> bool with false",
+          "package": "rcx-registry-skills",
+          "file": "crates/rcx-registry-skills/src/lock.rs",
+          "function": {
+            "function_name": "is_lower_hex",
+            "return_type": "-> bool",
+            "span": {
+              "start": {
+                "line": 155,
+                "column": 1
+              },
+              "end": {
+                "line": 159,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 156,
+              "column": 5
+            },
+            "end": {
+              "line": 158,
+              "column": 71
+            }
+          },
+          "replacement": "false",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/crates__rcx-registry-skills__src__lock.rs_line_156_col_5_001.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__lock.rs_line_156_col_5_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.551519999,
+          "process_status": "Success",
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.100824909,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0",
+            "--all-targets"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/rcx-registry-skills/src/lock.rs:157:9: replace && with || in is_lower_hex",
+          "package": "rcx-registry-skills",
+          "file": "crates/rcx-registry-skills/src/lock.rs",
+          "function": {
+            "function_name": "is_lower_hex",
+            "return_type": "-> bool",
+            "span": {
+              "start": {
+                "line": 155,
+                "column": 1
+              },
+              "end": {
+                "line": 159,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 157,
+              "column": 9
+            },
+            "end": {
+              "line": 157,
+              "column": 11
+            }
+          },
+          "replacement": "||",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/crates__rcx-registry-skills__src__lock.rs_line_157_col_9.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__lock.rs_line_157_col_9.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.551609961,
+          "process_status": "Success",
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.100913944,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0",
+            "--all-targets"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/rcx-registry-skills/src/lock.rs:156:13: replace == with != in is_lower_hex",
+          "package": "rcx-registry-skills",
+          "file": "crates/rcx-registry-skills/src/lock.rs",
+          "function": {
+            "function_name": "is_lower_hex",
+            "return_type": "-> bool",
+            "span": {
+              "start": {
+                "line": 155,
+                "column": 1
+              },
+              "end": {
+                "line": 159,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 156,
+              "column": 13
+            },
+            "end": {
+              "line": 156,
+              "column": 15
+            }
+          },
+          "replacement": "!=",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/crates__rcx-registry-skills__src__lock.rs_line_156_col_13.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__lock.rs_line_156_col_13.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.55105744,
+          "process_status": "Success",
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.100746084,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0",
+            "--all-targets"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/rcx-registry-skills/src/lock.rs:158:41: replace || with && in is_lower_hex",
+          "package": "rcx-registry-skills",
+          "file": "crates/rcx-registry-skills/src/lock.rs",
+          "function": {
+            "function_name": "is_lower_hex",
+            "return_type": "-> bool",
+            "span": {
+              "start": {
+                "line": 155,
+                "column": 1
+              },
+              "end": {
+                "line": 159,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 158,
+              "column": 41
+            },
+            "end": {
+              "line": 158,
+              "column": 43
+            }
+          },
+          "replacement": "&&",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/crates__rcx-registry-skills__src__lock.rs_line_158_col_41.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__lock.rs_line_158_col_41.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.551318905,
+          "process_status": "Success",
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.101004737,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0",
+            "--all-targets"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/rcx-registry-skills/src/sign.rs:36:5: replace digest_entries -> Vec<SnapshotEntry> with vec![]",
+          "package": "rcx-registry-skills",
+          "file": "crates/rcx-registry-skills/src/sign.rs",
+          "function": {
+            "function_name": "digest_entries",
+            "return_type": "-> Vec<SnapshotEntry>",
+            "span": {
+              "start": {
+                "line": 29,
+                "column": 1
+              },
+              "end": {
+                "line": 53,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 36,
+              "column": 5
+            },
+            "end": {
+              "line": 52,
+              "column": 19
+            }
+          },
+          "replacement": "vec![]",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/crates__rcx-registry-skills__src__sign.rs_line_36_col_5.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__sign.rs_line_36_col_5.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.601389072,
+          "process_status": "Success",
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.100725974,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0",
+            "--all-targets"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/rcx-registry-skills/src/sign.rs:36:5: replace digest_entries -> Vec<SnapshotEntry> with vec![Default::default()]",
+          "package": "rcx-registry-skills",
+          "file": "crates/rcx-registry-skills/src/sign.rs",
+          "function": {
+            "function_name": "digest_entries",
+            "return_type": "-> Vec<SnapshotEntry>",
+            "span": {
+              "start": {
+                "line": 29,
+                "column": 1
+              },
+              "end": {
+                "line": 53,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 36,
+              "column": 5
+            },
+            "end": {
+              "line": 52,
+              "column": 19
+            }
+          },
+          "replacement": "vec![Default::default()]",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "Unviable",
+      "log_path": "log/crates__rcx-registry-skills__src__sign.rs_line_36_col_5_001.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__sign.rs_line_36_col_5_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.150923938,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/rcx-registry-skills/src/sign.rs:60:5: replace lock_merkle_root -> Result<[u8; HASH_LEN], SkillsError> with Ok([0; HASH_LEN])",
+          "package": "rcx-registry-skills",
+          "file": "crates/rcx-registry-skills/src/sign.rs",
+          "function": {
+            "function_name": "lock_merkle_root",
+            "return_type": "-> Result<[u8; HASH_LEN], SkillsError>",
+            "span": {
+              "start": {
+                "line": 55,
+                "column": 1
+              },
+              "end": {
+                "line": 62,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 60,
+              "column": 5
+            },
+            "end": {
+              "line": 61,
+              "column": 52
+            }
+          },
+          "replacement": "Ok([0; HASH_LEN])",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/crates__rcx-registry-skills__src__sign.rs_line_60_col_5.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__sign.rs_line_60_col_5.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.701736713,
+          "process_status": "Success",
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.100739999,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0",
+            "--all-targets"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/rcx-registry-skills/src/sign.rs:60:5: replace lock_merkle_root -> Result<[u8; HASH_LEN], SkillsError> with Ok([1; HASH_LEN])",
+          "package": "rcx-registry-skills",
+          "file": "crates/rcx-registry-skills/src/sign.rs",
+          "function": {
+            "function_name": "lock_merkle_root",
+            "return_type": "-> Result<[u8; HASH_LEN], SkillsError>",
+            "span": {
+              "start": {
+                "line": 55,
+                "column": 1
+              },
+              "end": {
+                "line": 62,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 60,
+              "column": 5
+            },
+            "end": {
+              "line": 61,
+              "column": 52
+            }
+          },
+          "replacement": "Ok([1; HASH_LEN])",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/crates__rcx-registry-skills__src__sign.rs_line_60_col_5_001.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__sign.rs_line_60_col_5_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.501209573,
+          "process_status": "Success",
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.100777466,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0",
+            "--all-targets"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/rcx-registry-skills/src/sign.rs:82:5: replace prepare_receipt -> Result<SkillSnapshotReceipt, SkillsError> with Ok(Default::default())",
+          "package": "rcx-registry-skills",
+          "file": "crates/rcx-registry-skills/src/sign.rs",
+          "function": {
+            "function_name": "prepare_receipt",
+            "return_type": "-> Result<SkillSnapshotReceipt, SkillsError>",
+            "span": {
+              "start": {
+                "line": 74,
+                "column": 1
+              },
+              "end": {
+                "line": 96,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 82,
+              "column": 5
+            },
+            "end": {
+              "line": 95,
+              "column": 16
+            }
+          },
+          "replacement": "Ok(Default::default())",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "Unviable",
+      "log_path": "log/crates__rcx-registry-skills__src__sign.rs_line_82_col_5.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__sign.rs_line_82_col_5.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.150669133,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/rcx-registry-skills/src/sign.rs:111:5: replace signing_preimage -> Vec<u8> with vec![]",
+          "package": "rcx-registry-skills",
+          "file": "crates/rcx-registry-skills/src/sign.rs",
+          "function": {
+            "function_name": "signing_preimage",
+            "return_type": "-> Vec<u8>",
+            "span": {
+              "start": {
+                "line": 98,
+                "column": 1
+              },
+              "end": {
+                "line": 114,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 111,
+              "column": 5
+            },
+            "end": {
+              "line": 113,
+              "column": 33
+            }
+          },
+          "replacement": "vec![]",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/crates__rcx-registry-skills__src__sign.rs_line_111_col_5.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__sign.rs_line_111_col_5.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.651314144,
+          "process_status": "Success",
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.10073468,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0",
+            "--all-targets"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/rcx-registry-skills/src/sign.rs:111:5: replace signing_preimage -> Vec<u8> with vec![0]",
+          "package": "rcx-registry-skills",
+          "file": "crates/rcx-registry-skills/src/sign.rs",
+          "function": {
+            "function_name": "signing_preimage",
+            "return_type": "-> Vec<u8>",
+            "span": {
+              "start": {
+                "line": 98,
+                "column": 1
+              },
+              "end": {
+                "line": 114,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 111,
+              "column": 5
+            },
+            "end": {
+              "line": 113,
+              "column": 33
+            }
+          },
+          "replacement": "vec![0]",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/crates__rcx-registry-skills__src__sign.rs_line_111_col_5_001.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__sign.rs_line_111_col_5_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.501236944,
+          "process_status": "Success",
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.100725943,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0",
+            "--all-targets"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/rcx-registry-skills/src/sign.rs:111:5: replace signing_preimage -> Vec<u8> with vec![1]",
+          "package": "rcx-registry-skills",
+          "file": "crates/rcx-registry-skills/src/sign.rs",
+          "function": {
+            "function_name": "signing_preimage",
+            "return_type": "-> Vec<u8>",
+            "span": {
+              "start": {
+                "line": 98,
+                "column": 1
+              },
+              "end": {
+                "line": 114,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 111,
+              "column": 5
+            },
+            "end": {
+              "line": 113,
+              "column": 33
+            }
+          },
+          "replacement": "vec![1]",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/crates__rcx-registry-skills__src__sign.rs_line_111_col_5_002.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__sign.rs_line_111_col_5_002.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.501701008,
+          "process_status": "Success",
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.100604815,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0",
+            "--all-targets"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/rcx-registry-skills/src/sign.rs:128:5: replace sign_receipt -> Result<(), E> with Ok(())",
+          "package": "rcx-registry-skills",
+          "file": "crates/rcx-registry-skills/src/sign.rs",
+          "function": {
+            "function_name": "sign_receipt",
+            "return_type": "-> Result<(), E>",
+            "span": {
+              "start": {
+                "line": 116,
+                "column": 1
+              },
+              "end": {
+                "line": 131,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 128,
+              "column": 5
+            },
+            "end": {
+              "line": 130,
+              "column": 11
+            }
+          },
+          "replacement": "Ok(())",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/crates__rcx-registry-skills__src__sign.rs_line_128_col_5.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__sign.rs_line_128_col_5.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.551191611,
+          "process_status": "Success",
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.100841742,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0",
+            "--all-targets"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/rcx-registry-skills/src/sign.rs:145:5: replace verify_lock_receipt -> Result<(), SkillsError> with Ok(())",
+          "package": "rcx-registry-skills",
+          "file": "crates/rcx-registry-skills/src/sign.rs",
+          "function": {
+            "function_name": "verify_lock_receipt",
+            "return_type": "-> Result<(), SkillsError>",
+            "span": {
+              "start": {
+                "line": 133,
+                "column": 1
+              },
+              "end": {
+                "line": 181,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 145,
+              "column": 5
+            },
+            "end": {
+              "line": 180,
+              "column": 11
+            }
+          },
+          "replacement": "Ok(())",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/crates__rcx-registry-skills__src__sign.rs_line_145_col_5.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__sign.rs_line_145_col_5.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.601083559,
+          "process_status": "Success",
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.10076773,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0",
+            "--all-targets"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/rcx-registry-skills/src/sign.rs:152:19: replace != with == in verify_lock_receipt",
+          "package": "rcx-registry-skills",
+          "file": "crates/rcx-registry-skills/src/sign.rs",
+          "function": {
+            "function_name": "verify_lock_receipt",
+            "return_type": "-> Result<(), SkillsError>",
+            "span": {
+              "start": {
+                "line": 133,
+                "column": 1
+              },
+              "end": {
+                "line": 181,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 152,
+              "column": 19
+            },
+            "end": {
+              "line": 152,
+              "column": 21
+            }
+          },
+          "replacement": "==",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/crates__rcx-registry-skills__src__sign.rs_line_152_col_19.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__sign.rs_line_152_col_19.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.65175803,
+          "process_status": "Success",
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.100901725,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0",
+            "--all-targets"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/rcx-registry-skills/src/sign.rs:163:32: replace != with == in verify_lock_receipt",
+          "package": "rcx-registry-skills",
+          "file": "crates/rcx-registry-skills/src/sign.rs",
+          "function": {
+            "function_name": "verify_lock_receipt",
+            "return_type": "-> Result<(), SkillsError>",
+            "span": {
+              "start": {
+                "line": 133,
+                "column": 1
+              },
+              "end": {
+                "line": 181,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 163,
+              "column": 32
+            },
+            "end": {
+              "line": 163,
+              "column": 34
+            }
+          },
+          "replacement": "==",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/crates__rcx-registry-skills__src__sign.rs_line_163_col_32.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__sign.rs_line_163_col_32.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.5514878,
+          "process_status": "Success",
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.100761451,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0",
+            "--all-targets"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/rcx-registry-skills/src/sign.rs:171:26: replace != with == in verify_lock_receipt",
+          "package": "rcx-registry-skills",
+          "file": "crates/rcx-registry-skills/src/sign.rs",
+          "function": {
+            "function_name": "verify_lock_receipt",
+            "return_type": "-> Result<(), SkillsError>",
+            "span": {
+              "start": {
+                "line": 133,
+                "column": 1
+              },
+              "end": {
+                "line": 181,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 171,
+              "column": 26
+            },
+            "end": {
+              "line": 171,
+              "column": 28
+            }
+          },
+          "replacement": "==",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/crates__rcx-registry-skills__src__sign.rs_line_171_col_26.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__sign.rs_line_171_col_26.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.501422019,
+          "process_status": "Success",
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.100704756,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0",
+            "--all-targets"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/rcx-registry-skills/src/skill.rs:50:9: replace SkillDocument::parse -> Result<Self, SkillsError> with Ok(Default::default())",
+          "package": "rcx-registry-skills",
+          "file": "crates/rcx-registry-skills/src/skill.rs",
+          "function": {
+            "function_name": "SkillDocument::parse",
+            "return_type": "-> Result<Self, SkillsError>",
+            "span": {
+              "start": {
+                "line": 44,
+                "column": 5
+              },
+              "end": {
+                "line": 66,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 50,
+              "column": 9
+            },
+            "end": {
+              "line": 65,
+              "column": 11
+            }
+          },
+          "replacement": "Ok(Default::default())",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "Unviable",
+      "log_path": "log/crates__rcx-registry-skills__src__skill.rs_line_50_col_9.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__skill.rs_line_50_col_9.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.200704934,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/rcx-registry-skills/src/skill.rs:74:9: replace SkillDocument::discovery_description -> &str with \"\"",
+          "package": "rcx-registry-skills",
+          "file": "crates/rcx-registry-skills/src/skill.rs",
+          "function": {
+            "function_name": "SkillDocument::discovery_description",
+            "return_type": "-> &str",
+            "span": {
+              "start": {
+                "line": 68,
+                "column": 5
+              },
+              "end": {
+                "line": 79,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 74,
+              "column": 9
+            },
+            "end": {
+              "line": 78,
+              "column": 10
+            }
+          },
+          "replacement": "\"\"",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/crates__rcx-registry-skills__src__skill.rs_line_74_col_9.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__skill.rs_line_74_col_9.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.551423519,
+          "process_status": "Success",
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.100705987,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0",
+            "--all-targets"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/rcx-registry-skills/src/skill.rs:74:9: replace SkillDocument::discovery_description -> &str with \"xyzzy\"",
+          "package": "rcx-registry-skills",
+          "file": "crates/rcx-registry-skills/src/skill.rs",
+          "function": {
+            "function_name": "SkillDocument::discovery_description",
+            "return_type": "-> &str",
+            "span": {
+              "start": {
+                "line": 68,
+                "column": 5
+              },
+              "end": {
+                "line": 79,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 74,
+              "column": 9
+            },
+            "end": {
+              "line": 78,
+              "column": 10
+            }
+          },
+          "replacement": "\"xyzzy\"",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/crates__rcx-registry-skills__src__skill.rs_line_74_col_9_001.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__skill.rs_line_74_col_9_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.501396042,
+          "process_status": "Success",
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.100752463,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0",
+            "--all-targets"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/rcx-registry-skills/src/skill.rs:84:5: replace split_at_closing_fence -> Option<(&str, &str)> with None",
+          "package": "rcx-registry-skills",
+          "file": "crates/rcx-registry-skills/src/skill.rs",
+          "function": {
+            "function_name": "split_at_closing_fence",
+            "return_type": "-> Option<(&str, &str)>",
+            "span": {
+              "start": {
+                "line": 82,
+                "column": 1
+              },
+              "end": {
+                "line": 92,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 84,
+              "column": 5
+            },
+            "end": {
+              "line": 91,
+              "column": 9
+            }
+          },
+          "replacement": "None",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/crates__rcx-registry-skills__src__skill.rs_line_84_col_5.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__skill.rs_line_84_col_5.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.601511841,
+          "process_status": "Success",
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.100735915,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0",
+            "--all-targets"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/rcx-registry-skills/src/skill.rs:84:5: replace split_at_closing_fence -> Option<(&str, &str)> with Some((\"\", \"\"))",
+          "package": "rcx-registry-skills",
+          "file": "crates/rcx-registry-skills/src/skill.rs",
+          "function": {
+            "function_name": "split_at_closing_fence",
+            "return_type": "-> Option<(&str, &str)>",
+            "span": {
+              "start": {
+                "line": 82,
+                "column": 1
+              },
+              "end": {
+                "line": 92,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 84,
+              "column": 5
+            },
+            "end": {
+              "line": 91,
+              "column": 9
+            }
+          },
+          "replacement": "Some((\"\", \"\"))",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/crates__rcx-registry-skills__src__skill.rs_line_84_col_5_001.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__skill.rs_line_84_col_5_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.501484991,
+          "process_status": "Success",
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.100696218,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0",
+            "--all-targets"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/rcx-registry-skills/src/skill.rs:84:5: replace split_at_closing_fence -> Option<(&str, &str)> with Some((\"\", \"xyzzy\"))",
+          "package": "rcx-registry-skills",
+          "file": "crates/rcx-registry-skills/src/skill.rs",
+          "function": {
+            "function_name": "split_at_closing_fence",
+            "return_type": "-> Option<(&str, &str)>",
+            "span": {
+              "start": {
+                "line": 82,
+                "column": 1
+              },
+              "end": {
+                "line": 92,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 84,
+              "column": 5
+            },
+            "end": {
+              "line": 91,
+              "column": 9
+            }
+          },
+          "replacement": "Some((\"\", \"xyzzy\"))",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/crates__rcx-registry-skills__src__skill.rs_line_84_col_5_002.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__skill.rs_line_84_col_5_002.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.501575869,
+          "process_status": "Success",
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.100684609,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0",
+            "--all-targets"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/rcx-registry-skills/src/skill.rs:84:5: replace split_at_closing_fence -> Option<(&str, &str)> with Some((\"xyzzy\", \"\"))",
+          "package": "rcx-registry-skills",
+          "file": "crates/rcx-registry-skills/src/skill.rs",
+          "function": {
+            "function_name": "split_at_closing_fence",
+            "return_type": "-> Option<(&str, &str)>",
+            "span": {
+              "start": {
+                "line": 82,
+                "column": 1
+              },
+              "end": {
+                "line": 92,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 84,
+              "column": 5
+            },
+            "end": {
+              "line": 91,
+              "column": 9
+            }
+          },
+          "replacement": "Some((\"xyzzy\", \"\"))",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/crates__rcx-registry-skills__src__skill.rs_line_84_col_5_003.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__skill.rs_line_84_col_5_003.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.555080017,
+          "process_status": "Success",
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.100746785,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0",
+            "--all-targets"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/rcx-registry-skills/src/skill.rs:84:5: replace split_at_closing_fence -> Option<(&str, &str)> with Some((\"xyzzy\", \"xyzzy\"))",
+          "package": "rcx-registry-skills",
+          "file": "crates/rcx-registry-skills/src/skill.rs",
+          "function": {
+            "function_name": "split_at_closing_fence",
+            "return_type": "-> Option<(&str, &str)>",
+            "span": {
+              "start": {
+                "line": 82,
+                "column": 1
+              },
+              "end": {
+                "line": 92,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 84,
+              "column": 5
+            },
+            "end": {
+              "line": 91,
+              "column": 9
+            }
+          },
+          "replacement": "Some((\"xyzzy\", \"xyzzy\"))",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/crates__rcx-registry-skills__src__skill.rs_line_84_col_5_004.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__skill.rs_line_84_col_5_004.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.501395789,
+          "process_status": "Success",
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.100764355,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0",
+            "--all-targets"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/rcx-registry-skills/src/skill.rs:86:40: replace == with != in split_at_closing_fence",
+          "package": "rcx-registry-skills",
+          "file": "crates/rcx-registry-skills/src/skill.rs",
+          "function": {
+            "function_name": "split_at_closing_fence",
+            "return_type": "-> Option<(&str, &str)>",
+            "span": {
+              "start": {
+                "line": 82,
+                "column": 1
+              },
+              "end": {
+                "line": 92,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 86,
+              "column": 40
+            },
+            "end": {
+              "line": 86,
+              "column": 42
+            }
+          },
+          "replacement": "!=",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/crates__rcx-registry-skills__src__skill.rs_line_86_col_40.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__skill.rs_line_86_col_40.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.601438133,
+          "process_status": "Success",
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.100828745,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0",
+            "--all-targets"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/rcx-registry-skills/src/skill.rs:87:56: replace + with - in split_at_closing_fence",
+          "package": "rcx-registry-skills",
+          "file": "crates/rcx-registry-skills/src/skill.rs",
+          "function": {
+            "function_name": "split_at_closing_fence",
+            "return_type": "-> Option<(&str, &str)>",
+            "span": {
+              "start": {
+                "line": 82,
+                "column": 1
+              },
+              "end": {
+                "line": 92,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 87,
+              "column": 56
+            },
+            "end": {
+              "line": 87,
+              "column": 57
+            }
+          },
+          "replacement": "-",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/crates__rcx-registry-skills__src__skill.rs_line_87_col_56.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__skill.rs_line_87_col_56.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.551246157,
+          "process_status": "Success",
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.100770339,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0",
+            "--all-targets"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/rcx-registry-skills/src/skill.rs:87:56: replace + with * in split_at_closing_fence",
+          "package": "rcx-registry-skills",
+          "file": "crates/rcx-registry-skills/src/skill.rs",
+          "function": {
+            "function_name": "split_at_closing_fence",
+            "return_type": "-> Option<(&str, &str)>",
+            "span": {
+              "start": {
+                "line": 82,
+                "column": 1
+              },
+              "end": {
+                "line": 92,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 87,
+              "column": 56
+            },
+            "end": {
+              "line": 87,
+              "column": 57
+            }
+          },
+          "replacement": "*",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/crates__rcx-registry-skills__src__skill.rs_line_87_col_56_001.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__skill.rs_line_87_col_56_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.551453319,
+          "process_status": "Success",
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.100761716,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0",
+            "--all-targets"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/rcx-registry-skills/src/skill.rs:89:16: replace += with -= in split_at_closing_fence",
+          "package": "rcx-registry-skills",
+          "file": "crates/rcx-registry-skills/src/skill.rs",
+          "function": {
+            "function_name": "split_at_closing_fence",
+            "return_type": "-> Option<(&str, &str)>",
+            "span": {
+              "start": {
+                "line": 82,
+                "column": 1
+              },
+              "end": {
+                "line": 92,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 89,
+              "column": 16
+            },
+            "end": {
+              "line": 89,
+              "column": 18
+            }
+          },
+          "replacement": "-=",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/crates__rcx-registry-skills__src__skill.rs_line_89_col_16.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__skill.rs_line_89_col_16.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.601587747,
+          "process_status": "Success",
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.100747529,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0",
+            "--all-targets"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/rcx-registry-skills/src/skill.rs:89:16: replace += with *= in split_at_closing_fence",
+          "package": "rcx-registry-skills",
+          "file": "crates/rcx-registry-skills/src/skill.rs",
+          "function": {
+            "function_name": "split_at_closing_fence",
+            "return_type": "-> Option<(&str, &str)>",
+            "span": {
+              "start": {
+                "line": 82,
+                "column": 1
+              },
+              "end": {
+                "line": 92,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 89,
+              "column": 16
+            },
+            "end": {
+              "line": 89,
+              "column": 18
+            }
+          },
+          "replacement": "*=",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/crates__rcx-registry-skills__src__skill.rs_line_89_col_16_001.log",
+      "diff_path": "diff/crates__rcx-registry-skills__src__skill.rs_line_89_col_16_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.501035651,
+          "process_status": "Success",
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.100677032,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/home/myles/.rustup/toolchains/1.93.0-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=rcx-registry-skills@0.1.0",
+            "--all-targets"
+          ]
+        }
+      ]
+    }
+  ],
+  "total_mutants": 84,
+  "missed": 12,
+  "caught": 65,
+  "timeout": 0,
+  "unviable": 7,
+  "success": 0,
+  "start_time": "2026-08-08T11:25:57.478966547Z",
+  "end_time": "2026-08-08T11:26:59.347960032Z",
+  "cargo_mutants_version": "27.1.0"
+}

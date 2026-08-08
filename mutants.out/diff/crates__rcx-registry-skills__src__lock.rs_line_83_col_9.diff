@@ -1,0 +1,35 @@
+--- crates/rcx-registry-skills/src/lock.rs
++++ replace SkillLock::validate -> Result<(), SkillsError> with Ok(())
+@@ -75,31 +75,17 @@
+     /// trailing newline.
+     pub fn to_json(&self) -> Result<String, SkillsError> {
+         let mut out = serde_json::to_string_pretty(self)?;
+         out.push('\n');
+         Ok(out)
+     }
+ 
+     pub fn validate(&self) -> Result<(), SkillsError> {
+-        for (name, entry) in &self.skills {
+-            if !is_sha256_hex(&entry.computed_hash) {
+-                return Err(SkillsError::BadHash {
+-                    name: name.clone(),
+-                    got: entry.computed_hash.clone(),
+-                });
+-            }
+-            if entry.source_type != "github" {
+-                return Err(SkillsError::UnsupportedSource {
+-                    name: name.clone(),
+-                    source_type: entry.source_type.clone(),
+-                });
+-            }
+-        }
+-        Ok(())
++        Ok(()) /* ~ changed by cargo-mutants ~ */
+     }
+ 
+     /// Check this lockfile may be signed, or say precisely why not.
+     ///
+     /// Separate from [`Self::validate`] on purpose: a v1 lockfile is a legitimate
+     /// thing to parse, fetch from, and relock. It is only signing that must refuse
+     /// it, because a signature over refless entries would look like a guarantee and
+     /// carry none.

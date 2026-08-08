@@ -1,0 +1,26 @@
+--- crates/rcx-registry-skills/src/fetch.rs
++++ replace verify_bytes -> Result<(), String> with Ok(())
+@@ -226,22 +226,17 @@
+ }
+ 
+ /// Check bytes against a pinned digest. Returns the digest actually computed on
+ /// failure so the caller can report both sides.
+ ///
+ /// Fails closed: any difference at all rejects, and the comparison is over the full
+ /// 32-byte digest rather than a prefix.
+ pub fn verify_bytes(bytes: &[u8], expected_hex: &str) -> Result<(), String> {
+-    let actual = hex_digest(bytes);
+-    if actual == expected_hex {
+-        Ok(())
+-    } else {
+-        Err(actual)
+-    }
++    Ok(()) /* ~ changed by cargo-mutants ~ */
+ }
+ 
+ fn hex_digest(bytes: &[u8]) -> String {
+     let digest = Sha256::digest(bytes);
+     let mut out = String::with_capacity(64);
+     for byte in digest {
+         use std::fmt::Write as _;
+         let _ = write!(out, "{byte:02x}");

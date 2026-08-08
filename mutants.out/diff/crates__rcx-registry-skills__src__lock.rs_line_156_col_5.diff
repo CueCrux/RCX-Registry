@@ -1,0 +1,23 @@
+--- crates/rcx-registry-skills/src/lock.rs
++++ replace is_lower_hex -> bool with true
+@@ -148,19 +148,17 @@
+ 
+ /// A full git object id: 40 lowercase hex characters. Abbreviated ids are rejected
+ /// — they are ambiguous by construction, and an ambiguous ref cannot pin content.
+ fn is_git_sha_hex(s: &str) -> bool {
+     is_lower_hex(s, 40)
+ }
+ 
+ fn is_lower_hex(s: &str, len: usize) -> bool {
+-    s.len() == len
+-        && s.bytes()
+-            .all(|b| b.is_ascii_digit() || (b'a'..=b'f').contains(&b))
++    true /* ~ changed by cargo-mutants ~ */
+ }
+ 
+ #[cfg(test)]
+ mod tests {
+     use super::*;
+ 
+     fn entry(hash: &str) -> LockEntry {
+         LockEntry {

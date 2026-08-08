@@ -1,0 +1,21 @@
+--- crates/rcx-registry-skills/src/lock.rs
++++ replace < with == in SkillLock::signable
+@@ -99,17 +99,17 @@
+ 
+     /// Check this lockfile may be signed, or say precisely why not.
+     ///
+     /// Separate from [`Self::validate`] on purpose: a v1 lockfile is a legitimate
+     /// thing to parse, fetch from, and relock. It is only signing that must refuse
+     /// it, because a signature over refless entries would look like a guarantee and
+     /// carry none.
+     pub fn signable(&self) -> Result<(), SkillsError> {
+-        if self.version < MIN_SIGNABLE_LOCK_VERSION {
++        if self.version == /* ~ changed by cargo-mutants ~ */ MIN_SIGNABLE_LOCK_VERSION {
+             return Err(SkillsError::NotSignable {
+                 reason: format!(
+                     "lockfile version {} is below the minimum signable version {MIN_SIGNABLE_LOCK_VERSION} (no `ref` field, so a digest mismatch cannot be attributed)",
+                     self.version
+                 ),
+             });
+         }
+         if self.skills.is_empty() {

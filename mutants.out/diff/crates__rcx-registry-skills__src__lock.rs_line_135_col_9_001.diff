@@ -1,0 +1,21 @@
+--- crates/rcx-registry-skills/src/lock.rs
++++ replace SkillLock::len -> usize with 1
+@@ -127,17 +127,17 @@
+                     ),
+                 });
+             }
+         }
+         Ok(())
+     }
+ 
+     pub fn len(&self) -> usize {
+-        self.skills.len()
++        1 /* ~ changed by cargo-mutants ~ */
+     }
+ 
+     pub fn is_empty(&self) -> bool {
+         self.skills.is_empty()
+     }
+ }
+ 
+ /// 64 lowercase hex characters. Uppercase is rejected rather than normalised — two

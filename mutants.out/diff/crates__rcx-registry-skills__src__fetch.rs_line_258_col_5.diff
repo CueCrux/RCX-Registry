@@ -1,0 +1,58 @@
+--- crates/rcx-registry-skills/src/fetch.rs
++++ replace fetch_locked -> FetchOutcome with Default::default()
+@@ -250,54 +250,17 @@
+ }
+ 
+ /// Fetch and verify every entry in `lock`.
+ ///
+ /// One entry failing never aborts the walk — the point of the gate is to *name*
+ /// every mismatch, not to stop at the first. Callers decide what an unclean
+ /// outcome means.
+ pub fn fetch_locked(lock: &SkillLock, client: &reqwest::blocking::Client) -> FetchOutcome {
+-    let mut outcome = FetchOutcome::default();
+-    for (name, entry) in &lock.skills {
+-        match fetch_one(entry, client) {
+-            Ok(bytes) => {
+-                // Route through `verify_bytes` rather than comparing inline: an
+-                // inline duplicate is a second implementation of the security
+-                // comparison, and it is the one no unit test covers. `cargo-mutants`
+-                // confirmed that — inverting the inline `==` survived the suite.
+-                let (digest, matched_lock) = match verify_bytes(&bytes, &entry.computed_hash) {
+-                    Ok(()) => (entry.computed_hash.clone(), true),
+-                    Err(actual) => (actual, false),
+-                };
+-                if !matched_lock {
+-                    outcome.mismatches.push(Mismatch::Digest {
+-                        name: name.clone(),
+-                        source: entry.source.clone(),
+-                        expected: entry.computed_hash.clone(),
+-                        actual: digest.clone(),
+-                    });
+-                }
+-                outcome.fetched.insert(
+-                    name.clone(),
+-                    Fetched {
+-                        bytes,
+-                        git_ref: entry.git_ref.clone(),
+-                        digest,
+-                        matched_lock,
+-                    },
+-                );
+-            }
+-            Err(err) => outcome.mismatches.push(Mismatch::Unreachable {
+-                name: name.clone(),
+-                source: entry.source.clone(),
+-                detail: err.to_string(),
+-            }),
+-        }
+-    }
+-    outcome
++    Default::default() /* ~ changed by cargo-mutants ~ */
+ }
+ 
+ fn fetch_one(
+     entry: &LockEntry,
+     client: &reqwest::blocking::Client,
+ ) -> Result<Vec<u8>, SkillsError> {
+     let response = client.get(raw_url(entry)).send()?.error_for_status()?;
+     Ok(response.bytes()?.to_vec())

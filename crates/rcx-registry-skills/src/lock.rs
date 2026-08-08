@@ -17,8 +17,17 @@ use serde::{Deserialize, Serialize};
 
 use crate::error::SkillsError;
 
-/// Lockfile schema version. Bumping it is a breaking ingest change.
-pub const LOCK_VERSION: u32 = 1;
+/// Lockfile schema version written by this crate.
+///
+/// v1 → v2 added `ref`. v1 files still parse (the field defaults to empty and is
+/// omitted on write, so a v1 file round-trips byte-identically), but they cannot be
+/// signed — see [`SkillLock::signable`].
+pub const LOCK_VERSION: u32 = 2;
+
+/// Below this, a lockfile pins content but not a commit, so a digest mismatch
+/// cannot distinguish an upstream edit from tampering. Signing one would attest a
+/// claim nobody can check.
+pub const MIN_SIGNABLE_LOCK_VERSION: u32 = 2;
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct SkillLock {
@@ -39,6 +48,14 @@ pub struct LockEntry {
     /// Path to the `SKILL.md` within the source.
     #[serde(rename = "skillPath")]
     pub skill_path: String,
+    /// Commit the content was read at — a full 40-hex git object id, never a branch
+    /// name. A branch is a moving target, so pinning one would leave the digest
+    /// checkable only until the next upstream push.
+    ///
+    /// Empty on v1 lockfiles, which is why they are not signable. Omitted from the
+    /// serialised form when empty, so a v1 file round-trips byte-identically.
+    #[serde(default, rename = "ref", skip_serializing_if = "String::is_empty")]
+    pub git_ref: String,
     /// sha256 of the `SKILL.md` bytes at lock time, lowercase hex.
     #[serde(rename = "computedHash")]
     pub computed_hash: String,
@@ -80,6 +97,40 @@ impl SkillLock {
         Ok(())
     }
 
+    /// Check this lockfile may be signed, or say precisely why not.
+    ///
+    /// Separate from [`Self::validate`] on purpose: a v1 lockfile is a legitimate
+    /// thing to parse, fetch from, and relock. It is only signing that must refuse
+    /// it, because a signature over refless entries would look like a guarantee and
+    /// carry none.
+    pub fn signable(&self) -> Result<(), SkillsError> {
+        if self.version < MIN_SIGNABLE_LOCK_VERSION {
+            return Err(SkillsError::NotSignable {
+                reason: format!(
+                    "lockfile version {} is below the minimum signable version {MIN_SIGNABLE_LOCK_VERSION} (no `ref` field, so a digest mismatch cannot be attributed)",
+                    self.version
+                ),
+            });
+        }
+        if self.skills.is_empty() {
+            return Err(SkillsError::NotSignable {
+                reason: "refusing to sign an empty lockfile — an empty Merkle root attests nothing"
+                    .to_string(),
+            });
+        }
+        for (name, entry) in &self.skills {
+            if !is_git_sha_hex(&entry.git_ref) {
+                return Err(SkillsError::NotSignable {
+                    reason: format!(
+                        "entry `{name}` has ref {:?}; a full 40-hex commit id is required",
+                        entry.git_ref
+                    ),
+                });
+            }
+        }
+        Ok(())
+    }
+
     pub fn len(&self) -> usize {
         self.skills.len()
     }
@@ -92,7 +143,17 @@ impl SkillLock {
 /// 64 lowercase hex characters. Uppercase is rejected rather than normalised — two
 /// spellings of one digest would give the signed snapshot two valid forms.
 fn is_sha256_hex(s: &str) -> bool {
-    s.len() == 64
+    is_lower_hex(s, 64)
+}
+
+/// A full git object id: 40 lowercase hex characters. Abbreviated ids are rejected
+/// — they are ambiguous by construction, and an ambiguous ref cannot pin content.
+fn is_git_sha_hex(s: &str) -> bool {
+    is_lower_hex(s, 40)
+}
+
+fn is_lower_hex(s: &str, len: usize) -> bool {
+    s.len() == len
         && s.bytes()
             .all(|b| b.is_ascii_digit() || (b'a'..=b'f').contains(&b))
 }
@@ -106,6 +167,7 @@ mod tests {
             source: "trailofbits/skills".into(),
             source_type: "github".into(),
             skill_path: "skills/x/SKILL.md".into(),
+            git_ref: String::new(),
             computed_hash: hash.into(),
         }
     }
@@ -159,6 +221,25 @@ mod tests {
                 "expected {bad:?} to be rejected"
             );
         }
+    }
+
+    #[test]
+    fn len_and_is_empty_agree() {
+        let empty = SkillLock {
+            version: LOCK_VERSION,
+            skills: BTreeMap::new(),
+        };
+        assert!(empty.is_empty());
+        assert_eq!(empty.len(), 0);
+
+        let mut skills = BTreeMap::new();
+        skills.insert("s".to_string(), entry(GOOD));
+        let one = SkillLock {
+            version: LOCK_VERSION,
+            skills,
+        };
+        assert!(!one.is_empty());
+        assert_eq!(one.len(), 1);
     }
 
     #[test]

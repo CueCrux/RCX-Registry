@@ -1,0 +1,21 @@
+--- crates/rcx-registry-skills/src/fetch.rs
++++ replace == with != in verify_bytes
+@@ -227,17 +227,17 @@
+ 
+ /// Check bytes against a pinned digest. Returns the digest actually computed on
+ /// failure so the caller can report both sides.
+ ///
+ /// Fails closed: any difference at all rejects, and the comparison is over the full
+ /// 32-byte digest rather than a prefix.
+ pub fn verify_bytes(bytes: &[u8], expected_hex: &str) -> Result<(), String> {
+     let actual = hex_digest(bytes);
+-    if actual == expected_hex {
++    if actual != /* ~ changed by cargo-mutants ~ */ expected_hex {
+         Ok(())
+     } else {
+         Err(actual)
+     }
+ }
+ 
+ fn hex_digest(bytes: &[u8]) -> String {
+     let digest = Sha256::digest(bytes);

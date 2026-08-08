@@ -1,0 +1,21 @@
+--- crates/rcx-registry-skills/src/lock.rs
++++ replace SkillLock::is_empty -> bool with true
+@@ -131,17 +131,17 @@
+         Ok(())
+     }
+ 
+     pub fn len(&self) -> usize {
+         self.skills.len()
+     }
+ 
+     pub fn is_empty(&self) -> bool {
+-        self.skills.is_empty()
++        true /* ~ changed by cargo-mutants ~ */
+     }
+ }
+ 
+ /// 64 lowercase hex characters. Uppercase is rejected rather than normalised — two
+ /// spellings of one digest would give the signed snapshot two valid forms.
+ fn is_sha256_hex(s: &str) -> bool {
+     is_lower_hex(s, 64)
+ }

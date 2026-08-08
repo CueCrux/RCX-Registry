@@ -1,0 +1,7 @@
+crates/rcx-registry-skills/src/fetch.rs:78:9: replace FetchOutcome::verified -> impl Iterator<Item =(&String, &Fetched)> with ::std::iter::once((Box::leak(Box::new(String::new())), Box::leak(Box::new(Default::default()))))
+crates/rcx-registry-skills/src/fetch.rs:78:9: replace FetchOutcome::verified -> impl Iterator<Item =(&String, &Fetched)> with ::std::iter::once((Box::leak(Box::new("xyzzy".into())), Box::leak(Box::new(Default::default()))))
+crates/rcx-registry-skills/src/fetch.rs:103:9: replace FetchOutcome::relock -> SkillLock with Default::default()
+crates/rcx-registry-skills/src/lock.rs:69:9: replace SkillLock::from_json -> Result<Self, SkillsError> with Ok(Default::default())
+crates/rcx-registry-skills/src/sign.rs:36:5: replace digest_entries -> Vec<SnapshotEntry> with vec![Default::default()]
+crates/rcx-registry-skills/src/sign.rs:82:5: replace prepare_receipt -> Result<SkillSnapshotReceipt, SkillsError> with Ok(Default::default())
+crates/rcx-registry-skills/src/skill.rs:50:9: replace SkillDocument::parse -> Result<Self, SkillsError> with Ok(Default::default())

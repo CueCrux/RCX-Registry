@@ -1,0 +1,21 @@
+--- crates/rcx-registry-skills/src/fetch.rs
++++ delete field git_ref from struct LockEntry expression in FetchOutcome::relock
+@@ -104,17 +104,17 @@
+             .fetched
+             .iter()
+             .filter_map(|(name, f)| {
+                 let prev = previous.skills.get(name)?;
+                 Some((
+                     name.clone(),
+                     LockEntry {
+                         computed_hash: f.digest.clone(),
+-                        git_ref: f.git_ref.clone(),
++                         /* ~ changed by cargo-mutants ~ */
+                         ..prev.clone()
+                     },
+                 ))
+             })
+             .collect();
+         // Relocking always writes the current schema: the output carries whatever
+         // refs the fetch used, so labelling it v1 would understate it. A relock of
+         // an unpinned v1 lockfile still produces refless entries, which `signable`

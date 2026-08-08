@@ -1,0 +1,21 @@
+--- crates/rcx-registry-skills/src/fetch.rs
++++ delete ! in resolve_head_commit
+@@ -186,17 +186,17 @@
+         }
+     }
+     let response = request.send().map_err(|error| SkillsError::RefResolution {
+         repo: source.to_string(),
+         detail: error.to_string(),
+     })?;
+     let status = response.status();
+     let body = response.text().unwrap_or_default();
+-    if !status.is_success() {
++    if  /* ~ changed by cargo-mutants ~ */status.is_success() {
+         return Err(SkillsError::RefResolution {
+             repo: source.to_string(),
+             detail: format!(
+                 "HTTP {status}: {}",
+                 body.chars().take(120).collect::<String>()
+             ),
+         });
+     }

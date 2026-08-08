@@ -1,0 +1,23 @@
+--- crates/rcx-registry-skills/src/lock.rs
++++ replace SkillLock::to_json -> Result<String, SkillsError> with Ok("xyzzy".into())
+@@ -69,19 +69,17 @@
+         let lock: Self = serde_json::from_str(raw)?;
+         lock.validate()?;
+         Ok(lock)
+     }
+ 
+     /// Serialise in the canonical on-disk form: 2-space indent, sorted keys,
+     /// trailing newline.
+     pub fn to_json(&self) -> Result<String, SkillsError> {
+-        let mut out = serde_json::to_string_pretty(self)?;
+-        out.push('\n');
+-        Ok(out)
++        Ok("xyzzy".into()) /* ~ changed by cargo-mutants ~ */
+     }
+ 
+     pub fn validate(&self) -> Result<(), SkillsError> {
+         for (name, entry) in &self.skills {
+             if !is_sha256_hex(&entry.computed_hash) {
+                 return Err(SkillsError::BadHash {
+                     name: name.clone(),
+                     got: entry.computed_hash.clone(),

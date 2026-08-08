@@ -1,0 +1,21 @@
+--- crates/rcx-registry-skills/src/fetch.rs
++++ replace FetchOutcome::is_clean -> bool with true
+@@ -78,17 +78,17 @@
+         self.fetched.iter().filter(|(_, f)| f.matched_lock)
+     }
+ 
+     pub fn verified_count(&self) -> usize {
+         self.verified().count()
+     }
+ 
+     pub fn is_clean(&self) -> bool {
+-        self.mismatches.is_empty()
++        true /* ~ changed by cargo-mutants ~ */
+     }
+ 
+     /// Rebuild a lockfile from what was actually fetched, pinning the digests
+     /// observed rather than the ones inherited.
+     ///
+     /// This exists because an inherited lockfile can be unverifiable — the upstream
+     /// `skills-lock.json` verified 0 of 390 on first run, its hashes produced by a
+     /// process absent from that repo. Signing such a file attests nothing. Relocking

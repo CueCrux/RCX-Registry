@@ -1,0 +1,2690 @@
+[
+  {
+    "diff": "--- crates/rcx-registry-skills/src/fetch.rs\n+++ replace Mismatch::name -> &str with \"\"\n@@ -37,19 +37,17 @@\n         name: String,\n         source: String,\n         detail: String,\n     },\n }\n \n impl Mismatch {\n     pub fn name(&self) -> &str {\n-        match self {\n-            Self::Digest { name, .. } | Self::Unreachable { name, .. } => name,\n-        }\n+        \"\" /* ~ changed by cargo-mutants ~ */\n     }\n }\n \n /// Bytes that arrived for one entry, and how they compared to the pinned digest.\n #[derive(Debug, Clone, PartialEq, Eq)]\n pub struct Fetched {\n     pub bytes: Vec<u8>,\n     /// Commit the bytes were read at; empty when fetched from an unpinned `HEAD`.\n",
+    "file": "crates/rcx-registry-skills/src/fetch.rs",
+    "function": {
+      "function_name": "Mismatch::name",
+      "return_type": "-> &str",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 48
+        },
+        "start": {
+          "column": 5,
+          "line": 44
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "crates/rcx-registry-skills/src/fetch.rs:45:9: replace Mismatch::name -> &str with \"\"",
+    "package": "rcx-registry-skills",
+    "replacement": "\"\"",
+    "span": {
+      "end": {
+        "column": 10,
+        "line": 47
+      },
+      "start": {
+        "column": 9,
+        "line": 45
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/fetch.rs\n+++ replace Mismatch::name -> &str with \"xyzzy\"\n@@ -37,19 +37,17 @@\n         name: String,\n         source: String,\n         detail: String,\n     },\n }\n \n impl Mismatch {\n     pub fn name(&self) -> &str {\n-        match self {\n-            Self::Digest { name, .. } | Self::Unreachable { name, .. } => name,\n-        }\n+        \"xyzzy\" /* ~ changed by cargo-mutants ~ */\n     }\n }\n \n /// Bytes that arrived for one entry, and how they compared to the pinned digest.\n #[derive(Debug, Clone, PartialEq, Eq)]\n pub struct Fetched {\n     pub bytes: Vec<u8>,\n     /// Commit the bytes were read at; empty when fetched from an unpinned `HEAD`.\n",
+    "file": "crates/rcx-registry-skills/src/fetch.rs",
+    "function": {
+      "function_name": "Mismatch::name",
+      "return_type": "-> &str",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 48
+        },
+        "start": {
+          "column": 5,
+          "line": 44
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "crates/rcx-registry-skills/src/fetch.rs:45:9: replace Mismatch::name -> &str with \"xyzzy\"",
+    "package": "rcx-registry-skills",
+    "replacement": "\"xyzzy\"",
+    "span": {
+      "end": {
+        "column": 10,
+        "line": 47
+      },
+      "start": {
+        "column": 9,
+        "line": 45
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/fetch.rs\n+++ replace FetchOutcome::verified -> impl Iterator<Item =(&String, &Fetched)> with ::std::iter::empty()\n@@ -70,17 +70,17 @@\n pub struct FetchOutcome {\n     pub fetched: BTreeMap<String, Fetched>,\n     pub mismatches: Vec<Mismatch>,\n }\n \n impl FetchOutcome {\n     /// Entries whose bytes matched their pinned digest — the only trusted content.\n     pub fn verified(&self) -> impl Iterator<Item = (&String, &Fetched)> {\n-        self.fetched.iter().filter(|(_, f)| f.matched_lock)\n+        ::std::iter::empty() /* ~ changed by cargo-mutants ~ */\n     }\n \n     pub fn verified_count(&self) -> usize {\n         self.verified().count()\n     }\n \n     pub fn is_clean(&self) -> bool {\n         self.mismatches.is_empty()\n",
+    "file": "crates/rcx-registry-skills/src/fetch.rs",
+    "function": {
+      "function_name": "FetchOutcome::verified",
+      "return_type": "-> impl Iterator<Item =(&String, &Fetched)>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 79
+        },
+        "start": {
+          "column": 5,
+          "line": 76
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "crates/rcx-registry-skills/src/fetch.rs:78:9: replace FetchOutcome::verified -> impl Iterator<Item =(&String, &Fetched)> with ::std::iter::empty()",
+    "package": "rcx-registry-skills",
+    "replacement": "::std::iter::empty()",
+    "span": {
+      "end": {
+        "column": 60,
+        "line": 78
+      },
+      "start": {
+        "column": 9,
+        "line": 78
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/fetch.rs\n+++ replace FetchOutcome::verified -> impl Iterator<Item =(&String, &Fetched)> with ::std::iter::once((Box::leak(Box::new(String::new())), Box::leak(Box::new(Default::default()))))\n@@ -70,17 +70,17 @@\n pub struct FetchOutcome {\n     pub fetched: BTreeMap<String, Fetched>,\n     pub mismatches: Vec<Mismatch>,\n }\n \n impl FetchOutcome {\n     /// Entries whose bytes matched their pinned digest — the only trusted content.\n     pub fn verified(&self) -> impl Iterator<Item = (&String, &Fetched)> {\n-        self.fetched.iter().filter(|(_, f)| f.matched_lock)\n+        ::std::iter::once((Box::leak(Box::new(String::new())), Box::leak(Box::new(Default::default())))) /* ~ changed by cargo-mutants ~ */\n     }\n \n     pub fn verified_count(&self) -> usize {\n         self.verified().count()\n     }\n \n     pub fn is_clean(&self) -> bool {\n         self.mismatches.is_empty()\n",
+    "file": "crates/rcx-registry-skills/src/fetch.rs",
+    "function": {
+      "function_name": "FetchOutcome::verified",
+      "return_type": "-> impl Iterator<Item =(&String, &Fetched)>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 79
+        },
+        "start": {
+          "column": 5,
+          "line": 76
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "crates/rcx-registry-skills/src/fetch.rs:78:9: replace FetchOutcome::verified -> impl Iterator<Item =(&String, &Fetched)> with ::std::iter::once((Box::leak(Box::new(String::new())), Box::leak(Box::new(Default::default()))))",
+    "package": "rcx-registry-skills",
+    "replacement": "::std::iter::once((Box::leak(Box::new(String::new())), Box::leak(Box::new(Default::default()))))",
+    "span": {
+      "end": {
+        "column": 60,
+        "line": 78
+      },
+      "start": {
+        "column": 9,
+        "line": 78
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/fetch.rs\n+++ replace FetchOutcome::verified -> impl Iterator<Item =(&String, &Fetched)> with ::std::iter::once((Box::leak(Box::new(\"xyzzy\".into())), Box::leak(Box::new(Default::default()))))\n@@ -70,17 +70,17 @@\n pub struct FetchOutcome {\n     pub fetched: BTreeMap<String, Fetched>,\n     pub mismatches: Vec<Mismatch>,\n }\n \n impl FetchOutcome {\n     /// Entries whose bytes matched their pinned digest — the only trusted content.\n     pub fn verified(&self) -> impl Iterator<Item = (&String, &Fetched)> {\n-        self.fetched.iter().filter(|(_, f)| f.matched_lock)\n+        ::std::iter::once((Box::leak(Box::new(\"xyzzy\".into())), Box::leak(Box::new(Default::default())))) /* ~ changed by cargo-mutants ~ */\n     }\n \n     pub fn verified_count(&self) -> usize {\n         self.verified().count()\n     }\n \n     pub fn is_clean(&self) -> bool {\n         self.mismatches.is_empty()\n",
+    "file": "crates/rcx-registry-skills/src/fetch.rs",
+    "function": {
+      "function_name": "FetchOutcome::verified",
+      "return_type": "-> impl Iterator<Item =(&String, &Fetched)>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 79
+        },
+        "start": {
+          "column": 5,
+          "line": 76
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "crates/rcx-registry-skills/src/fetch.rs:78:9: replace FetchOutcome::verified -> impl Iterator<Item =(&String, &Fetched)> with ::std::iter::once((Box::leak(Box::new(\"xyzzy\".into())), Box::leak(Box::new(Default::default()))))",
+    "package": "rcx-registry-skills",
+    "replacement": "::std::iter::once((Box::leak(Box::new(\"xyzzy\".into())), Box::leak(Box::new(Default::default()))))",
+    "span": {
+      "end": {
+        "column": 60,
+        "line": 78
+      },
+      "start": {
+        "column": 9,
+        "line": 78
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/fetch.rs\n+++ replace FetchOutcome::verified_count -> usize with 0\n@@ -74,17 +74,17 @@\n \n impl FetchOutcome {\n     /// Entries whose bytes matched their pinned digest — the only trusted content.\n     pub fn verified(&self) -> impl Iterator<Item = (&String, &Fetched)> {\n         self.fetched.iter().filter(|(_, f)| f.matched_lock)\n     }\n \n     pub fn verified_count(&self) -> usize {\n-        self.verified().count()\n+        0 /* ~ changed by cargo-mutants ~ */\n     }\n \n     pub fn is_clean(&self) -> bool {\n         self.mismatches.is_empty()\n     }\n \n     /// Rebuild a lockfile from what was actually fetched, pinning the digests\n     /// observed rather than the ones inherited.\n",
+    "file": "crates/rcx-registry-skills/src/fetch.rs",
+    "function": {
+      "function_name": "FetchOutcome::verified_count",
+      "return_type": "-> usize",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 83
+        },
+        "start": {
+          "column": 5,
+          "line": 81
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "crates/rcx-registry-skills/src/fetch.rs:82:9: replace FetchOutcome::verified_count -> usize with 0",
+    "package": "rcx-registry-skills",
+    "replacement": "0",
+    "span": {
+      "end": {
+        "column": 32,
+        "line": 82
+      },
+      "start": {
+        "column": 9,
+        "line": 82
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/fetch.rs\n+++ replace FetchOutcome::verified_count -> usize with 1\n@@ -74,17 +74,17 @@\n \n impl FetchOutcome {\n     /// Entries whose bytes matched their pinned digest — the only trusted content.\n     pub fn verified(&self) -> impl Iterator<Item = (&String, &Fetched)> {\n         self.fetched.iter().filter(|(_, f)| f.matched_lock)\n     }\n \n     pub fn verified_count(&self) -> usize {\n-        self.verified().count()\n+        1 /* ~ changed by cargo-mutants ~ */\n     }\n \n     pub fn is_clean(&self) -> bool {\n         self.mismatches.is_empty()\n     }\n \n     /// Rebuild a lockfile from what was actually fetched, pinning the digests\n     /// observed rather than the ones inherited.\n",
+    "file": "crates/rcx-registry-skills/src/fetch.rs",
+    "function": {
+      "function_name": "FetchOutcome::verified_count",
+      "return_type": "-> usize",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 83
+        },
+        "start": {
+          "column": 5,
+          "line": 81
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "crates/rcx-registry-skills/src/fetch.rs:82:9: replace FetchOutcome::verified_count -> usize with 1",
+    "package": "rcx-registry-skills",
+    "replacement": "1",
+    "span": {
+      "end": {
+        "column": 32,
+        "line": 82
+      },
+      "start": {
+        "column": 9,
+        "line": 82
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/fetch.rs\n+++ replace FetchOutcome::is_clean -> bool with true\n@@ -78,17 +78,17 @@\n         self.fetched.iter().filter(|(_, f)| f.matched_lock)\n     }\n \n     pub fn verified_count(&self) -> usize {\n         self.verified().count()\n     }\n \n     pub fn is_clean(&self) -> bool {\n-        self.mismatches.is_empty()\n+        true /* ~ changed by cargo-mutants ~ */\n     }\n \n     /// Rebuild a lockfile from what was actually fetched, pinning the digests\n     /// observed rather than the ones inherited.\n     ///\n     /// This exists because an inherited lockfile can be unverifiable — the upstream\n     /// `skills-lock.json` verified 0 of 390 on first run, its hashes produced by a\n     /// process absent from that repo. Signing such a file attests nothing. Relocking\n",
+    "file": "crates/rcx-registry-skills/src/fetch.rs",
+    "function": {
+      "function_name": "FetchOutcome::is_clean",
+      "return_type": "-> bool",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 87
+        },
+        "start": {
+          "column": 5,
+          "line": 85
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "crates/rcx-registry-skills/src/fetch.rs:86:9: replace FetchOutcome::is_clean -> bool with true",
+    "package": "rcx-registry-skills",
+    "replacement": "true",
+    "span": {
+      "end": {
+        "column": 35,
+        "line": 86
+      },
+      "start": {
+        "column": 9,
+        "line": 86
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/fetch.rs\n+++ replace FetchOutcome::is_clean -> bool with false\n@@ -78,17 +78,17 @@\n         self.fetched.iter().filter(|(_, f)| f.matched_lock)\n     }\n \n     pub fn verified_count(&self) -> usize {\n         self.verified().count()\n     }\n \n     pub fn is_clean(&self) -> bool {\n-        self.mismatches.is_empty()\n+        false /* ~ changed by cargo-mutants ~ */\n     }\n \n     /// Rebuild a lockfile from what was actually fetched, pinning the digests\n     /// observed rather than the ones inherited.\n     ///\n     /// This exists because an inherited lockfile can be unverifiable — the upstream\n     /// `skills-lock.json` verified 0 of 390 on first run, its hashes produced by a\n     /// process absent from that repo. Signing such a file attests nothing. Relocking\n",
+    "file": "crates/rcx-registry-skills/src/fetch.rs",
+    "function": {
+      "function_name": "FetchOutcome::is_clean",
+      "return_type": "-> bool",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 87
+        },
+        "start": {
+          "column": 5,
+          "line": 85
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "crates/rcx-registry-skills/src/fetch.rs:86:9: replace FetchOutcome::is_clean -> bool with false",
+    "package": "rcx-registry-skills",
+    "replacement": "false",
+    "span": {
+      "end": {
+        "column": 35,
+        "line": 86
+      },
+      "start": {
+        "column": 9,
+        "line": 86
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/fetch.rs\n+++ replace FetchOutcome::relock -> SkillLock with Default::default()\n@@ -95,39 +95,17 @@\n     /// against a live fetch produces hashes that are ours and checkable.\n     ///\n     /// Entries that could not be fetched are dropped: a lock entry with no\n     /// retrievable content is a promise the registry cannot keep.\n     ///\n     /// The output carries the ref each fetch actually used, so relocking after\n     /// [`pin_refs`] yields a signable lockfile.\n     pub fn relock(&self, previous: &SkillLock) -> SkillLock {\n-        let skills = self\n-            .fetched\n-            .iter()\n-            .filter_map(|(name, f)| {\n-                let prev = previous.skills.get(name)?;\n-                Some((\n-                    name.clone(),\n-                    LockEntry {\n-                        computed_hash: f.digest.clone(),\n-                        git_ref: f.git_ref.clone(),\n-                        ..prev.clone()\n-                    },\n-                ))\n-            })\n-            .collect();\n-        // Relocking always writes the current schema: the output carries whatever\n-        // refs the fetch used, so labelling it v1 would understate it. A relock of\n-        // an unpinned v1 lockfile still produces refless entries, which `signable`\n-        // then rejects — the version alone never implies the guarantee.\n-        SkillLock {\n-            version: crate::lock::LOCK_VERSION,\n-            skills,\n-        }\n+        Default::default() /* ~ changed by cargo-mutants ~ */\n     }\n }\n \n /// Raw-content URL for a locked entry.\n ///\n /// Uses the pinned commit when the entry has one, which makes the URL immutable and\n /// the digest attributable. Falls back to `HEAD` only for v1 entries, which is\n /// exactly the ambiguity described above — those lockfiles cannot be signed.\n",
+    "file": "crates/rcx-registry-skills/src/fetch.rs",
+    "function": {
+      "function_name": "FetchOutcome::relock",
+      "return_type": "-> SkillLock",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 126
+        },
+        "start": {
+          "column": 5,
+          "line": 89
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "crates/rcx-registry-skills/src/fetch.rs:103:9: replace FetchOutcome::relock -> SkillLock with Default::default()",
+    "package": "rcx-registry-skills",
+    "replacement": "Default::default()",
+    "span": {
+      "end": {
+        "column": 10,
+        "line": 125
+      },
+      "start": {
+        "column": 9,
+        "line": 103
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/fetch.rs\n+++ delete field computed_hash from struct LockEntry expression in FetchOutcome::relock\n@@ -103,17 +103,17 @@\n         let skills = self\n             .fetched\n             .iter()\n             .filter_map(|(name, f)| {\n                 let prev = previous.skills.get(name)?;\n                 Some((\n                     name.clone(),\n                     LockEntry {\n-                        computed_hash: f.digest.clone(),\n+                         /* ~ changed by cargo-mutants ~ */\n                         git_ref: f.git_ref.clone(),\n                         ..prev.clone()\n                     },\n                 ))\n             })\n             .collect();\n         // Relocking always writes the current schema: the output carries whatever\n         // refs the fetch used, so labelling it v1 would understate it. A relock of\n",
+    "file": "crates/rcx-registry-skills/src/fetch.rs",
+    "function": {
+      "function_name": "FetchOutcome::relock",
+      "return_type": "-> SkillLock",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 126
+        },
+        "start": {
+          "column": 5,
+          "line": 89
+        }
+      }
+    },
+    "genre": "StructField",
+    "name": "crates/rcx-registry-skills/src/fetch.rs:111:25: delete field computed_hash from struct LockEntry expression in FetchOutcome::relock",
+    "package": "rcx-registry-skills",
+    "replacement": "",
+    "span": {
+      "end": {
+        "column": 57,
+        "line": 111
+      },
+      "start": {
+        "column": 25,
+        "line": 111
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/fetch.rs\n+++ delete field git_ref from struct LockEntry expression in FetchOutcome::relock\n@@ -104,17 +104,17 @@\n             .fetched\n             .iter()\n             .filter_map(|(name, f)| {\n                 let prev = previous.skills.get(name)?;\n                 Some((\n                     name.clone(),\n                     LockEntry {\n                         computed_hash: f.digest.clone(),\n-                        git_ref: f.git_ref.clone(),\n+                         /* ~ changed by cargo-mutants ~ */\n                         ..prev.clone()\n                     },\n                 ))\n             })\n             .collect();\n         // Relocking always writes the current schema: the output carries whatever\n         // refs the fetch used, so labelling it v1 would understate it. A relock of\n         // an unpinned v1 lockfile still produces refless entries, which `signable`\n",
+    "file": "crates/rcx-registry-skills/src/fetch.rs",
+    "function": {
+      "function_name": "FetchOutcome::relock",
+      "return_type": "-> SkillLock",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 126
+        },
+        "start": {
+          "column": 5,
+          "line": 89
+        }
+      }
+    },
+    "genre": "StructField",
+    "name": "crates/rcx-registry-skills/src/fetch.rs:112:25: delete field git_ref from struct LockEntry expression in FetchOutcome::relock",
+    "package": "rcx-registry-skills",
+    "replacement": "",
+    "span": {
+      "end": {
+        "column": 52,
+        "line": 112
+      },
+      "start": {
+        "column": 25,
+        "line": 112
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/fetch.rs\n+++ replace raw_url -> String with String::new()\n@@ -127,25 +127,17 @@\n }\n \n /// Raw-content URL for a locked entry.\n ///\n /// Uses the pinned commit when the entry has one, which makes the URL immutable and\n /// the digest attributable. Falls back to `HEAD` only for v1 entries, which is\n /// exactly the ambiguity described above — those lockfiles cannot be signed.\n pub fn raw_url(entry: &LockEntry) -> String {\n-    let reference = if entry.git_ref.is_empty() {\n-        \"HEAD\"\n-    } else {\n-        &entry.git_ref\n-    };\n-    format!(\n-        \"https://raw.githubusercontent.com/{}/{reference}/{}\",\n-        entry.source, entry.skill_path\n-    )\n+    String::new() /* ~ changed by cargo-mutants ~ */\n }\n \n /// Resolve each distinct source to the commit its default branch currently points\n /// at, and stamp every entry with it.\n ///\n /// Resolution is per **source**, not per skill: 26 sources back 390 skills in the\n /// upstream lockfile, so this is 26 requests rather than 390, and it also guarantees\n /// that skills from one repo are pinned to one consistent commit rather than to\n",
+    "file": "crates/rcx-registry-skills/src/fetch.rs",
+    "function": {
+      "function_name": "raw_url",
+      "return_type": "-> String",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 144
+        },
+        "start": {
+          "column": 1,
+          "line": 129
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "crates/rcx-registry-skills/src/fetch.rs:135:5: replace raw_url -> String with String::new()",
+    "package": "rcx-registry-skills",
+    "replacement": "String::new()",
+    "span": {
+      "end": {
+        "column": 6,
+        "line": 143
+      },
+      "start": {
+        "column": 5,
+        "line": 135
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/fetch.rs\n+++ replace raw_url -> String with \"xyzzy\".into()\n@@ -127,25 +127,17 @@\n }\n \n /// Raw-content URL for a locked entry.\n ///\n /// Uses the pinned commit when the entry has one, which makes the URL immutable and\n /// the digest attributable. Falls back to `HEAD` only for v1 entries, which is\n /// exactly the ambiguity described above — those lockfiles cannot be signed.\n pub fn raw_url(entry: &LockEntry) -> String {\n-    let reference = if entry.git_ref.is_empty() {\n-        \"HEAD\"\n-    } else {\n-        &entry.git_ref\n-    };\n-    format!(\n-        \"https://raw.githubusercontent.com/{}/{reference}/{}\",\n-        entry.source, entry.skill_path\n-    )\n+    \"xyzzy\".into() /* ~ changed by cargo-mutants ~ */\n }\n \n /// Resolve each distinct source to the commit its default branch currently points\n /// at, and stamp every entry with it.\n ///\n /// Resolution is per **source**, not per skill: 26 sources back 390 skills in the\n /// upstream lockfile, so this is 26 requests rather than 390, and it also guarantees\n /// that skills from one repo are pinned to one consistent commit rather than to\n",
+    "file": "crates/rcx-registry-skills/src/fetch.rs",
+    "function": {
+      "function_name": "raw_url",
+      "return_type": "-> String",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 144
+        },
+        "start": {
+          "column": 1,
+          "line": 129
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "crates/rcx-registry-skills/src/fetch.rs:135:5: replace raw_url -> String with \"xyzzy\".into()",
+    "package": "rcx-registry-skills",
+    "replacement": "\"xyzzy\".into()",
+    "span": {
+      "end": {
+        "column": 6,
+        "line": 143
+      },
+      "start": {
+        "column": 5,
+        "line": 135
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/fetch.rs\n+++ replace pin_refs -> Result<(), SkillsError> with Ok(())\n@@ -152,29 +152,17 @@\n /// whatever each individual request happened to race.\n ///\n /// Honours `GITHUB_TOKEN` when set. Unauthenticated GitHub allows 60 requests an\n /// hour, which covers this but leaves no headroom for a retry.\n pub fn pin_refs(\n     lock: &mut SkillLock,\n     client: &reqwest::blocking::Client,\n ) -> Result<(), SkillsError> {\n-    let sources: BTreeSet<String> = lock.skills.values().map(|e| e.source.clone()).collect();\n-    let mut resolved: BTreeMap<String, String> = BTreeMap::new();\n-    for source in sources {\n-        let sha = resolve_head_commit(&source, client)?;\n-        resolved.insert(source, sha);\n-    }\n-    for entry in lock.skills.values_mut() {\n-        if let Some(sha) = resolved.get(&entry.source) {\n-            entry.git_ref.clone_from(sha);\n-        }\n-    }\n-    lock.version = crate::lock::LOCK_VERSION;\n-    Ok(())\n+    Ok(()) /* ~ changed by cargo-mutants ~ */\n }\n \n fn resolve_head_commit(\n     source: &str,\n     client: &reqwest::blocking::Client,\n ) -> Result<String, SkillsError> {\n     let url = format!(\"https://api.github.com/repos/{source}/commits/HEAD\");\n     let mut request = client\n",
+    "file": "crates/rcx-registry-skills/src/fetch.rs",
+    "function": {
+      "function_name": "pin_refs",
+      "return_type": "-> Result<(), SkillsError>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 173
+        },
+        "start": {
+          "column": 1,
+          "line": 146
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "crates/rcx-registry-skills/src/fetch.rs:160:5: replace pin_refs -> Result<(), SkillsError> with Ok(())",
+    "package": "rcx-registry-skills",
+    "replacement": "Ok(())",
+    "span": {
+      "end": {
+        "column": 11,
+        "line": 172
+      },
+      "start": {
+        "column": 5,
+        "line": 160
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/fetch.rs\n+++ replace resolve_head_commit -> Result<String, SkillsError> with Ok(String::new())\n@@ -171,47 +171,17 @@\n     lock.version = crate::lock::LOCK_VERSION;\n     Ok(())\n }\n \n fn resolve_head_commit(\n     source: &str,\n     client: &reqwest::blocking::Client,\n ) -> Result<String, SkillsError> {\n-    let url = format!(\"https://api.github.com/repos/{source}/commits/HEAD\");\n-    let mut request = client\n-        .get(&url)\n-        .header(\"Accept\", \"application/vnd.github.sha\");\n-    if let Ok(token) = std::env::var(\"GITHUB_TOKEN\") {\n-        if !token.is_empty() {\n-            request = request.bearer_auth(token);\n-        }\n-    }\n-    let response = request.send().map_err(|error| SkillsError::RefResolution {\n-        repo: source.to_string(),\n-        detail: error.to_string(),\n-    })?;\n-    let status = response.status();\n-    let body = response.text().unwrap_or_default();\n-    if !status.is_success() {\n-        return Err(SkillsError::RefResolution {\n-            repo: source.to_string(),\n-            detail: format!(\n-                \"HTTP {status}: {}\",\n-                body.chars().take(120).collect::<String>()\n-            ),\n-        });\n-    }\n-    parse_commit_sha(&body).ok_or_else(|| SkillsError::RefResolution {\n-        repo: source.to_string(),\n-        detail: format!(\n-            \"expected a 40-hex commit id, got {:?}\",\n-            body.trim().chars().take(60).collect::<String>()\n-        ),\n-    })\n+    Ok(String::new()) /* ~ changed by cargo-mutants ~ */\n }\n \n /// Accept a GitHub `.sha` response, or reject it.\n ///\n /// Split out of the request path so the guard is unit-testable — it is the only\n /// thing standing between a surprising API response and a lockfile pinned to\n /// garbage, and a network-gated test cannot exercise it.\n ///\n",
+    "file": "crates/rcx-registry-skills/src/fetch.rs",
+    "function": {
+      "function_name": "resolve_head_commit",
+      "return_type": "-> Result<String, SkillsError>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 210
+        },
+        "start": {
+          "column": 1,
+          "line": 175
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "crates/rcx-registry-skills/src/fetch.rs:179:5: replace resolve_head_commit -> Result<String, SkillsError> with Ok(String::new())",
+    "package": "rcx-registry-skills",
+    "replacement": "Ok(String::new())",
+    "span": {
+      "end": {
+        "column": 7,
+        "line": 209
+      },
+      "start": {
+        "column": 5,
+        "line": 179
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/fetch.rs\n+++ replace resolve_head_commit -> Result<String, SkillsError> with Ok(\"xyzzy\".into())\n@@ -171,47 +171,17 @@\n     lock.version = crate::lock::LOCK_VERSION;\n     Ok(())\n }\n \n fn resolve_head_commit(\n     source: &str,\n     client: &reqwest::blocking::Client,\n ) -> Result<String, SkillsError> {\n-    let url = format!(\"https://api.github.com/repos/{source}/commits/HEAD\");\n-    let mut request = client\n-        .get(&url)\n-        .header(\"Accept\", \"application/vnd.github.sha\");\n-    if let Ok(token) = std::env::var(\"GITHUB_TOKEN\") {\n-        if !token.is_empty() {\n-            request = request.bearer_auth(token);\n-        }\n-    }\n-    let response = request.send().map_err(|error| SkillsError::RefResolution {\n-        repo: source.to_string(),\n-        detail: error.to_string(),\n-    })?;\n-    let status = response.status();\n-    let body = response.text().unwrap_or_default();\n-    if !status.is_success() {\n-        return Err(SkillsError::RefResolution {\n-            repo: source.to_string(),\n-            detail: format!(\n-                \"HTTP {status}: {}\",\n-                body.chars().take(120).collect::<String>()\n-            ),\n-        });\n-    }\n-    parse_commit_sha(&body).ok_or_else(|| SkillsError::RefResolution {\n-        repo: source.to_string(),\n-        detail: format!(\n-            \"expected a 40-hex commit id, got {:?}\",\n-            body.trim().chars().take(60).collect::<String>()\n-        ),\n-    })\n+    Ok(\"xyzzy\".into()) /* ~ changed by cargo-mutants ~ */\n }\n \n /// Accept a GitHub `.sha` response, or reject it.\n ///\n /// Split out of the request path so the guard is unit-testable — it is the only\n /// thing standing between a surprising API response and a lockfile pinned to\n /// garbage, and a network-gated test cannot exercise it.\n ///\n",
+    "file": "crates/rcx-registry-skills/src/fetch.rs",
+    "function": {
+      "function_name": "resolve_head_commit",
+      "return_type": "-> Result<String, SkillsError>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 210
+        },
+        "start": {
+          "column": 1,
+          "line": 175
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "crates/rcx-registry-skills/src/fetch.rs:179:5: replace resolve_head_commit -> Result<String, SkillsError> with Ok(\"xyzzy\".into())",
+    "package": "rcx-registry-skills",
+    "replacement": "Ok(\"xyzzy\".into())",
+    "span": {
+      "end": {
+        "column": 7,
+        "line": 209
+      },
+      "start": {
+        "column": 5,
+        "line": 179
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/fetch.rs\n+++ delete ! in resolve_head_commit\n@@ -176,17 +176,17 @@\n     source: &str,\n     client: &reqwest::blocking::Client,\n ) -> Result<String, SkillsError> {\n     let url = format!(\"https://api.github.com/repos/{source}/commits/HEAD\");\n     let mut request = client\n         .get(&url)\n         .header(\"Accept\", \"application/vnd.github.sha\");\n     if let Ok(token) = std::env::var(\"GITHUB_TOKEN\") {\n-        if !token.is_empty() {\n+        if  /* ~ changed by cargo-mutants ~ */token.is_empty() {\n             request = request.bearer_auth(token);\n         }\n     }\n     let response = request.send().map_err(|error| SkillsError::RefResolution {\n         repo: source.to_string(),\n         detail: error.to_string(),\n     })?;\n     let status = response.status();\n",
+    "file": "crates/rcx-registry-skills/src/fetch.rs",
+    "function": {
+      "function_name": "resolve_head_commit",
+      "return_type": "-> Result<String, SkillsError>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 210
+        },
+        "start": {
+          "column": 1,
+          "line": 175
+        }
+      }
+    },
+    "genre": "UnaryOperator",
+    "name": "crates/rcx-registry-skills/src/fetch.rs:184:12: delete ! in resolve_head_commit",
+    "package": "rcx-registry-skills",
+    "replacement": "",
+    "span": {
+      "end": {
+        "column": 13,
+        "line": 184
+      },
+      "start": {
+        "column": 12,
+        "line": 184
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/fetch.rs\n+++ delete ! in resolve_head_commit\n@@ -186,17 +186,17 @@\n         }\n     }\n     let response = request.send().map_err(|error| SkillsError::RefResolution {\n         repo: source.to_string(),\n         detail: error.to_string(),\n     })?;\n     let status = response.status();\n     let body = response.text().unwrap_or_default();\n-    if !status.is_success() {\n+    if  /* ~ changed by cargo-mutants ~ */status.is_success() {\n         return Err(SkillsError::RefResolution {\n             repo: source.to_string(),\n             detail: format!(\n                 \"HTTP {status}: {}\",\n                 body.chars().take(120).collect::<String>()\n             ),\n         });\n     }\n",
+    "file": "crates/rcx-registry-skills/src/fetch.rs",
+    "function": {
+      "function_name": "resolve_head_commit",
+      "return_type": "-> Result<String, SkillsError>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 210
+        },
+        "start": {
+          "column": 1,
+          "line": 175
+        }
+      }
+    },
+    "genre": "UnaryOperator",
+    "name": "crates/rcx-registry-skills/src/fetch.rs:194:8: delete ! in resolve_head_commit",
+    "package": "rcx-registry-skills",
+    "replacement": "",
+    "span": {
+      "end": {
+        "column": 9,
+        "line": 194
+      },
+      "start": {
+        "column": 8,
+        "line": 194
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/fetch.rs\n+++ replace parse_commit_sha -> Option<String> with None\n@@ -213,21 +213,17 @@\n ///\n /// Split out of the request path so the guard is unit-testable — it is the only\n /// thing standing between a surprising API response and a lockfile pinned to\n /// garbage, and a network-gated test cannot exercise it.\n ///\n /// Normalises case on the way through: GitHub returns lowercase, but an uppercase\n /// id would otherwise reach `signable()` and be rejected far from its cause.\n fn parse_commit_sha(body: &str) -> Option<String> {\n-    let sha = body.trim();\n-    if sha.len() != 40 || !sha.bytes().all(|b| b.is_ascii_hexdigit()) {\n-        return None;\n-    }\n-    Some(sha.to_ascii_lowercase())\n+    None /* ~ changed by cargo-mutants ~ */\n }\n \n /// Check bytes against a pinned digest. Returns the digest actually computed on\n /// failure so the caller can report both sides.\n ///\n /// Fails closed: any difference at all rejects, and the comparison is over the full\n /// 32-byte digest rather than a prefix.\n pub fn verify_bytes(bytes: &[u8], expected_hex: &str) -> Result<(), String> {\n",
+    "file": "crates/rcx-registry-skills/src/fetch.rs",
+    "function": {
+      "function_name": "parse_commit_sha",
+      "return_type": "-> Option<String>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 226
+        },
+        "start": {
+          "column": 1,
+          "line": 212
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "crates/rcx-registry-skills/src/fetch.rs:221:5: replace parse_commit_sha -> Option<String> with None",
+    "package": "rcx-registry-skills",
+    "replacement": "None",
+    "span": {
+      "end": {
+        "column": 35,
+        "line": 225
+      },
+      "start": {
+        "column": 5,
+        "line": 221
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/fetch.rs\n+++ replace parse_commit_sha -> Option<String> with Some(String::new())\n@@ -213,21 +213,17 @@\n ///\n /// Split out of the request path so the guard is unit-testable — it is the only\n /// thing standing between a surprising API response and a lockfile pinned to\n /// garbage, and a network-gated test cannot exercise it.\n ///\n /// Normalises case on the way through: GitHub returns lowercase, but an uppercase\n /// id would otherwise reach `signable()` and be rejected far from its cause.\n fn parse_commit_sha(body: &str) -> Option<String> {\n-    let sha = body.trim();\n-    if sha.len() != 40 || !sha.bytes().all(|b| b.is_ascii_hexdigit()) {\n-        return None;\n-    }\n-    Some(sha.to_ascii_lowercase())\n+    Some(String::new()) /* ~ changed by cargo-mutants ~ */\n }\n \n /// Check bytes against a pinned digest. Returns the digest actually computed on\n /// failure so the caller can report both sides.\n ///\n /// Fails closed: any difference at all rejects, and the comparison is over the full\n /// 32-byte digest rather than a prefix.\n pub fn verify_bytes(bytes: &[u8], expected_hex: &str) -> Result<(), String> {\n",
+    "file": "crates/rcx-registry-skills/src/fetch.rs",
+    "function": {
+      "function_name": "parse_commit_sha",
+      "return_type": "-> Option<String>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 226
+        },
+        "start": {
+          "column": 1,
+          "line": 212
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "crates/rcx-registry-skills/src/fetch.rs:221:5: replace parse_commit_sha -> Option<String> with Some(String::new())",
+    "package": "rcx-registry-skills",
+    "replacement": "Some(String::new())",
+    "span": {
+      "end": {
+        "column": 35,
+        "line": 225
+      },
+      "start": {
+        "column": 5,
+        "line": 221
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/fetch.rs\n+++ replace parse_commit_sha -> Option<String> with Some(\"xyzzy\".into())\n@@ -213,21 +213,17 @@\n ///\n /// Split out of the request path so the guard is unit-testable — it is the only\n /// thing standing between a surprising API response and a lockfile pinned to\n /// garbage, and a network-gated test cannot exercise it.\n ///\n /// Normalises case on the way through: GitHub returns lowercase, but an uppercase\n /// id would otherwise reach `signable()` and be rejected far from its cause.\n fn parse_commit_sha(body: &str) -> Option<String> {\n-    let sha = body.trim();\n-    if sha.len() != 40 || !sha.bytes().all(|b| b.is_ascii_hexdigit()) {\n-        return None;\n-    }\n-    Some(sha.to_ascii_lowercase())\n+    Some(\"xyzzy\".into()) /* ~ changed by cargo-mutants ~ */\n }\n \n /// Check bytes against a pinned digest. Returns the digest actually computed on\n /// failure so the caller can report both sides.\n ///\n /// Fails closed: any difference at all rejects, and the comparison is over the full\n /// 32-byte digest rather than a prefix.\n pub fn verify_bytes(bytes: &[u8], expected_hex: &str) -> Result<(), String> {\n",
+    "file": "crates/rcx-registry-skills/src/fetch.rs",
+    "function": {
+      "function_name": "parse_commit_sha",
+      "return_type": "-> Option<String>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 226
+        },
+        "start": {
+          "column": 1,
+          "line": 212
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "crates/rcx-registry-skills/src/fetch.rs:221:5: replace parse_commit_sha -> Option<String> with Some(\"xyzzy\".into())",
+    "package": "rcx-registry-skills",
+    "replacement": "Some(\"xyzzy\".into())",
+    "span": {
+      "end": {
+        "column": 35,
+        "line": 225
+      },
+      "start": {
+        "column": 5,
+        "line": 221
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/fetch.rs\n+++ replace || with && in parse_commit_sha\n@@ -214,17 +214,17 @@\n /// Split out of the request path so the guard is unit-testable — it is the only\n /// thing standing between a surprising API response and a lockfile pinned to\n /// garbage, and a network-gated test cannot exercise it.\n ///\n /// Normalises case on the way through: GitHub returns lowercase, but an uppercase\n /// id would otherwise reach `signable()` and be rejected far from its cause.\n fn parse_commit_sha(body: &str) -> Option<String> {\n     let sha = body.trim();\n-    if sha.len() != 40 || !sha.bytes().all(|b| b.is_ascii_hexdigit()) {\n+    if sha.len() != 40 && /* ~ changed by cargo-mutants ~ */ !sha.bytes().all(|b| b.is_ascii_hexdigit()) {\n         return None;\n     }\n     Some(sha.to_ascii_lowercase())\n }\n \n /// Check bytes against a pinned digest. Returns the digest actually computed on\n /// failure so the caller can report both sides.\n ///\n",
+    "file": "crates/rcx-registry-skills/src/fetch.rs",
+    "function": {
+      "function_name": "parse_commit_sha",
+      "return_type": "-> Option<String>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 226
+        },
+        "start": {
+          "column": 1,
+          "line": 212
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "crates/rcx-registry-skills/src/fetch.rs:222:24: replace || with && in parse_commit_sha",
+    "package": "rcx-registry-skills",
+    "replacement": "&&",
+    "span": {
+      "end": {
+        "column": 26,
+        "line": 222
+      },
+      "start": {
+        "column": 24,
+        "line": 222
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/fetch.rs\n+++ replace != with == in parse_commit_sha\n@@ -214,17 +214,17 @@\n /// Split out of the request path so the guard is unit-testable — it is the only\n /// thing standing between a surprising API response and a lockfile pinned to\n /// garbage, and a network-gated test cannot exercise it.\n ///\n /// Normalises case on the way through: GitHub returns lowercase, but an uppercase\n /// id would otherwise reach `signable()` and be rejected far from its cause.\n fn parse_commit_sha(body: &str) -> Option<String> {\n     let sha = body.trim();\n-    if sha.len() != 40 || !sha.bytes().all(|b| b.is_ascii_hexdigit()) {\n+    if sha.len() == /* ~ changed by cargo-mutants ~ */ 40 || !sha.bytes().all(|b| b.is_ascii_hexdigit()) {\n         return None;\n     }\n     Some(sha.to_ascii_lowercase())\n }\n \n /// Check bytes against a pinned digest. Returns the digest actually computed on\n /// failure so the caller can report both sides.\n ///\n",
+    "file": "crates/rcx-registry-skills/src/fetch.rs",
+    "function": {
+      "function_name": "parse_commit_sha",
+      "return_type": "-> Option<String>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 226
+        },
+        "start": {
+          "column": 1,
+          "line": 212
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "crates/rcx-registry-skills/src/fetch.rs:222:18: replace != with == in parse_commit_sha",
+    "package": "rcx-registry-skills",
+    "replacement": "==",
+    "span": {
+      "end": {
+        "column": 20,
+        "line": 222
+      },
+      "start": {
+        "column": 18,
+        "line": 222
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/fetch.rs\n+++ delete ! in parse_commit_sha\n@@ -214,17 +214,17 @@\n /// Split out of the request path so the guard is unit-testable — it is the only\n /// thing standing between a surprising API response and a lockfile pinned to\n /// garbage, and a network-gated test cannot exercise it.\n ///\n /// Normalises case on the way through: GitHub returns lowercase, but an uppercase\n /// id would otherwise reach `signable()` and be rejected far from its cause.\n fn parse_commit_sha(body: &str) -> Option<String> {\n     let sha = body.trim();\n-    if sha.len() != 40 || !sha.bytes().all(|b| b.is_ascii_hexdigit()) {\n+    if sha.len() != 40 ||  /* ~ changed by cargo-mutants ~ */sha.bytes().all(|b| b.is_ascii_hexdigit()) {\n         return None;\n     }\n     Some(sha.to_ascii_lowercase())\n }\n \n /// Check bytes against a pinned digest. Returns the digest actually computed on\n /// failure so the caller can report both sides.\n ///\n",
+    "file": "crates/rcx-registry-skills/src/fetch.rs",
+    "function": {
+      "function_name": "parse_commit_sha",
+      "return_type": "-> Option<String>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 226
+        },
+        "start": {
+          "column": 1,
+          "line": 212
+        }
+      }
+    },
+    "genre": "UnaryOperator",
+    "name": "crates/rcx-registry-skills/src/fetch.rs:222:27: delete ! in parse_commit_sha",
+    "package": "rcx-registry-skills",
+    "replacement": "",
+    "span": {
+      "end": {
+        "column": 28,
+        "line": 222
+      },
+      "start": {
+        "column": 27,
+        "line": 222
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/fetch.rs\n+++ replace verify_bytes -> Result<(), String> with Ok(())\n@@ -226,22 +226,17 @@\n }\n \n /// Check bytes against a pinned digest. Returns the digest actually computed on\n /// failure so the caller can report both sides.\n ///\n /// Fails closed: any difference at all rejects, and the comparison is over the full\n /// 32-byte digest rather than a prefix.\n pub fn verify_bytes(bytes: &[u8], expected_hex: &str) -> Result<(), String> {\n-    let actual = hex_digest(bytes);\n-    if actual == expected_hex {\n-        Ok(())\n-    } else {\n-        Err(actual)\n-    }\n+    Ok(()) /* ~ changed by cargo-mutants ~ */\n }\n \n fn hex_digest(bytes: &[u8]) -> String {\n     let digest = Sha256::digest(bytes);\n     let mut out = String::with_capacity(64);\n     for byte in digest {\n         use std::fmt::Write as _;\n         let _ = write!(out, \"{byte:02x}\");\n",
+    "file": "crates/rcx-registry-skills/src/fetch.rs",
+    "function": {
+      "function_name": "verify_bytes",
+      "return_type": "-> Result<(), String>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 240
+        },
+        "start": {
+          "column": 1,
+          "line": 228
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "crates/rcx-registry-skills/src/fetch.rs:234:5: replace verify_bytes -> Result<(), String> with Ok(())",
+    "package": "rcx-registry-skills",
+    "replacement": "Ok(())",
+    "span": {
+      "end": {
+        "column": 6,
+        "line": 239
+      },
+      "start": {
+        "column": 5,
+        "line": 234
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/fetch.rs\n+++ replace == with != in verify_bytes\n@@ -227,17 +227,17 @@\n \n /// Check bytes against a pinned digest. Returns the digest actually computed on\n /// failure so the caller can report both sides.\n ///\n /// Fails closed: any difference at all rejects, and the comparison is over the full\n /// 32-byte digest rather than a prefix.\n pub fn verify_bytes(bytes: &[u8], expected_hex: &str) -> Result<(), String> {\n     let actual = hex_digest(bytes);\n-    if actual == expected_hex {\n+    if actual != /* ~ changed by cargo-mutants ~ */ expected_hex {\n         Ok(())\n     } else {\n         Err(actual)\n     }\n }\n \n fn hex_digest(bytes: &[u8]) -> String {\n     let digest = Sha256::digest(bytes);\n",
+    "file": "crates/rcx-registry-skills/src/fetch.rs",
+    "function": {
+      "function_name": "verify_bytes",
+      "return_type": "-> Result<(), String>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 240
+        },
+        "start": {
+          "column": 1,
+          "line": 228
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "crates/rcx-registry-skills/src/fetch.rs:235:15: replace == with != in verify_bytes",
+    "package": "rcx-registry-skills",
+    "replacement": "!=",
+    "span": {
+      "end": {
+        "column": 17,
+        "line": 235
+      },
+      "start": {
+        "column": 15,
+        "line": 235
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/fetch.rs\n+++ replace hex_digest -> String with String::new()\n@@ -235,23 +235,17 @@\n     if actual == expected_hex {\n         Ok(())\n     } else {\n         Err(actual)\n     }\n }\n \n fn hex_digest(bytes: &[u8]) -> String {\n-    let digest = Sha256::digest(bytes);\n-    let mut out = String::with_capacity(64);\n-    for byte in digest {\n-        use std::fmt::Write as _;\n-        let _ = write!(out, \"{byte:02x}\");\n-    }\n-    out\n+    String::new() /* ~ changed by cargo-mutants ~ */\n }\n \n /// Fetch and verify every entry in `lock`.\n ///\n /// One entry failing never aborts the walk — the point of the gate is to *name*\n /// every mismatch, not to stop at the first. Callers decide what an unclean\n /// outcome means.\n pub fn fetch_locked(lock: &SkillLock, client: &reqwest::blocking::Client) -> FetchOutcome {\n",
+    "file": "crates/rcx-registry-skills/src/fetch.rs",
+    "function": {
+      "function_name": "hex_digest",
+      "return_type": "-> String",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 250
+        },
+        "start": {
+          "column": 1,
+          "line": 242
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "crates/rcx-registry-skills/src/fetch.rs:243:5: replace hex_digest -> String with String::new()",
+    "package": "rcx-registry-skills",
+    "replacement": "String::new()",
+    "span": {
+      "end": {
+        "column": 8,
+        "line": 249
+      },
+      "start": {
+        "column": 5,
+        "line": 243
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/fetch.rs\n+++ replace hex_digest -> String with \"xyzzy\".into()\n@@ -235,23 +235,17 @@\n     if actual == expected_hex {\n         Ok(())\n     } else {\n         Err(actual)\n     }\n }\n \n fn hex_digest(bytes: &[u8]) -> String {\n-    let digest = Sha256::digest(bytes);\n-    let mut out = String::with_capacity(64);\n-    for byte in digest {\n-        use std::fmt::Write as _;\n-        let _ = write!(out, \"{byte:02x}\");\n-    }\n-    out\n+    \"xyzzy\".into() /* ~ changed by cargo-mutants ~ */\n }\n \n /// Fetch and verify every entry in `lock`.\n ///\n /// One entry failing never aborts the walk — the point of the gate is to *name*\n /// every mismatch, not to stop at the first. Callers decide what an unclean\n /// outcome means.\n pub fn fetch_locked(lock: &SkillLock, client: &reqwest::blocking::Client) -> FetchOutcome {\n",
+    "file": "crates/rcx-registry-skills/src/fetch.rs",
+    "function": {
+      "function_name": "hex_digest",
+      "return_type": "-> String",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 250
+        },
+        "start": {
+          "column": 1,
+          "line": 242
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "crates/rcx-registry-skills/src/fetch.rs:243:5: replace hex_digest -> String with \"xyzzy\".into()",
+    "package": "rcx-registry-skills",
+    "replacement": "\"xyzzy\".into()",
+    "span": {
+      "end": {
+        "column": 8,
+        "line": 249
+      },
+      "start": {
+        "column": 5,
+        "line": 243
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/fetch.rs\n+++ replace fetch_locked -> FetchOutcome with Default::default()\n@@ -250,54 +250,17 @@\n }\n \n /// Fetch and verify every entry in `lock`.\n ///\n /// One entry failing never aborts the walk — the point of the gate is to *name*\n /// every mismatch, not to stop at the first. Callers decide what an unclean\n /// outcome means.\n pub fn fetch_locked(lock: &SkillLock, client: &reqwest::blocking::Client) -> FetchOutcome {\n-    let mut outcome = FetchOutcome::default();\n-    for (name, entry) in &lock.skills {\n-        match fetch_one(entry, client) {\n-            Ok(bytes) => {\n-                // Route through `verify_bytes` rather than comparing inline: an\n-                // inline duplicate is a second implementation of the security\n-                // comparison, and it is the one no unit test covers. `cargo-mutants`\n-                // confirmed that — inverting the inline `==` survived the suite.\n-                let (digest, matched_lock) = match verify_bytes(&bytes, &entry.computed_hash) {\n-                    Ok(()) => (entry.computed_hash.clone(), true),\n-                    Err(actual) => (actual, false),\n-                };\n-                if !matched_lock {\n-                    outcome.mismatches.push(Mismatch::Digest {\n-                        name: name.clone(),\n-                        source: entry.source.clone(),\n-                        expected: entry.computed_hash.clone(),\n-                        actual: digest.clone(),\n-                    });\n-                }\n-                outcome.fetched.insert(\n-                    name.clone(),\n-                    Fetched {\n-                        bytes,\n-                        git_ref: entry.git_ref.clone(),\n-                        digest,\n-                        matched_lock,\n-                    },\n-                );\n-            }\n-            Err(err) => outcome.mismatches.push(Mismatch::Unreachable {\n-                name: name.clone(),\n-                source: entry.source.clone(),\n-                detail: err.to_string(),\n-            }),\n-        }\n-    }\n-    outcome\n+    Default::default() /* ~ changed by cargo-mutants ~ */\n }\n \n fn fetch_one(\n     entry: &LockEntry,\n     client: &reqwest::blocking::Client,\n ) -> Result<Vec<u8>, SkillsError> {\n     let response = client.get(raw_url(entry)).send()?.error_for_status()?;\n     Ok(response.bytes()?.to_vec())\n",
+    "file": "crates/rcx-registry-skills/src/fetch.rs",
+    "function": {
+      "function_name": "fetch_locked",
+      "return_type": "-> FetchOutcome",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 296
+        },
+        "start": {
+          "column": 1,
+          "line": 252
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "crates/rcx-registry-skills/src/fetch.rs:258:5: replace fetch_locked -> FetchOutcome with Default::default()",
+    "package": "rcx-registry-skills",
+    "replacement": "Default::default()",
+    "span": {
+      "end": {
+        "column": 12,
+        "line": 295
+      },
+      "start": {
+        "column": 5,
+        "line": 258
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/fetch.rs\n+++ delete ! in fetch_locked\n@@ -262,17 +262,17 @@\n                 // Route through `verify_bytes` rather than comparing inline: an\n                 // inline duplicate is a second implementation of the security\n                 // comparison, and it is the one no unit test covers. `cargo-mutants`\n                 // confirmed that — inverting the inline `==` survived the suite.\n                 let (digest, matched_lock) = match verify_bytes(&bytes, &entry.computed_hash) {\n                     Ok(()) => (entry.computed_hash.clone(), true),\n                     Err(actual) => (actual, false),\n                 };\n-                if !matched_lock {\n+                if  /* ~ changed by cargo-mutants ~ */matched_lock {\n                     outcome.mismatches.push(Mismatch::Digest {\n                         name: name.clone(),\n                         source: entry.source.clone(),\n                         expected: entry.computed_hash.clone(),\n                         actual: digest.clone(),\n                     });\n                 }\n                 outcome.fetched.insert(\n",
+    "file": "crates/rcx-registry-skills/src/fetch.rs",
+    "function": {
+      "function_name": "fetch_locked",
+      "return_type": "-> FetchOutcome",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 296
+        },
+        "start": {
+          "column": 1,
+          "line": 252
+        }
+      }
+    },
+    "genre": "UnaryOperator",
+    "name": "crates/rcx-registry-skills/src/fetch.rs:270:20: delete ! in fetch_locked",
+    "package": "rcx-registry-skills",
+    "replacement": "",
+    "span": {
+      "end": {
+        "column": 21,
+        "line": 270
+      },
+      "start": {
+        "column": 20,
+        "line": 270
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/fetch.rs\n+++ replace fetch_one -> Result<Vec<u8>, SkillsError> with Ok(vec![])\n@@ -294,18 +294,17 @@\n     }\n     outcome\n }\n \n fn fetch_one(\n     entry: &LockEntry,\n     client: &reqwest::blocking::Client,\n ) -> Result<Vec<u8>, SkillsError> {\n-    let response = client.get(raw_url(entry)).send()?.error_for_status()?;\n-    Ok(response.bytes()?.to_vec())\n+    Ok(vec![]) /* ~ changed by cargo-mutants ~ */\n }\n \n #[cfg(test)]\n mod tests {\n     use super::*;\n \n     // sha256(\"hello world\")\n     const HELLO: &str = \"b94d27b9934d3e08a52e52d7da7dabfac484efe37a5380ee9088f7ace2efcde9\";\n",
+    "file": "crates/rcx-registry-skills/src/fetch.rs",
+    "function": {
+      "function_name": "fetch_one",
+      "return_type": "-> Result<Vec<u8>, SkillsError>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 304
+        },
+        "start": {
+          "column": 1,
+          "line": 298
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "crates/rcx-registry-skills/src/fetch.rs:302:5: replace fetch_one -> Result<Vec<u8>, SkillsError> with Ok(vec![])",
+    "package": "rcx-registry-skills",
+    "replacement": "Ok(vec![])",
+    "span": {
+      "end": {
+        "column": 35,
+        "line": 303
+      },
+      "start": {
+        "column": 5,
+        "line": 302
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/fetch.rs\n+++ replace fetch_one -> Result<Vec<u8>, SkillsError> with Ok(vec![0])\n@@ -294,18 +294,17 @@\n     }\n     outcome\n }\n \n fn fetch_one(\n     entry: &LockEntry,\n     client: &reqwest::blocking::Client,\n ) -> Result<Vec<u8>, SkillsError> {\n-    let response = client.get(raw_url(entry)).send()?.error_for_status()?;\n-    Ok(response.bytes()?.to_vec())\n+    Ok(vec![0]) /* ~ changed by cargo-mutants ~ */\n }\n \n #[cfg(test)]\n mod tests {\n     use super::*;\n \n     // sha256(\"hello world\")\n     const HELLO: &str = \"b94d27b9934d3e08a52e52d7da7dabfac484efe37a5380ee9088f7ace2efcde9\";\n",
+    "file": "crates/rcx-registry-skills/src/fetch.rs",
+    "function": {
+      "function_name": "fetch_one",
+      "return_type": "-> Result<Vec<u8>, SkillsError>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 304
+        },
+        "start": {
+          "column": 1,
+          "line": 298
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "crates/rcx-registry-skills/src/fetch.rs:302:5: replace fetch_one -> Result<Vec<u8>, SkillsError> with Ok(vec![0])",
+    "package": "rcx-registry-skills",
+    "replacement": "Ok(vec![0])",
+    "span": {
+      "end": {
+        "column": 35,
+        "line": 303
+      },
+      "start": {
+        "column": 5,
+        "line": 302
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/fetch.rs\n+++ replace fetch_one -> Result<Vec<u8>, SkillsError> with Ok(vec![1])\n@@ -294,18 +294,17 @@\n     }\n     outcome\n }\n \n fn fetch_one(\n     entry: &LockEntry,\n     client: &reqwest::blocking::Client,\n ) -> Result<Vec<u8>, SkillsError> {\n-    let response = client.get(raw_url(entry)).send()?.error_for_status()?;\n-    Ok(response.bytes()?.to_vec())\n+    Ok(vec![1]) /* ~ changed by cargo-mutants ~ */\n }\n \n #[cfg(test)]\n mod tests {\n     use super::*;\n \n     // sha256(\"hello world\")\n     const HELLO: &str = \"b94d27b9934d3e08a52e52d7da7dabfac484efe37a5380ee9088f7ace2efcde9\";\n",
+    "file": "crates/rcx-registry-skills/src/fetch.rs",
+    "function": {
+      "function_name": "fetch_one",
+      "return_type": "-> Result<Vec<u8>, SkillsError>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 304
+        },
+        "start": {
+          "column": 1,
+          "line": 298
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "crates/rcx-registry-skills/src/fetch.rs:302:5: replace fetch_one -> Result<Vec<u8>, SkillsError> with Ok(vec![1])",
+    "package": "rcx-registry-skills",
+    "replacement": "Ok(vec![1])",
+    "span": {
+      "end": {
+        "column": 35,
+        "line": 303
+      },
+      "start": {
+        "column": 5,
+        "line": 302
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/lock.rs\n+++ replace SkillLock::from_json -> Result<Self, SkillsError> with Ok(Default::default())\n@@ -61,19 +61,17 @@\n     pub computed_hash: String,\n }\n \n impl SkillLock {\n     /// Parse and validate. Validation is not optional here — an entry whose hash is\n     /// malformed can never match a real digest, so accepting it would push a\n     /// guaranteed failure to fetch time and report it as a content mismatch.\n     pub fn from_json(raw: &str) -> Result<Self, SkillsError> {\n-        let lock: Self = serde_json::from_str(raw)?;\n-        lock.validate()?;\n-        Ok(lock)\n+        Ok(Default::default()) /* ~ changed by cargo-mutants ~ */\n     }\n \n     /// Serialise in the canonical on-disk form: 2-space indent, sorted keys,\n     /// trailing newline.\n     pub fn to_json(&self) -> Result<String, SkillsError> {\n         let mut out = serde_json::to_string_pretty(self)?;\n         out.push('\\n');\n         Ok(out)\n",
+    "file": "crates/rcx-registry-skills/src/lock.rs",
+    "function": {
+      "function_name": "SkillLock::from_json",
+      "return_type": "-> Result<Self, SkillsError>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 72
+        },
+        "start": {
+          "column": 5,
+          "line": 65
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "crates/rcx-registry-skills/src/lock.rs:69:9: replace SkillLock::from_json -> Result<Self, SkillsError> with Ok(Default::default())",
+    "package": "rcx-registry-skills",
+    "replacement": "Ok(Default::default())",
+    "span": {
+      "end": {
+        "column": 17,
+        "line": 71
+      },
+      "start": {
+        "column": 9,
+        "line": 69
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/lock.rs\n+++ replace SkillLock::to_json -> Result<String, SkillsError> with Ok(String::new())\n@@ -69,19 +69,17 @@\n         let lock: Self = serde_json::from_str(raw)?;\n         lock.validate()?;\n         Ok(lock)\n     }\n \n     /// Serialise in the canonical on-disk form: 2-space indent, sorted keys,\n     /// trailing newline.\n     pub fn to_json(&self) -> Result<String, SkillsError> {\n-        let mut out = serde_json::to_string_pretty(self)?;\n-        out.push('\\n');\n-        Ok(out)\n+        Ok(String::new()) /* ~ changed by cargo-mutants ~ */\n     }\n \n     pub fn validate(&self) -> Result<(), SkillsError> {\n         for (name, entry) in &self.skills {\n             if !is_sha256_hex(&entry.computed_hash) {\n                 return Err(SkillsError::BadHash {\n                     name: name.clone(),\n                     got: entry.computed_hash.clone(),\n",
+    "file": "crates/rcx-registry-skills/src/lock.rs",
+    "function": {
+      "function_name": "SkillLock::to_json",
+      "return_type": "-> Result<String, SkillsError>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 80
+        },
+        "start": {
+          "column": 5,
+          "line": 74
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "crates/rcx-registry-skills/src/lock.rs:77:9: replace SkillLock::to_json -> Result<String, SkillsError> with Ok(String::new())",
+    "package": "rcx-registry-skills",
+    "replacement": "Ok(String::new())",
+    "span": {
+      "end": {
+        "column": 16,
+        "line": 79
+      },
+      "start": {
+        "column": 9,
+        "line": 77
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/lock.rs\n+++ replace SkillLock::to_json -> Result<String, SkillsError> with Ok(\"xyzzy\".into())\n@@ -69,19 +69,17 @@\n         let lock: Self = serde_json::from_str(raw)?;\n         lock.validate()?;\n         Ok(lock)\n     }\n \n     /// Serialise in the canonical on-disk form: 2-space indent, sorted keys,\n     /// trailing newline.\n     pub fn to_json(&self) -> Result<String, SkillsError> {\n-        let mut out = serde_json::to_string_pretty(self)?;\n-        out.push('\\n');\n-        Ok(out)\n+        Ok(\"xyzzy\".into()) /* ~ changed by cargo-mutants ~ */\n     }\n \n     pub fn validate(&self) -> Result<(), SkillsError> {\n         for (name, entry) in &self.skills {\n             if !is_sha256_hex(&entry.computed_hash) {\n                 return Err(SkillsError::BadHash {\n                     name: name.clone(),\n                     got: entry.computed_hash.clone(),\n",
+    "file": "crates/rcx-registry-skills/src/lock.rs",
+    "function": {
+      "function_name": "SkillLock::to_json",
+      "return_type": "-> Result<String, SkillsError>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 80
+        },
+        "start": {
+          "column": 5,
+          "line": 74
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "crates/rcx-registry-skills/src/lock.rs:77:9: replace SkillLock::to_json -> Result<String, SkillsError> with Ok(\"xyzzy\".into())",
+    "package": "rcx-registry-skills",
+    "replacement": "Ok(\"xyzzy\".into())",
+    "span": {
+      "end": {
+        "column": 16,
+        "line": 79
+      },
+      "start": {
+        "column": 9,
+        "line": 77
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/lock.rs\n+++ replace SkillLock::validate -> Result<(), SkillsError> with Ok(())\n@@ -75,31 +75,17 @@\n     /// trailing newline.\n     pub fn to_json(&self) -> Result<String, SkillsError> {\n         let mut out = serde_json::to_string_pretty(self)?;\n         out.push('\\n');\n         Ok(out)\n     }\n \n     pub fn validate(&self) -> Result<(), SkillsError> {\n-        for (name, entry) in &self.skills {\n-            if !is_sha256_hex(&entry.computed_hash) {\n-                return Err(SkillsError::BadHash {\n-                    name: name.clone(),\n-                    got: entry.computed_hash.clone(),\n-                });\n-            }\n-            if entry.source_type != \"github\" {\n-                return Err(SkillsError::UnsupportedSource {\n-                    name: name.clone(),\n-                    source_type: entry.source_type.clone(),\n-                });\n-            }\n-        }\n-        Ok(())\n+        Ok(()) /* ~ changed by cargo-mutants ~ */\n     }\n \n     /// Check this lockfile may be signed, or say precisely why not.\n     ///\n     /// Separate from [`Self::validate`] on purpose: a v1 lockfile is a legitimate\n     /// thing to parse, fetch from, and relock. It is only signing that must refuse\n     /// it, because a signature over refless entries would look like a guarantee and\n     /// carry none.\n",
+    "file": "crates/rcx-registry-skills/src/lock.rs",
+    "function": {
+      "function_name": "SkillLock::validate",
+      "return_type": "-> Result<(), SkillsError>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 98
+        },
+        "start": {
+          "column": 5,
+          "line": 82
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "crates/rcx-registry-skills/src/lock.rs:83:9: replace SkillLock::validate -> Result<(), SkillsError> with Ok(())",
+    "package": "rcx-registry-skills",
+    "replacement": "Ok(())",
+    "span": {
+      "end": {
+        "column": 15,
+        "line": 97
+      },
+      "start": {
+        "column": 9,
+        "line": 83
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/lock.rs\n+++ delete ! in SkillLock::validate\n@@ -76,17 +76,17 @@\n     pub fn to_json(&self) -> Result<String, SkillsError> {\n         let mut out = serde_json::to_string_pretty(self)?;\n         out.push('\\n');\n         Ok(out)\n     }\n \n     pub fn validate(&self) -> Result<(), SkillsError> {\n         for (name, entry) in &self.skills {\n-            if !is_sha256_hex(&entry.computed_hash) {\n+            if  /* ~ changed by cargo-mutants ~ */is_sha256_hex(&entry.computed_hash) {\n                 return Err(SkillsError::BadHash {\n                     name: name.clone(),\n                     got: entry.computed_hash.clone(),\n                 });\n             }\n             if entry.source_type != \"github\" {\n                 return Err(SkillsError::UnsupportedSource {\n                     name: name.clone(),\n",
+    "file": "crates/rcx-registry-skills/src/lock.rs",
+    "function": {
+      "function_name": "SkillLock::validate",
+      "return_type": "-> Result<(), SkillsError>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 98
+        },
+        "start": {
+          "column": 5,
+          "line": 82
+        }
+      }
+    },
+    "genre": "UnaryOperator",
+    "name": "crates/rcx-registry-skills/src/lock.rs:84:16: delete ! in SkillLock::validate",
+    "package": "rcx-registry-skills",
+    "replacement": "",
+    "span": {
+      "end": {
+        "column": 17,
+        "line": 84
+      },
+      "start": {
+        "column": 16,
+        "line": 84
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/lock.rs\n+++ replace != with == in SkillLock::validate\n@@ -82,17 +82,17 @@\n     pub fn validate(&self) -> Result<(), SkillsError> {\n         for (name, entry) in &self.skills {\n             if !is_sha256_hex(&entry.computed_hash) {\n                 return Err(SkillsError::BadHash {\n                     name: name.clone(),\n                     got: entry.computed_hash.clone(),\n                 });\n             }\n-            if entry.source_type != \"github\" {\n+            if entry.source_type == /* ~ changed by cargo-mutants ~ */ \"github\" {\n                 return Err(SkillsError::UnsupportedSource {\n                     name: name.clone(),\n                     source_type: entry.source_type.clone(),\n                 });\n             }\n         }\n         Ok(())\n     }\n",
+    "file": "crates/rcx-registry-skills/src/lock.rs",
+    "function": {
+      "function_name": "SkillLock::validate",
+      "return_type": "-> Result<(), SkillsError>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 98
+        },
+        "start": {
+          "column": 5,
+          "line": 82
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "crates/rcx-registry-skills/src/lock.rs:90:34: replace != with == in SkillLock::validate",
+    "package": "rcx-registry-skills",
+    "replacement": "==",
+    "span": {
+      "end": {
+        "column": 36,
+        "line": 90
+      },
+      "start": {
+        "column": 34,
+        "line": 90
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/lock.rs\n+++ replace SkillLock::signable -> Result<(), SkillsError> with Ok(())\n@@ -99,41 +99,17 @@\n \n     /// Check this lockfile may be signed, or say precisely why not.\n     ///\n     /// Separate from [`Self::validate`] on purpose: a v1 lockfile is a legitimate\n     /// thing to parse, fetch from, and relock. It is only signing that must refuse\n     /// it, because a signature over refless entries would look like a guarantee and\n     /// carry none.\n     pub fn signable(&self) -> Result<(), SkillsError> {\n-        if self.version < MIN_SIGNABLE_LOCK_VERSION {\n-            return Err(SkillsError::NotSignable {\n-                reason: format!(\n-                    \"lockfile version {} is below the minimum signable version {MIN_SIGNABLE_LOCK_VERSION} (no `ref` field, so a digest mismatch cannot be attributed)\",\n-                    self.version\n-                ),\n-            });\n-        }\n-        if self.skills.is_empty() {\n-            return Err(SkillsError::NotSignable {\n-                reason: \"refusing to sign an empty lockfile — an empty Merkle root attests nothing\"\n-                    .to_string(),\n-            });\n-        }\n-        for (name, entry) in &self.skills {\n-            if !is_git_sha_hex(&entry.git_ref) {\n-                return Err(SkillsError::NotSignable {\n-                    reason: format!(\n-                        \"entry `{name}` has ref {:?}; a full 40-hex commit id is required\",\n-                        entry.git_ref\n-                    ),\n-                });\n-            }\n-        }\n-        Ok(())\n+        Ok(()) /* ~ changed by cargo-mutants ~ */\n     }\n \n     pub fn len(&self) -> usize {\n         self.skills.len()\n     }\n \n     pub fn is_empty(&self) -> bool {\n         self.skills.is_empty()\n",
+    "file": "crates/rcx-registry-skills/src/lock.rs",
+    "function": {
+      "function_name": "SkillLock::signable",
+      "return_type": "-> Result<(), SkillsError>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 132
+        },
+        "start": {
+          "column": 5,
+          "line": 100
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "crates/rcx-registry-skills/src/lock.rs:107:9: replace SkillLock::signable -> Result<(), SkillsError> with Ok(())",
+    "package": "rcx-registry-skills",
+    "replacement": "Ok(())",
+    "span": {
+      "end": {
+        "column": 15,
+        "line": 131
+      },
+      "start": {
+        "column": 9,
+        "line": 107
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/lock.rs\n+++ replace < with == in SkillLock::signable\n@@ -99,17 +99,17 @@\n \n     /// Check this lockfile may be signed, or say precisely why not.\n     ///\n     /// Separate from [`Self::validate`] on purpose: a v1 lockfile is a legitimate\n     /// thing to parse, fetch from, and relock. It is only signing that must refuse\n     /// it, because a signature over refless entries would look like a guarantee and\n     /// carry none.\n     pub fn signable(&self) -> Result<(), SkillsError> {\n-        if self.version < MIN_SIGNABLE_LOCK_VERSION {\n+        if self.version == /* ~ changed by cargo-mutants ~ */ MIN_SIGNABLE_LOCK_VERSION {\n             return Err(SkillsError::NotSignable {\n                 reason: format!(\n                     \"lockfile version {} is below the minimum signable version {MIN_SIGNABLE_LOCK_VERSION} (no `ref` field, so a digest mismatch cannot be attributed)\",\n                     self.version\n                 ),\n             });\n         }\n         if self.skills.is_empty() {\n",
+    "file": "crates/rcx-registry-skills/src/lock.rs",
+    "function": {
+      "function_name": "SkillLock::signable",
+      "return_type": "-> Result<(), SkillsError>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 132
+        },
+        "start": {
+          "column": 5,
+          "line": 100
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "crates/rcx-registry-skills/src/lock.rs:107:25: replace < with == in SkillLock::signable",
+    "package": "rcx-registry-skills",
+    "replacement": "==",
+    "span": {
+      "end": {
+        "column": 26,
+        "line": 107
+      },
+      "start": {
+        "column": 25,
+        "line": 107
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/lock.rs\n+++ replace < with > in SkillLock::signable\n@@ -99,17 +99,17 @@\n \n     /// Check this lockfile may be signed, or say precisely why not.\n     ///\n     /// Separate from [`Self::validate`] on purpose: a v1 lockfile is a legitimate\n     /// thing to parse, fetch from, and relock. It is only signing that must refuse\n     /// it, because a signature over refless entries would look like a guarantee and\n     /// carry none.\n     pub fn signable(&self) -> Result<(), SkillsError> {\n-        if self.version < MIN_SIGNABLE_LOCK_VERSION {\n+        if self.version > /* ~ changed by cargo-mutants ~ */ MIN_SIGNABLE_LOCK_VERSION {\n             return Err(SkillsError::NotSignable {\n                 reason: format!(\n                     \"lockfile version {} is below the minimum signable version {MIN_SIGNABLE_LOCK_VERSION} (no `ref` field, so a digest mismatch cannot be attributed)\",\n                     self.version\n                 ),\n             });\n         }\n         if self.skills.is_empty() {\n",
+    "file": "crates/rcx-registry-skills/src/lock.rs",
+    "function": {
+      "function_name": "SkillLock::signable",
+      "return_type": "-> Result<(), SkillsError>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 132
+        },
+        "start": {
+          "column": 5,
+          "line": 100
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "crates/rcx-registry-skills/src/lock.rs:107:25: replace < with > in SkillLock::signable",
+    "package": "rcx-registry-skills",
+    "replacement": ">",
+    "span": {
+      "end": {
+        "column": 26,
+        "line": 107
+      },
+      "start": {
+        "column": 25,
+        "line": 107
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/lock.rs\n+++ replace < with <= in SkillLock::signable\n@@ -99,17 +99,17 @@\n \n     /// Check this lockfile may be signed, or say precisely why not.\n     ///\n     /// Separate from [`Self::validate`] on purpose: a v1 lockfile is a legitimate\n     /// thing to parse, fetch from, and relock. It is only signing that must refuse\n     /// it, because a signature over refless entries would look like a guarantee and\n     /// carry none.\n     pub fn signable(&self) -> Result<(), SkillsError> {\n-        if self.version < MIN_SIGNABLE_LOCK_VERSION {\n+        if self.version <= /* ~ changed by cargo-mutants ~ */ MIN_SIGNABLE_LOCK_VERSION {\n             return Err(SkillsError::NotSignable {\n                 reason: format!(\n                     \"lockfile version {} is below the minimum signable version {MIN_SIGNABLE_LOCK_VERSION} (no `ref` field, so a digest mismatch cannot be attributed)\",\n                     self.version\n                 ),\n             });\n         }\n         if self.skills.is_empty() {\n",
+    "file": "crates/rcx-registry-skills/src/lock.rs",
+    "function": {
+      "function_name": "SkillLock::signable",
+      "return_type": "-> Result<(), SkillsError>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 132
+        },
+        "start": {
+          "column": 5,
+          "line": 100
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "crates/rcx-registry-skills/src/lock.rs:107:25: replace < with <= in SkillLock::signable",
+    "package": "rcx-registry-skills",
+    "replacement": "<=",
+    "span": {
+      "end": {
+        "column": 26,
+        "line": 107
+      },
+      "start": {
+        "column": 25,
+        "line": 107
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/lock.rs\n+++ delete ! in SkillLock::signable\n@@ -114,17 +114,17 @@\n         }\n         if self.skills.is_empty() {\n             return Err(SkillsError::NotSignable {\n                 reason: \"refusing to sign an empty lockfile — an empty Merkle root attests nothing\"\n                     .to_string(),\n             });\n         }\n         for (name, entry) in &self.skills {\n-            if !is_git_sha_hex(&entry.git_ref) {\n+            if  /* ~ changed by cargo-mutants ~ */is_git_sha_hex(&entry.git_ref) {\n                 return Err(SkillsError::NotSignable {\n                     reason: format!(\n                         \"entry `{name}` has ref {:?}; a full 40-hex commit id is required\",\n                         entry.git_ref\n                     ),\n                 });\n             }\n         }\n",
+    "file": "crates/rcx-registry-skills/src/lock.rs",
+    "function": {
+      "function_name": "SkillLock::signable",
+      "return_type": "-> Result<(), SkillsError>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 132
+        },
+        "start": {
+          "column": 5,
+          "line": 100
+        }
+      }
+    },
+    "genre": "UnaryOperator",
+    "name": "crates/rcx-registry-skills/src/lock.rs:122:16: delete ! in SkillLock::signable",
+    "package": "rcx-registry-skills",
+    "replacement": "",
+    "span": {
+      "end": {
+        "column": 17,
+        "line": 122
+      },
+      "start": {
+        "column": 16,
+        "line": 122
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/lock.rs\n+++ replace SkillLock::len -> usize with 0\n@@ -127,17 +127,17 @@\n                     ),\n                 });\n             }\n         }\n         Ok(())\n     }\n \n     pub fn len(&self) -> usize {\n-        self.skills.len()\n+        0 /* ~ changed by cargo-mutants ~ */\n     }\n \n     pub fn is_empty(&self) -> bool {\n         self.skills.is_empty()\n     }\n }\n \n /// 64 lowercase hex characters. Uppercase is rejected rather than normalised — two\n",
+    "file": "crates/rcx-registry-skills/src/lock.rs",
+    "function": {
+      "function_name": "SkillLock::len",
+      "return_type": "-> usize",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 136
+        },
+        "start": {
+          "column": 5,
+          "line": 134
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "crates/rcx-registry-skills/src/lock.rs:135:9: replace SkillLock::len -> usize with 0",
+    "package": "rcx-registry-skills",
+    "replacement": "0",
+    "span": {
+      "end": {
+        "column": 26,
+        "line": 135
+      },
+      "start": {
+        "column": 9,
+        "line": 135
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/lock.rs\n+++ replace SkillLock::len -> usize with 1\n@@ -127,17 +127,17 @@\n                     ),\n                 });\n             }\n         }\n         Ok(())\n     }\n \n     pub fn len(&self) -> usize {\n-        self.skills.len()\n+        1 /* ~ changed by cargo-mutants ~ */\n     }\n \n     pub fn is_empty(&self) -> bool {\n         self.skills.is_empty()\n     }\n }\n \n /// 64 lowercase hex characters. Uppercase is rejected rather than normalised — two\n",
+    "file": "crates/rcx-registry-skills/src/lock.rs",
+    "function": {
+      "function_name": "SkillLock::len",
+      "return_type": "-> usize",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 136
+        },
+        "start": {
+          "column": 5,
+          "line": 134
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "crates/rcx-registry-skills/src/lock.rs:135:9: replace SkillLock::len -> usize with 1",
+    "package": "rcx-registry-skills",
+    "replacement": "1",
+    "span": {
+      "end": {
+        "column": 26,
+        "line": 135
+      },
+      "start": {
+        "column": 9,
+        "line": 135
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/lock.rs\n+++ replace SkillLock::is_empty -> bool with true\n@@ -131,17 +131,17 @@\n         Ok(())\n     }\n \n     pub fn len(&self) -> usize {\n         self.skills.len()\n     }\n \n     pub fn is_empty(&self) -> bool {\n-        self.skills.is_empty()\n+        true /* ~ changed by cargo-mutants ~ */\n     }\n }\n \n /// 64 lowercase hex characters. Uppercase is rejected rather than normalised — two\n /// spellings of one digest would give the signed snapshot two valid forms.\n fn is_sha256_hex(s: &str) -> bool {\n     is_lower_hex(s, 64)\n }\n",
+    "file": "crates/rcx-registry-skills/src/lock.rs",
+    "function": {
+      "function_name": "SkillLock::is_empty",
+      "return_type": "-> bool",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 140
+        },
+        "start": {
+          "column": 5,
+          "line": 138
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "crates/rcx-registry-skills/src/lock.rs:139:9: replace SkillLock::is_empty -> bool with true",
+    "package": "rcx-registry-skills",
+    "replacement": "true",
+    "span": {
+      "end": {
+        "column": 31,
+        "line": 139
+      },
+      "start": {
+        "column": 9,
+        "line": 139
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/lock.rs\n+++ replace SkillLock::is_empty -> bool with false\n@@ -131,17 +131,17 @@\n         Ok(())\n     }\n \n     pub fn len(&self) -> usize {\n         self.skills.len()\n     }\n \n     pub fn is_empty(&self) -> bool {\n-        self.skills.is_empty()\n+        false /* ~ changed by cargo-mutants ~ */\n     }\n }\n \n /// 64 lowercase hex characters. Uppercase is rejected rather than normalised — two\n /// spellings of one digest would give the signed snapshot two valid forms.\n fn is_sha256_hex(s: &str) -> bool {\n     is_lower_hex(s, 64)\n }\n",
+    "file": "crates/rcx-registry-skills/src/lock.rs",
+    "function": {
+      "function_name": "SkillLock::is_empty",
+      "return_type": "-> bool",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 140
+        },
+        "start": {
+          "column": 5,
+          "line": 138
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "crates/rcx-registry-skills/src/lock.rs:139:9: replace SkillLock::is_empty -> bool with false",
+    "package": "rcx-registry-skills",
+    "replacement": "false",
+    "span": {
+      "end": {
+        "column": 31,
+        "line": 139
+      },
+      "start": {
+        "column": 9,
+        "line": 139
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/lock.rs\n+++ replace is_sha256_hex -> bool with true\n@@ -138,17 +138,17 @@\n     pub fn is_empty(&self) -> bool {\n         self.skills.is_empty()\n     }\n }\n \n /// 64 lowercase hex characters. Uppercase is rejected rather than normalised — two\n /// spellings of one digest would give the signed snapshot two valid forms.\n fn is_sha256_hex(s: &str) -> bool {\n-    is_lower_hex(s, 64)\n+    true /* ~ changed by cargo-mutants ~ */\n }\n \n /// A full git object id: 40 lowercase hex characters. Abbreviated ids are rejected\n /// — they are ambiguous by construction, and an ambiguous ref cannot pin content.\n fn is_git_sha_hex(s: &str) -> bool {\n     is_lower_hex(s, 40)\n }\n \n",
+    "file": "crates/rcx-registry-skills/src/lock.rs",
+    "function": {
+      "function_name": "is_sha256_hex",
+      "return_type": "-> bool",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 147
+        },
+        "start": {
+          "column": 1,
+          "line": 143
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "crates/rcx-registry-skills/src/lock.rs:146:5: replace is_sha256_hex -> bool with true",
+    "package": "rcx-registry-skills",
+    "replacement": "true",
+    "span": {
+      "end": {
+        "column": 24,
+        "line": 146
+      },
+      "start": {
+        "column": 5,
+        "line": 146
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/lock.rs\n+++ replace is_sha256_hex -> bool with false\n@@ -138,17 +138,17 @@\n     pub fn is_empty(&self) -> bool {\n         self.skills.is_empty()\n     }\n }\n \n /// 64 lowercase hex characters. Uppercase is rejected rather than normalised — two\n /// spellings of one digest would give the signed snapshot two valid forms.\n fn is_sha256_hex(s: &str) -> bool {\n-    is_lower_hex(s, 64)\n+    false /* ~ changed by cargo-mutants ~ */\n }\n \n /// A full git object id: 40 lowercase hex characters. Abbreviated ids are rejected\n /// — they are ambiguous by construction, and an ambiguous ref cannot pin content.\n fn is_git_sha_hex(s: &str) -> bool {\n     is_lower_hex(s, 40)\n }\n \n",
+    "file": "crates/rcx-registry-skills/src/lock.rs",
+    "function": {
+      "function_name": "is_sha256_hex",
+      "return_type": "-> bool",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 147
+        },
+        "start": {
+          "column": 1,
+          "line": 143
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "crates/rcx-registry-skills/src/lock.rs:146:5: replace is_sha256_hex -> bool with false",
+    "package": "rcx-registry-skills",
+    "replacement": "false",
+    "span": {
+      "end": {
+        "column": 24,
+        "line": 146
+      },
+      "start": {
+        "column": 5,
+        "line": 146
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/lock.rs\n+++ replace is_git_sha_hex -> bool with true\n@@ -144,17 +144,17 @@\n /// spellings of one digest would give the signed snapshot two valid forms.\n fn is_sha256_hex(s: &str) -> bool {\n     is_lower_hex(s, 64)\n }\n \n /// A full git object id: 40 lowercase hex characters. Abbreviated ids are rejected\n /// — they are ambiguous by construction, and an ambiguous ref cannot pin content.\n fn is_git_sha_hex(s: &str) -> bool {\n-    is_lower_hex(s, 40)\n+    true /* ~ changed by cargo-mutants ~ */\n }\n \n fn is_lower_hex(s: &str, len: usize) -> bool {\n     s.len() == len\n         && s.bytes()\n             .all(|b| b.is_ascii_digit() || (b'a'..=b'f').contains(&b))\n }\n \n",
+    "file": "crates/rcx-registry-skills/src/lock.rs",
+    "function": {
+      "function_name": "is_git_sha_hex",
+      "return_type": "-> bool",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 153
+        },
+        "start": {
+          "column": 1,
+          "line": 149
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "crates/rcx-registry-skills/src/lock.rs:152:5: replace is_git_sha_hex -> bool with true",
+    "package": "rcx-registry-skills",
+    "replacement": "true",
+    "span": {
+      "end": {
+        "column": 24,
+        "line": 152
+      },
+      "start": {
+        "column": 5,
+        "line": 152
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/lock.rs\n+++ replace is_git_sha_hex -> bool with false\n@@ -144,17 +144,17 @@\n /// spellings of one digest would give the signed snapshot two valid forms.\n fn is_sha256_hex(s: &str) -> bool {\n     is_lower_hex(s, 64)\n }\n \n /// A full git object id: 40 lowercase hex characters. Abbreviated ids are rejected\n /// — they are ambiguous by construction, and an ambiguous ref cannot pin content.\n fn is_git_sha_hex(s: &str) -> bool {\n-    is_lower_hex(s, 40)\n+    false /* ~ changed by cargo-mutants ~ */\n }\n \n fn is_lower_hex(s: &str, len: usize) -> bool {\n     s.len() == len\n         && s.bytes()\n             .all(|b| b.is_ascii_digit() || (b'a'..=b'f').contains(&b))\n }\n \n",
+    "file": "crates/rcx-registry-skills/src/lock.rs",
+    "function": {
+      "function_name": "is_git_sha_hex",
+      "return_type": "-> bool",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 153
+        },
+        "start": {
+          "column": 1,
+          "line": 149
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "crates/rcx-registry-skills/src/lock.rs:152:5: replace is_git_sha_hex -> bool with false",
+    "package": "rcx-registry-skills",
+    "replacement": "false",
+    "span": {
+      "end": {
+        "column": 24,
+        "line": 152
+      },
+      "start": {
+        "column": 5,
+        "line": 152
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/lock.rs\n+++ replace is_lower_hex -> bool with true\n@@ -148,19 +148,17 @@\n \n /// A full git object id: 40 lowercase hex characters. Abbreviated ids are rejected\n /// — they are ambiguous by construction, and an ambiguous ref cannot pin content.\n fn is_git_sha_hex(s: &str) -> bool {\n     is_lower_hex(s, 40)\n }\n \n fn is_lower_hex(s: &str, len: usize) -> bool {\n-    s.len() == len\n-        && s.bytes()\n-            .all(|b| b.is_ascii_digit() || (b'a'..=b'f').contains(&b))\n+    true /* ~ changed by cargo-mutants ~ */\n }\n \n #[cfg(test)]\n mod tests {\n     use super::*;\n \n     fn entry(hash: &str) -> LockEntry {\n         LockEntry {\n",
+    "file": "crates/rcx-registry-skills/src/lock.rs",
+    "function": {
+      "function_name": "is_lower_hex",
+      "return_type": "-> bool",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 159
+        },
+        "start": {
+          "column": 1,
+          "line": 155
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "crates/rcx-registry-skills/src/lock.rs:156:5: replace is_lower_hex -> bool with true",
+    "package": "rcx-registry-skills",
+    "replacement": "true",
+    "span": {
+      "end": {
+        "column": 71,
+        "line": 158
+      },
+      "start": {
+        "column": 5,
+        "line": 156
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/lock.rs\n+++ replace is_lower_hex -> bool with false\n@@ -148,19 +148,17 @@\n \n /// A full git object id: 40 lowercase hex characters. Abbreviated ids are rejected\n /// — they are ambiguous by construction, and an ambiguous ref cannot pin content.\n fn is_git_sha_hex(s: &str) -> bool {\n     is_lower_hex(s, 40)\n }\n \n fn is_lower_hex(s: &str, len: usize) -> bool {\n-    s.len() == len\n-        && s.bytes()\n-            .all(|b| b.is_ascii_digit() || (b'a'..=b'f').contains(&b))\n+    false /* ~ changed by cargo-mutants ~ */\n }\n \n #[cfg(test)]\n mod tests {\n     use super::*;\n \n     fn entry(hash: &str) -> LockEntry {\n         LockEntry {\n",
+    "file": "crates/rcx-registry-skills/src/lock.rs",
+    "function": {
+      "function_name": "is_lower_hex",
+      "return_type": "-> bool",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 159
+        },
+        "start": {
+          "column": 1,
+          "line": 155
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "crates/rcx-registry-skills/src/lock.rs:156:5: replace is_lower_hex -> bool with false",
+    "package": "rcx-registry-skills",
+    "replacement": "false",
+    "span": {
+      "end": {
+        "column": 71,
+        "line": 158
+      },
+      "start": {
+        "column": 5,
+        "line": 156
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/lock.rs\n+++ replace && with || in is_lower_hex\n@@ -149,17 +149,17 @@\n /// A full git object id: 40 lowercase hex characters. Abbreviated ids are rejected\n /// — they are ambiguous by construction, and an ambiguous ref cannot pin content.\n fn is_git_sha_hex(s: &str) -> bool {\n     is_lower_hex(s, 40)\n }\n \n fn is_lower_hex(s: &str, len: usize) -> bool {\n     s.len() == len\n-        && s.bytes()\n+        || /* ~ changed by cargo-mutants ~ */ s.bytes()\n             .all(|b| b.is_ascii_digit() || (b'a'..=b'f').contains(&b))\n }\n \n #[cfg(test)]\n mod tests {\n     use super::*;\n \n     fn entry(hash: &str) -> LockEntry {\n",
+    "file": "crates/rcx-registry-skills/src/lock.rs",
+    "function": {
+      "function_name": "is_lower_hex",
+      "return_type": "-> bool",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 159
+        },
+        "start": {
+          "column": 1,
+          "line": 155
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "crates/rcx-registry-skills/src/lock.rs:157:9: replace && with || in is_lower_hex",
+    "package": "rcx-registry-skills",
+    "replacement": "||",
+    "span": {
+      "end": {
+        "column": 11,
+        "line": 157
+      },
+      "start": {
+        "column": 9,
+        "line": 157
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/lock.rs\n+++ replace == with != in is_lower_hex\n@@ -148,17 +148,17 @@\n \n /// A full git object id: 40 lowercase hex characters. Abbreviated ids are rejected\n /// — they are ambiguous by construction, and an ambiguous ref cannot pin content.\n fn is_git_sha_hex(s: &str) -> bool {\n     is_lower_hex(s, 40)\n }\n \n fn is_lower_hex(s: &str, len: usize) -> bool {\n-    s.len() == len\n+    s.len() != /* ~ changed by cargo-mutants ~ */ len\n         && s.bytes()\n             .all(|b| b.is_ascii_digit() || (b'a'..=b'f').contains(&b))\n }\n \n #[cfg(test)]\n mod tests {\n     use super::*;\n \n",
+    "file": "crates/rcx-registry-skills/src/lock.rs",
+    "function": {
+      "function_name": "is_lower_hex",
+      "return_type": "-> bool",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 159
+        },
+        "start": {
+          "column": 1,
+          "line": 155
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "crates/rcx-registry-skills/src/lock.rs:156:13: replace == with != in is_lower_hex",
+    "package": "rcx-registry-skills",
+    "replacement": "!=",
+    "span": {
+      "end": {
+        "column": 15,
+        "line": 156
+      },
+      "start": {
+        "column": 13,
+        "line": 156
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/lock.rs\n+++ replace || with && in is_lower_hex\n@@ -150,17 +150,17 @@\n /// — they are ambiguous by construction, and an ambiguous ref cannot pin content.\n fn is_git_sha_hex(s: &str) -> bool {\n     is_lower_hex(s, 40)\n }\n \n fn is_lower_hex(s: &str, len: usize) -> bool {\n     s.len() == len\n         && s.bytes()\n-            .all(|b| b.is_ascii_digit() || (b'a'..=b'f').contains(&b))\n+            .all(|b| b.is_ascii_digit() && /* ~ changed by cargo-mutants ~ */ (b'a'..=b'f').contains(&b))\n }\n \n #[cfg(test)]\n mod tests {\n     use super::*;\n \n     fn entry(hash: &str) -> LockEntry {\n         LockEntry {\n",
+    "file": "crates/rcx-registry-skills/src/lock.rs",
+    "function": {
+      "function_name": "is_lower_hex",
+      "return_type": "-> bool",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 159
+        },
+        "start": {
+          "column": 1,
+          "line": 155
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "crates/rcx-registry-skills/src/lock.rs:158:41: replace || with && in is_lower_hex",
+    "package": "rcx-registry-skills",
+    "replacement": "&&",
+    "span": {
+      "end": {
+        "column": 43,
+        "line": 158
+      },
+      "start": {
+        "column": 41,
+        "line": 158
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/sign.rs\n+++ replace digest_entries -> Vec<SnapshotEntry> with vec![]\n@@ -28,33 +28,17 @@\n \n /// Project a lockfile onto the digest entries the Merkle root is taken over.\n ///\n /// `version` in the digest is the **commit ref**, not a semver: it is what makes\n /// two lockings of the same skill at different commits distinct leaves. Entries are\n /// framed and sorted inside `snapshot_merkle_root`, so map iteration order here\n /// cannot affect the root.\n pub fn digest_entries(lock: &SkillLock) -> Vec<SnapshotEntry> {\n-    lock.skills\n-        .iter()\n-        .map(|(name, entry)| {\n-            // Every field that identifies the content enters the digest. `source`\n-            // and `skillPath` are included because the same bytes fetched from a\n-            // different repo is a different provenance claim, and the root must\n-            // move when provenance moves.\n-            let canonical = canonicalize_json(&json!({\n-                \"source\": entry.source,\n-                \"sourceType\": entry.source_type,\n-                \"skillPath\": entry.skill_path,\n-                \"ref\": entry.git_ref,\n-                \"computedHash\": entry.computed_hash,\n-            }));\n-            SnapshotEntry::new(name.clone(), entry.git_ref.clone(), canonical)\n-        })\n-        .collect()\n+    vec![] /* ~ changed by cargo-mutants ~ */\n }\n \n /// Merkle root over a lockfile.\n ///\n /// Refuses unsignable lockfiles rather than returning a root nobody should use —\n /// a root is only meaningful if the entries under it can be re-derived.\n pub fn lock_merkle_root(lock: &SkillLock) -> Result<[u8; HASH_LEN], SkillsError> {\n     lock.signable()?;\n",
+    "file": "crates/rcx-registry-skills/src/sign.rs",
+    "function": {
+      "function_name": "digest_entries",
+      "return_type": "-> Vec<SnapshotEntry>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 53
+        },
+        "start": {
+          "column": 1,
+          "line": 29
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "crates/rcx-registry-skills/src/sign.rs:36:5: replace digest_entries -> Vec<SnapshotEntry> with vec![]",
+    "package": "rcx-registry-skills",
+    "replacement": "vec![]",
+    "span": {
+      "end": {
+        "column": 19,
+        "line": 52
+      },
+      "start": {
+        "column": 5,
+        "line": 36
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/sign.rs\n+++ replace digest_entries -> Vec<SnapshotEntry> with vec![Default::default()]\n@@ -28,33 +28,17 @@\n \n /// Project a lockfile onto the digest entries the Merkle root is taken over.\n ///\n /// `version` in the digest is the **commit ref**, not a semver: it is what makes\n /// two lockings of the same skill at different commits distinct leaves. Entries are\n /// framed and sorted inside `snapshot_merkle_root`, so map iteration order here\n /// cannot affect the root.\n pub fn digest_entries(lock: &SkillLock) -> Vec<SnapshotEntry> {\n-    lock.skills\n-        .iter()\n-        .map(|(name, entry)| {\n-            // Every field that identifies the content enters the digest. `source`\n-            // and `skillPath` are included because the same bytes fetched from a\n-            // different repo is a different provenance claim, and the root must\n-            // move when provenance moves.\n-            let canonical = canonicalize_json(&json!({\n-                \"source\": entry.source,\n-                \"sourceType\": entry.source_type,\n-                \"skillPath\": entry.skill_path,\n-                \"ref\": entry.git_ref,\n-                \"computedHash\": entry.computed_hash,\n-            }));\n-            SnapshotEntry::new(name.clone(), entry.git_ref.clone(), canonical)\n-        })\n-        .collect()\n+    vec![Default::default()] /* ~ changed by cargo-mutants ~ */\n }\n \n /// Merkle root over a lockfile.\n ///\n /// Refuses unsignable lockfiles rather than returning a root nobody should use —\n /// a root is only meaningful if the entries under it can be re-derived.\n pub fn lock_merkle_root(lock: &SkillLock) -> Result<[u8; HASH_LEN], SkillsError> {\n     lock.signable()?;\n",
+    "file": "crates/rcx-registry-skills/src/sign.rs",
+    "function": {
+      "function_name": "digest_entries",
+      "return_type": "-> Vec<SnapshotEntry>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 53
+        },
+        "start": {
+          "column": 1,
+          "line": 29
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "crates/rcx-registry-skills/src/sign.rs:36:5: replace digest_entries -> Vec<SnapshotEntry> with vec![Default::default()]",
+    "package": "rcx-registry-skills",
+    "replacement": "vec![Default::default()]",
+    "span": {
+      "end": {
+        "column": 19,
+        "line": 52
+      },
+      "start": {
+        "column": 5,
+        "line": 36
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/sign.rs\n+++ replace lock_merkle_root -> Result<[u8; HASH_LEN], SkillsError> with Ok([0; HASH_LEN])\n@@ -52,18 +52,17 @@\n         .collect()\n }\n \n /// Merkle root over a lockfile.\n ///\n /// Refuses unsignable lockfiles rather than returning a root nobody should use —\n /// a root is only meaningful if the entries under it can be re-derived.\n pub fn lock_merkle_root(lock: &SkillLock) -> Result<[u8; HASH_LEN], SkillsError> {\n-    lock.signable()?;\n-    Ok(snapshot_merkle_root(&digest_entries(lock)))\n+    Ok([0; HASH_LEN]) /* ~ changed by cargo-mutants ~ */\n }\n \n /// Everything about a receipt except the signature, which the caller's signer\n /// produces. Identifiers are caller-supplied so the reproducible part of the\n /// receipt stays reproducible.\n pub struct ReceiptDraft {\n     pub event_id: [u8; 16],\n     pub snapshot_id: [u8; 16],\n",
+    "file": "crates/rcx-registry-skills/src/sign.rs",
+    "function": {
+      "function_name": "lock_merkle_root",
+      "return_type": "-> Result<[u8; HASH_LEN], SkillsError>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 62
+        },
+        "start": {
+          "column": 1,
+          "line": 55
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "crates/rcx-registry-skills/src/sign.rs:60:5: replace lock_merkle_root -> Result<[u8; HASH_LEN], SkillsError> with Ok([0; HASH_LEN])",
+    "package": "rcx-registry-skills",
+    "replacement": "Ok([0; HASH_LEN])",
+    "span": {
+      "end": {
+        "column": 52,
+        "line": 61
+      },
+      "start": {
+        "column": 5,
+        "line": 60
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/sign.rs\n+++ replace lock_merkle_root -> Result<[u8; HASH_LEN], SkillsError> with Ok([1; HASH_LEN])\n@@ -52,18 +52,17 @@\n         .collect()\n }\n \n /// Merkle root over a lockfile.\n ///\n /// Refuses unsignable lockfiles rather than returning a root nobody should use —\n /// a root is only meaningful if the entries under it can be re-derived.\n pub fn lock_merkle_root(lock: &SkillLock) -> Result<[u8; HASH_LEN], SkillsError> {\n-    lock.signable()?;\n-    Ok(snapshot_merkle_root(&digest_entries(lock)))\n+    Ok([1; HASH_LEN]) /* ~ changed by cargo-mutants ~ */\n }\n \n /// Everything about a receipt except the signature, which the caller's signer\n /// produces. Identifiers are caller-supplied so the reproducible part of the\n /// receipt stays reproducible.\n pub struct ReceiptDraft {\n     pub event_id: [u8; 16],\n     pub snapshot_id: [u8; 16],\n",
+    "file": "crates/rcx-registry-skills/src/sign.rs",
+    "function": {
+      "function_name": "lock_merkle_root",
+      "return_type": "-> Result<[u8; HASH_LEN], SkillsError>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 62
+        },
+        "start": {
+          "column": 1,
+          "line": 55
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "crates/rcx-registry-skills/src/sign.rs:60:5: replace lock_merkle_root -> Result<[u8; HASH_LEN], SkillsError> with Ok([1; HASH_LEN])",
+    "package": "rcx-registry-skills",
+    "replacement": "Ok([1; HASH_LEN])",
+    "span": {
+      "end": {
+        "column": 52,
+        "line": 61
+      },
+      "start": {
+        "column": 5,
+        "line": 60
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/sign.rs\n+++ replace prepare_receipt -> Result<SkillSnapshotReceipt, SkillsError> with Ok(Default::default())\n@@ -74,30 +74,17 @@\n /// Build the receipt and its hash for `lock`, leaving the signature zeroed.\n ///\n /// Split from signing so the hash can be computed without holding a key — the\n /// server signs through Vault Transit, which never exposes one.\n pub fn prepare_receipt(\n     lock: &SkillLock,\n     draft: ReceiptDraft,\n ) -> Result<SkillSnapshotReceipt, SkillsError> {\n-    let root = lock_merkle_root(lock)?;\n-    let mut receipt = SkillSnapshotReceipt {\n-        event_id: draft.event_id,\n-        snapshot_id: draft.snapshot_id,\n-        skill_count: lock.len() as u64,\n-        lock_version: u64::from(lock.version),\n-        lock_merkle_root: root,\n-        previous_snapshot_hash: draft.previous_snapshot_hash,\n-        receipt_hash: [0u8; HASH_LEN],\n-        receipt_signature: [0u8; 64],\n-        signer_kid: draft.signer_kid,\n-    };\n-    receipt.receipt_hash = receipt.compute_hash();\n-    Ok(receipt)\n+    Ok(Default::default()) /* ~ changed by cargo-mutants ~ */\n }\n \n /// Exact bytes a signer must sign for `receipt`.\n ///\n /// The preimage is the canonical CBOR of the **whole** receipt with only\n /// `receipt_signature` zeroed — not the receipt hash, and not the fully-zeroed body\n /// that `compute_hash` uses. Three different byte strings are in play and signing\n /// the wrong one produces a signature that never verifies, with `BadSignature` as\n",
+    "file": "crates/rcx-registry-skills/src/sign.rs",
+    "function": {
+      "function_name": "prepare_receipt",
+      "return_type": "-> Result<SkillSnapshotReceipt, SkillsError>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 96
+        },
+        "start": {
+          "column": 1,
+          "line": 74
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "crates/rcx-registry-skills/src/sign.rs:82:5: replace prepare_receipt -> Result<SkillSnapshotReceipt, SkillsError> with Ok(Default::default())",
+    "package": "rcx-registry-skills",
+    "replacement": "Ok(Default::default())",
+    "span": {
+      "end": {
+        "column": 16,
+        "line": 95
+      },
+      "start": {
+        "column": 5,
+        "line": 82
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/sign.rs\n+++ replace signing_preimage -> Vec<u8> with vec![]\n@@ -103,19 +103,17 @@\n /// the wrong one produces a signature that never verifies, with `BadSignature` as\n /// the only symptom for all three.\n ///\n /// Crown has no exported helper for this, so callers reconstruct it by knowing to\n /// call `to_canonical_cbor()` *before* populating the signature field. That ordering\n /// requirement is invisible at the call site and easy to get backwards. This function\n /// zeroes the field itself, so it is correct whatever the receipt currently holds.\n pub fn signing_preimage(receipt: &SkillSnapshotReceipt) -> Vec<u8> {\n-    let mut unsigned = receipt.clone();\n-    unsigned.receipt_signature = [0u8; 64];\n-    unsigned.to_canonical_cbor()\n+    vec![] /* ~ changed by cargo-mutants ~ */\n }\n \n /// Sign `receipt` in place with a caller-supplied signer.\n ///\n /// The closure shape matches the server's Vault Transit signer, which never exposes\n /// a key — so this works for both a local test key and the production HSM path\n /// without either one reimplementing the preimage rule above.\n pub fn sign_receipt<E>(\n",
+    "file": "crates/rcx-registry-skills/src/sign.rs",
+    "function": {
+      "function_name": "signing_preimage",
+      "return_type": "-> Vec<u8>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 114
+        },
+        "start": {
+          "column": 1,
+          "line": 98
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "crates/rcx-registry-skills/src/sign.rs:111:5: replace signing_preimage -> Vec<u8> with vec![]",
+    "package": "rcx-registry-skills",
+    "replacement": "vec![]",
+    "span": {
+      "end": {
+        "column": 33,
+        "line": 113
+      },
+      "start": {
+        "column": 5,
+        "line": 111
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/sign.rs\n+++ replace signing_preimage -> Vec<u8> with vec![0]\n@@ -103,19 +103,17 @@\n /// the wrong one produces a signature that never verifies, with `BadSignature` as\n /// the only symptom for all three.\n ///\n /// Crown has no exported helper for this, so callers reconstruct it by knowing to\n /// call `to_canonical_cbor()` *before* populating the signature field. That ordering\n /// requirement is invisible at the call site and easy to get backwards. This function\n /// zeroes the field itself, so it is correct whatever the receipt currently holds.\n pub fn signing_preimage(receipt: &SkillSnapshotReceipt) -> Vec<u8> {\n-    let mut unsigned = receipt.clone();\n-    unsigned.receipt_signature = [0u8; 64];\n-    unsigned.to_canonical_cbor()\n+    vec![0] /* ~ changed by cargo-mutants ~ */\n }\n \n /// Sign `receipt` in place with a caller-supplied signer.\n ///\n /// The closure shape matches the server's Vault Transit signer, which never exposes\n /// a key — so this works for both a local test key and the production HSM path\n /// without either one reimplementing the preimage rule above.\n pub fn sign_receipt<E>(\n",
+    "file": "crates/rcx-registry-skills/src/sign.rs",
+    "function": {
+      "function_name": "signing_preimage",
+      "return_type": "-> Vec<u8>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 114
+        },
+        "start": {
+          "column": 1,
+          "line": 98
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "crates/rcx-registry-skills/src/sign.rs:111:5: replace signing_preimage -> Vec<u8> with vec![0]",
+    "package": "rcx-registry-skills",
+    "replacement": "vec![0]",
+    "span": {
+      "end": {
+        "column": 33,
+        "line": 113
+      },
+      "start": {
+        "column": 5,
+        "line": 111
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/sign.rs\n+++ replace signing_preimage -> Vec<u8> with vec![1]\n@@ -103,19 +103,17 @@\n /// the wrong one produces a signature that never verifies, with `BadSignature` as\n /// the only symptom for all three.\n ///\n /// Crown has no exported helper for this, so callers reconstruct it by knowing to\n /// call `to_canonical_cbor()` *before* populating the signature field. That ordering\n /// requirement is invisible at the call site and easy to get backwards. This function\n /// zeroes the field itself, so it is correct whatever the receipt currently holds.\n pub fn signing_preimage(receipt: &SkillSnapshotReceipt) -> Vec<u8> {\n-    let mut unsigned = receipt.clone();\n-    unsigned.receipt_signature = [0u8; 64];\n-    unsigned.to_canonical_cbor()\n+    vec![1] /* ~ changed by cargo-mutants ~ */\n }\n \n /// Sign `receipt` in place with a caller-supplied signer.\n ///\n /// The closure shape matches the server's Vault Transit signer, which never exposes\n /// a key — so this works for both a local test key and the production HSM path\n /// without either one reimplementing the preimage rule above.\n pub fn sign_receipt<E>(\n",
+    "file": "crates/rcx-registry-skills/src/sign.rs",
+    "function": {
+      "function_name": "signing_preimage",
+      "return_type": "-> Vec<u8>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 114
+        },
+        "start": {
+          "column": 1,
+          "line": 98
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "crates/rcx-registry-skills/src/sign.rs:111:5: replace signing_preimage -> Vec<u8> with vec![1]",
+    "package": "rcx-registry-skills",
+    "replacement": "vec![1]",
+    "span": {
+      "end": {
+        "column": 33,
+        "line": 113
+      },
+      "start": {
+        "column": 5,
+        "line": 111
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/sign.rs\n+++ replace sign_receipt -> Result<(), E> with Ok(())\n@@ -120,19 +120,17 @@\n /// without either one reimplementing the preimage rule above.\n pub fn sign_receipt<E>(\n     receipt: &mut SkillSnapshotReceipt,\n     sign: impl FnOnce(&[u8]) -> Result<[u8; 64], E>,\n ) -> Result<(), E> {\n     // Recompute rather than trust: a caller who mutated the body after\n     // `prepare_receipt` would otherwise sign a preimage that disagrees with the\n     // stored hash, and fail verification at the hash check with no clue why.\n-    receipt.receipt_hash = receipt.compute_hash();\n-    receipt.receipt_signature = sign(&signing_preimage(receipt))?;\n-    Ok(())\n+    Ok(()) /* ~ changed by cargo-mutants ~ */\n }\n \n /// Check a receipt against a lockfile and a public key.\n ///\n /// Both halves are required and neither implies the other: the signature proves the\n /// receipt came from the signer, and the root comparison proves the receipt is about\n /// *this* lockfile. Verifying only the signature would accept a validly signed\n /// receipt for a different set of skills — the substitution a lockfile signature\n",
+    "file": "crates/rcx-registry-skills/src/sign.rs",
+    "function": {
+      "function_name": "sign_receipt",
+      "return_type": "-> Result<(), E>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 131
+        },
+        "start": {
+          "column": 1,
+          "line": 116
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "crates/rcx-registry-skills/src/sign.rs:128:5: replace sign_receipt -> Result<(), E> with Ok(())",
+    "package": "rcx-registry-skills",
+    "replacement": "Ok(())",
+    "span": {
+      "end": {
+        "column": 11,
+        "line": 130
+      },
+      "start": {
+        "column": 5,
+        "line": 128
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/sign.rs\n+++ replace verify_lock_receipt -> Result<(), SkillsError> with Ok(())\n@@ -137,45 +137,10 @@\n /// *this* lockfile. Verifying only the signature would accept a validly signed\n /// receipt for a different set of skills — the substitution a lockfile signature\n /// exists to prevent.\n pub fn verify_lock_receipt(\n     lock: &SkillLock,\n     receipt: &SkillSnapshotReceipt,\n     public_key: &[u8],\n ) -> Result<(), SkillsError> {\n-    verify_receipt_signature(receipt, public_key).map_err(|error: CrownError| {\n-        SkillsError::NotSignable {\n-            reason: format!(\"receipt signature did not verify: {error}\"),\n-        }\n-    })?;\n-\n-    let recomputed = lock_merkle_root(lock)?;\n-    if recomputed != receipt.lock_merkle_root {\n-        return Err(SkillsError::NotSignable {\n-            reason: \"receipt is validly signed but its Merkle root does not match this lockfile\"\n-                .to_string(),\n-        });\n-    }\n-\n-    // Split rather than `||`-joined: a combined condition is satisfied by either\n-    // half, so a test that trips both at once never proves the other is checked.\n-    // `cargo-mutants` flagged exactly that — flipping the `||` to `&&` survived the\n-    // whole suite, because every case that changed the count also changed the root.\n-    if u64::from(lock.version) != receipt.lock_version {\n-        return Err(SkillsError::NotSignable {\n-            reason: format!(\n-                \"receipt describes lock version {} but this lockfile is version {}\",\n-                receipt.lock_version, lock.version\n-            ),\n-        });\n-    }\n-    if lock.len() as u64 != receipt.skill_count {\n-        return Err(SkillsError::NotSignable {\n-            reason: format!(\n-                \"receipt describes {} skills but this lockfile has {}\",\n-                receipt.skill_count,\n-                lock.len()\n-            ),\n-        });\n-    }\n-    Ok(())\n+    Ok(()) /* ~ changed by cargo-mutants ~ */\n }\n",
+    "file": "crates/rcx-registry-skills/src/sign.rs",
+    "function": {
+      "function_name": "verify_lock_receipt",
+      "return_type": "-> Result<(), SkillsError>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 181
+        },
+        "start": {
+          "column": 1,
+          "line": 133
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "crates/rcx-registry-skills/src/sign.rs:145:5: replace verify_lock_receipt -> Result<(), SkillsError> with Ok(())",
+    "package": "rcx-registry-skills",
+    "replacement": "Ok(())",
+    "span": {
+      "end": {
+        "column": 11,
+        "line": 180
+      },
+      "start": {
+        "column": 5,
+        "line": 145
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/sign.rs\n+++ replace != with == in verify_lock_receipt\n@@ -144,17 +144,17 @@\n ) -> Result<(), SkillsError> {\n     verify_receipt_signature(receipt, public_key).map_err(|error: CrownError| {\n         SkillsError::NotSignable {\n             reason: format!(\"receipt signature did not verify: {error}\"),\n         }\n     })?;\n \n     let recomputed = lock_merkle_root(lock)?;\n-    if recomputed != receipt.lock_merkle_root {\n+    if recomputed == /* ~ changed by cargo-mutants ~ */ receipt.lock_merkle_root {\n         return Err(SkillsError::NotSignable {\n             reason: \"receipt is validly signed but its Merkle root does not match this lockfile\"\n                 .to_string(),\n         });\n     }\n \n     // Split rather than `||`-joined: a combined condition is satisfied by either\n     // half, so a test that trips both at once never proves the other is checked.\n",
+    "file": "crates/rcx-registry-skills/src/sign.rs",
+    "function": {
+      "function_name": "verify_lock_receipt",
+      "return_type": "-> Result<(), SkillsError>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 181
+        },
+        "start": {
+          "column": 1,
+          "line": 133
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "crates/rcx-registry-skills/src/sign.rs:152:19: replace != with == in verify_lock_receipt",
+    "package": "rcx-registry-skills",
+    "replacement": "==",
+    "span": {
+      "end": {
+        "column": 21,
+        "line": 152
+      },
+      "start": {
+        "column": 19,
+        "line": 152
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/sign.rs\n+++ replace != with == in verify_lock_receipt\n@@ -155,17 +155,17 @@\n                 .to_string(),\n         });\n     }\n \n     // Split rather than `||`-joined: a combined condition is satisfied by either\n     // half, so a test that trips both at once never proves the other is checked.\n     // `cargo-mutants` flagged exactly that — flipping the `||` to `&&` survived the\n     // whole suite, because every case that changed the count also changed the root.\n-    if u64::from(lock.version) != receipt.lock_version {\n+    if u64::from(lock.version) == /* ~ changed by cargo-mutants ~ */ receipt.lock_version {\n         return Err(SkillsError::NotSignable {\n             reason: format!(\n                 \"receipt describes lock version {} but this lockfile is version {}\",\n                 receipt.lock_version, lock.version\n             ),\n         });\n     }\n     if lock.len() as u64 != receipt.skill_count {\n",
+    "file": "crates/rcx-registry-skills/src/sign.rs",
+    "function": {
+      "function_name": "verify_lock_receipt",
+      "return_type": "-> Result<(), SkillsError>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 181
+        },
+        "start": {
+          "column": 1,
+          "line": 133
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "crates/rcx-registry-skills/src/sign.rs:163:32: replace != with == in verify_lock_receipt",
+    "package": "rcx-registry-skills",
+    "replacement": "==",
+    "span": {
+      "end": {
+        "column": 34,
+        "line": 163
+      },
+      "start": {
+        "column": 32,
+        "line": 163
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/sign.rs\n+++ replace != with == in verify_lock_receipt\n@@ -163,17 +163,17 @@\n     if u64::from(lock.version) != receipt.lock_version {\n         return Err(SkillsError::NotSignable {\n             reason: format!(\n                 \"receipt describes lock version {} but this lockfile is version {}\",\n                 receipt.lock_version, lock.version\n             ),\n         });\n     }\n-    if lock.len() as u64 != receipt.skill_count {\n+    if lock.len() as u64 == /* ~ changed by cargo-mutants ~ */ receipt.skill_count {\n         return Err(SkillsError::NotSignable {\n             reason: format!(\n                 \"receipt describes {} skills but this lockfile has {}\",\n                 receipt.skill_count,\n                 lock.len()\n             ),\n         });\n     }\n",
+    "file": "crates/rcx-registry-skills/src/sign.rs",
+    "function": {
+      "function_name": "verify_lock_receipt",
+      "return_type": "-> Result<(), SkillsError>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 181
+        },
+        "start": {
+          "column": 1,
+          "line": 133
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "crates/rcx-registry-skills/src/sign.rs:171:26: replace != with == in verify_lock_receipt",
+    "package": "rcx-registry-skills",
+    "replacement": "==",
+    "span": {
+      "end": {
+        "column": 28,
+        "line": 171
+      },
+      "start": {
+        "column": 26,
+        "line": 171
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/skill.rs\n+++ replace SkillDocument::parse -> Result<Self, SkillsError> with Ok(Default::default())\n@@ -42,32 +42,17 @@\n \n impl SkillDocument {\n     /// Parse a `SKILL.md`.\n     ///\n     /// A leading UTF-8 BOM is stripped and CRLF is accepted — both turn up in\n     /// skills authored on Windows, and a BOM would otherwise push the opening fence\n     /// off byte zero and read as \"no frontmatter\".\n     pub fn parse(raw: &str) -> Result<Self, SkillsError> {\n-        let text = raw\n-            .strip_prefix('\\u{feff}')\n-            .unwrap_or(raw)\n-            .replace(\"\\r\\n\", \"\\n\");\n-        let rest = text\n-            .strip_prefix(&format!(\"{FENCE}\\n\"))\n-            .ok_or(SkillsError::MalformedFrontMatter)?;\n-\n-        // The closing fence is a `---` alone on its line. Searching for \"\\n---\\n\"\n-        // would miss a file whose frontmatter ends at EOF with no trailing newline.\n-        let (yaml, body) = split_at_closing_fence(rest).ok_or(SkillsError::MalformedFrontMatter)?;\n-\n-        Ok(Self {\n-            front_matter: serde_yaml::from_str(yaml)?,\n-            body: body.trim_start_matches('\\n').to_string(),\n-        })\n+        Ok(Default::default()) /* ~ changed by cargo-mutants ~ */\n     }\n \n     /// Description as agents see it at discovery time.\n     ///\n     /// Claude Code truncates each description to 250 characters in its skill index\n     /// and caps the whole index at 1% of the context window, so a long description\n     /// does not merely get cut — it crowds out other skills' descriptions too.\n     pub fn discovery_description(&self, limit: usize) -> &str {\n",
+    "file": "crates/rcx-registry-skills/src/skill.rs",
+    "function": {
+      "function_name": "SkillDocument::parse",
+      "return_type": "-> Result<Self, SkillsError>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 66
+        },
+        "start": {
+          "column": 5,
+          "line": 44
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "crates/rcx-registry-skills/src/skill.rs:50:9: replace SkillDocument::parse -> Result<Self, SkillsError> with Ok(Default::default())",
+    "package": "rcx-registry-skills",
+    "replacement": "Ok(Default::default())",
+    "span": {
+      "end": {
+        "column": 11,
+        "line": 65
+      },
+      "start": {
+        "column": 9,
+        "line": 50
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/skill.rs\n+++ replace SkillDocument::discovery_description -> &str with \"\"\n@@ -66,21 +66,17 @@\n     }\n \n     /// Description as agents see it at discovery time.\n     ///\n     /// Claude Code truncates each description to 250 characters in its skill index\n     /// and caps the whole index at 1% of the context window, so a long description\n     /// does not merely get cut — it crowds out other skills' descriptions too.\n     pub fn discovery_description(&self, limit: usize) -> &str {\n-        let d = &self.front_matter.description;\n-        match d.char_indices().nth(limit) {\n-            Some((byte_idx, _)) => &d[..byte_idx],\n-            None => d,\n-        }\n+        \"\" /* ~ changed by cargo-mutants ~ */\n     }\n }\n \n /// Split frontmatter from body at the first line that is exactly `---`.\n fn split_at_closing_fence(rest: &str) -> Option<(&str, &str)> {\n     let mut offset = 0usize;\n     for line in rest.split_inclusive('\\n') {\n         if line.trim_end_matches('\\n') == FENCE {\n",
+    "file": "crates/rcx-registry-skills/src/skill.rs",
+    "function": {
+      "function_name": "SkillDocument::discovery_description",
+      "return_type": "-> &str",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 79
+        },
+        "start": {
+          "column": 5,
+          "line": 68
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "crates/rcx-registry-skills/src/skill.rs:74:9: replace SkillDocument::discovery_description -> &str with \"\"",
+    "package": "rcx-registry-skills",
+    "replacement": "\"\"",
+    "span": {
+      "end": {
+        "column": 10,
+        "line": 78
+      },
+      "start": {
+        "column": 9,
+        "line": 74
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/skill.rs\n+++ replace SkillDocument::discovery_description -> &str with \"xyzzy\"\n@@ -66,21 +66,17 @@\n     }\n \n     /// Description as agents see it at discovery time.\n     ///\n     /// Claude Code truncates each description to 250 characters in its skill index\n     /// and caps the whole index at 1% of the context window, so a long description\n     /// does not merely get cut — it crowds out other skills' descriptions too.\n     pub fn discovery_description(&self, limit: usize) -> &str {\n-        let d = &self.front_matter.description;\n-        match d.char_indices().nth(limit) {\n-            Some((byte_idx, _)) => &d[..byte_idx],\n-            None => d,\n-        }\n+        \"xyzzy\" /* ~ changed by cargo-mutants ~ */\n     }\n }\n \n /// Split frontmatter from body at the first line that is exactly `---`.\n fn split_at_closing_fence(rest: &str) -> Option<(&str, &str)> {\n     let mut offset = 0usize;\n     for line in rest.split_inclusive('\\n') {\n         if line.trim_end_matches('\\n') == FENCE {\n",
+    "file": "crates/rcx-registry-skills/src/skill.rs",
+    "function": {
+      "function_name": "SkillDocument::discovery_description",
+      "return_type": "-> &str",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 79
+        },
+        "start": {
+          "column": 5,
+          "line": 68
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "crates/rcx-registry-skills/src/skill.rs:74:9: replace SkillDocument::discovery_description -> &str with \"xyzzy\"",
+    "package": "rcx-registry-skills",
+    "replacement": "\"xyzzy\"",
+    "span": {
+      "end": {
+        "column": 10,
+        "line": 78
+      },
+      "start": {
+        "column": 9,
+        "line": 74
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/skill.rs\n+++ replace split_at_closing_fence -> Option<(&str, &str)> with None\n@@ -76,24 +76,17 @@\n             Some((byte_idx, _)) => &d[..byte_idx],\n             None => d,\n         }\n     }\n }\n \n /// Split frontmatter from body at the first line that is exactly `---`.\n fn split_at_closing_fence(rest: &str) -> Option<(&str, &str)> {\n-    let mut offset = 0usize;\n-    for line in rest.split_inclusive('\\n') {\n-        if line.trim_end_matches('\\n') == FENCE {\n-            return Some((&rest[..offset], &rest[offset + line.len()..]));\n-        }\n-        offset += line.len();\n-    }\n-    None\n+    None /* ~ changed by cargo-mutants ~ */\n }\n \n #[cfg(test)]\n mod tests {\n     use super::*;\n \n     const DOC: &str = \"---\\nname: ab-testing\\ndescription: \\\"Run an A/B test: design, size, read out.\\\"\\nversion: \\\"1.2\\\"\\ntags:\\n  - growth\\n---\\n\\n# A/B testing\\n\\nBody here.\\n\";\n \n",
+    "file": "crates/rcx-registry-skills/src/skill.rs",
+    "function": {
+      "function_name": "split_at_closing_fence",
+      "return_type": "-> Option<(&str, &str)>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 92
+        },
+        "start": {
+          "column": 1,
+          "line": 82
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "crates/rcx-registry-skills/src/skill.rs:84:5: replace split_at_closing_fence -> Option<(&str, &str)> with None",
+    "package": "rcx-registry-skills",
+    "replacement": "None",
+    "span": {
+      "end": {
+        "column": 9,
+        "line": 91
+      },
+      "start": {
+        "column": 5,
+        "line": 84
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/skill.rs\n+++ replace split_at_closing_fence -> Option<(&str, &str)> with Some((\"\", \"\"))\n@@ -76,24 +76,17 @@\n             Some((byte_idx, _)) => &d[..byte_idx],\n             None => d,\n         }\n     }\n }\n \n /// Split frontmatter from body at the first line that is exactly `---`.\n fn split_at_closing_fence(rest: &str) -> Option<(&str, &str)> {\n-    let mut offset = 0usize;\n-    for line in rest.split_inclusive('\\n') {\n-        if line.trim_end_matches('\\n') == FENCE {\n-            return Some((&rest[..offset], &rest[offset + line.len()..]));\n-        }\n-        offset += line.len();\n-    }\n-    None\n+    Some((\"\", \"\")) /* ~ changed by cargo-mutants ~ */\n }\n \n #[cfg(test)]\n mod tests {\n     use super::*;\n \n     const DOC: &str = \"---\\nname: ab-testing\\ndescription: \\\"Run an A/B test: design, size, read out.\\\"\\nversion: \\\"1.2\\\"\\ntags:\\n  - growth\\n---\\n\\n# A/B testing\\n\\nBody here.\\n\";\n \n",
+    "file": "crates/rcx-registry-skills/src/skill.rs",
+    "function": {
+      "function_name": "split_at_closing_fence",
+      "return_type": "-> Option<(&str, &str)>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 92
+        },
+        "start": {
+          "column": 1,
+          "line": 82
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "crates/rcx-registry-skills/src/skill.rs:84:5: replace split_at_closing_fence -> Option<(&str, &str)> with Some((\"\", \"\"))",
+    "package": "rcx-registry-skills",
+    "replacement": "Some((\"\", \"\"))",
+    "span": {
+      "end": {
+        "column": 9,
+        "line": 91
+      },
+      "start": {
+        "column": 5,
+        "line": 84
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/skill.rs\n+++ replace split_at_closing_fence -> Option<(&str, &str)> with Some((\"\", \"xyzzy\"))\n@@ -76,24 +76,17 @@\n             Some((byte_idx, _)) => &d[..byte_idx],\n             None => d,\n         }\n     }\n }\n \n /// Split frontmatter from body at the first line that is exactly `---`.\n fn split_at_closing_fence(rest: &str) -> Option<(&str, &str)> {\n-    let mut offset = 0usize;\n-    for line in rest.split_inclusive('\\n') {\n-        if line.trim_end_matches('\\n') == FENCE {\n-            return Some((&rest[..offset], &rest[offset + line.len()..]));\n-        }\n-        offset += line.len();\n-    }\n-    None\n+    Some((\"\", \"xyzzy\")) /* ~ changed by cargo-mutants ~ */\n }\n \n #[cfg(test)]\n mod tests {\n     use super::*;\n \n     const DOC: &str = \"---\\nname: ab-testing\\ndescription: \\\"Run an A/B test: design, size, read out.\\\"\\nversion: \\\"1.2\\\"\\ntags:\\n  - growth\\n---\\n\\n# A/B testing\\n\\nBody here.\\n\";\n \n",
+    "file": "crates/rcx-registry-skills/src/skill.rs",
+    "function": {
+      "function_name": "split_at_closing_fence",
+      "return_type": "-> Option<(&str, &str)>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 92
+        },
+        "start": {
+          "column": 1,
+          "line": 82
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "crates/rcx-registry-skills/src/skill.rs:84:5: replace split_at_closing_fence -> Option<(&str, &str)> with Some((\"\", \"xyzzy\"))",
+    "package": "rcx-registry-skills",
+    "replacement": "Some((\"\", \"xyzzy\"))",
+    "span": {
+      "end": {
+        "column": 9,
+        "line": 91
+      },
+      "start": {
+        "column": 5,
+        "line": 84
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/skill.rs\n+++ replace split_at_closing_fence -> Option<(&str, &str)> with Some((\"xyzzy\", \"\"))\n@@ -76,24 +76,17 @@\n             Some((byte_idx, _)) => &d[..byte_idx],\n             None => d,\n         }\n     }\n }\n \n /// Split frontmatter from body at the first line that is exactly `---`.\n fn split_at_closing_fence(rest: &str) -> Option<(&str, &str)> {\n-    let mut offset = 0usize;\n-    for line in rest.split_inclusive('\\n') {\n-        if line.trim_end_matches('\\n') == FENCE {\n-            return Some((&rest[..offset], &rest[offset + line.len()..]));\n-        }\n-        offset += line.len();\n-    }\n-    None\n+    Some((\"xyzzy\", \"\")) /* ~ changed by cargo-mutants ~ */\n }\n \n #[cfg(test)]\n mod tests {\n     use super::*;\n \n     const DOC: &str = \"---\\nname: ab-testing\\ndescription: \\\"Run an A/B test: design, size, read out.\\\"\\nversion: \\\"1.2\\\"\\ntags:\\n  - growth\\n---\\n\\n# A/B testing\\n\\nBody here.\\n\";\n \n",
+    "file": "crates/rcx-registry-skills/src/skill.rs",
+    "function": {
+      "function_name": "split_at_closing_fence",
+      "return_type": "-> Option<(&str, &str)>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 92
+        },
+        "start": {
+          "column": 1,
+          "line": 82
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "crates/rcx-registry-skills/src/skill.rs:84:5: replace split_at_closing_fence -> Option<(&str, &str)> with Some((\"xyzzy\", \"\"))",
+    "package": "rcx-registry-skills",
+    "replacement": "Some((\"xyzzy\", \"\"))",
+    "span": {
+      "end": {
+        "column": 9,
+        "line": 91
+      },
+      "start": {
+        "column": 5,
+        "line": 84
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/skill.rs\n+++ replace split_at_closing_fence -> Option<(&str, &str)> with Some((\"xyzzy\", \"xyzzy\"))\n@@ -76,24 +76,17 @@\n             Some((byte_idx, _)) => &d[..byte_idx],\n             None => d,\n         }\n     }\n }\n \n /// Split frontmatter from body at the first line that is exactly `---`.\n fn split_at_closing_fence(rest: &str) -> Option<(&str, &str)> {\n-    let mut offset = 0usize;\n-    for line in rest.split_inclusive('\\n') {\n-        if line.trim_end_matches('\\n') == FENCE {\n-            return Some((&rest[..offset], &rest[offset + line.len()..]));\n-        }\n-        offset += line.len();\n-    }\n-    None\n+    Some((\"xyzzy\", \"xyzzy\")) /* ~ changed by cargo-mutants ~ */\n }\n \n #[cfg(test)]\n mod tests {\n     use super::*;\n \n     const DOC: &str = \"---\\nname: ab-testing\\ndescription: \\\"Run an A/B test: design, size, read out.\\\"\\nversion: \\\"1.2\\\"\\ntags:\\n  - growth\\n---\\n\\n# A/B testing\\n\\nBody here.\\n\";\n \n",
+    "file": "crates/rcx-registry-skills/src/skill.rs",
+    "function": {
+      "function_name": "split_at_closing_fence",
+      "return_type": "-> Option<(&str, &str)>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 92
+        },
+        "start": {
+          "column": 1,
+          "line": 82
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "crates/rcx-registry-skills/src/skill.rs:84:5: replace split_at_closing_fence -> Option<(&str, &str)> with Some((\"xyzzy\", \"xyzzy\"))",
+    "package": "rcx-registry-skills",
+    "replacement": "Some((\"xyzzy\", \"xyzzy\"))",
+    "span": {
+      "end": {
+        "column": 9,
+        "line": 91
+      },
+      "start": {
+        "column": 5,
+        "line": 84
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/skill.rs\n+++ replace == with != in split_at_closing_fence\n@@ -78,17 +78,17 @@\n         }\n     }\n }\n \n /// Split frontmatter from body at the first line that is exactly `---`.\n fn split_at_closing_fence(rest: &str) -> Option<(&str, &str)> {\n     let mut offset = 0usize;\n     for line in rest.split_inclusive('\\n') {\n-        if line.trim_end_matches('\\n') == FENCE {\n+        if line.trim_end_matches('\\n') != /* ~ changed by cargo-mutants ~ */ FENCE {\n             return Some((&rest[..offset], &rest[offset + line.len()..]));\n         }\n         offset += line.len();\n     }\n     None\n }\n \n #[cfg(test)]\n",
+    "file": "crates/rcx-registry-skills/src/skill.rs",
+    "function": {
+      "function_name": "split_at_closing_fence",
+      "return_type": "-> Option<(&str, &str)>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 92
+        },
+        "start": {
+          "column": 1,
+          "line": 82
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "crates/rcx-registry-skills/src/skill.rs:86:40: replace == with != in split_at_closing_fence",
+    "package": "rcx-registry-skills",
+    "replacement": "!=",
+    "span": {
+      "end": {
+        "column": 42,
+        "line": 86
+      },
+      "start": {
+        "column": 40,
+        "line": 86
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/skill.rs\n+++ replace + with - in split_at_closing_fence\n@@ -79,17 +79,17 @@\n     }\n }\n \n /// Split frontmatter from body at the first line that is exactly `---`.\n fn split_at_closing_fence(rest: &str) -> Option<(&str, &str)> {\n     let mut offset = 0usize;\n     for line in rest.split_inclusive('\\n') {\n         if line.trim_end_matches('\\n') == FENCE {\n-            return Some((&rest[..offset], &rest[offset + line.len()..]));\n+            return Some((&rest[..offset], &rest[offset - /* ~ changed by cargo-mutants ~ */ line.len()..]));\n         }\n         offset += line.len();\n     }\n     None\n }\n \n #[cfg(test)]\n mod tests {\n",
+    "file": "crates/rcx-registry-skills/src/skill.rs",
+    "function": {
+      "function_name": "split_at_closing_fence",
+      "return_type": "-> Option<(&str, &str)>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 92
+        },
+        "start": {
+          "column": 1,
+          "line": 82
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "crates/rcx-registry-skills/src/skill.rs:87:56: replace + with - in split_at_closing_fence",
+    "package": "rcx-registry-skills",
+    "replacement": "-",
+    "span": {
+      "end": {
+        "column": 57,
+        "line": 87
+      },
+      "start": {
+        "column": 56,
+        "line": 87
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/skill.rs\n+++ replace + with * in split_at_closing_fence\n@@ -79,17 +79,17 @@\n     }\n }\n \n /// Split frontmatter from body at the first line that is exactly `---`.\n fn split_at_closing_fence(rest: &str) -> Option<(&str, &str)> {\n     let mut offset = 0usize;\n     for line in rest.split_inclusive('\\n') {\n         if line.trim_end_matches('\\n') == FENCE {\n-            return Some((&rest[..offset], &rest[offset + line.len()..]));\n+            return Some((&rest[..offset], &rest[offset * /* ~ changed by cargo-mutants ~ */ line.len()..]));\n         }\n         offset += line.len();\n     }\n     None\n }\n \n #[cfg(test)]\n mod tests {\n",
+    "file": "crates/rcx-registry-skills/src/skill.rs",
+    "function": {
+      "function_name": "split_at_closing_fence",
+      "return_type": "-> Option<(&str, &str)>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 92
+        },
+        "start": {
+          "column": 1,
+          "line": 82
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "crates/rcx-registry-skills/src/skill.rs:87:56: replace + with * in split_at_closing_fence",
+    "package": "rcx-registry-skills",
+    "replacement": "*",
+    "span": {
+      "end": {
+        "column": 57,
+        "line": 87
+      },
+      "start": {
+        "column": 56,
+        "line": 87
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/skill.rs\n+++ replace += with -= in split_at_closing_fence\n@@ -81,17 +81,17 @@\n \n /// Split frontmatter from body at the first line that is exactly `---`.\n fn split_at_closing_fence(rest: &str) -> Option<(&str, &str)> {\n     let mut offset = 0usize;\n     for line in rest.split_inclusive('\\n') {\n         if line.trim_end_matches('\\n') == FENCE {\n             return Some((&rest[..offset], &rest[offset + line.len()..]));\n         }\n-        offset += line.len();\n+        offset -= /* ~ changed by cargo-mutants ~ */ line.len();\n     }\n     None\n }\n \n #[cfg(test)]\n mod tests {\n     use super::*;\n \n",
+    "file": "crates/rcx-registry-skills/src/skill.rs",
+    "function": {
+      "function_name": "split_at_closing_fence",
+      "return_type": "-> Option<(&str, &str)>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 92
+        },
+        "start": {
+          "column": 1,
+          "line": 82
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "crates/rcx-registry-skills/src/skill.rs:89:16: replace += with -= in split_at_closing_fence",
+    "package": "rcx-registry-skills",
+    "replacement": "-=",
+    "span": {
+      "end": {
+        "column": 18,
+        "line": 89
+      },
+      "start": {
+        "column": 16,
+        "line": 89
+      }
+    }
+  },
+  {
+    "diff": "--- crates/rcx-registry-skills/src/skill.rs\n+++ replace += with *= in split_at_closing_fence\n@@ -81,17 +81,17 @@\n \n /// Split frontmatter from body at the first line that is exactly `---`.\n fn split_at_closing_fence(rest: &str) -> Option<(&str, &str)> {\n     let mut offset = 0usize;\n     for line in rest.split_inclusive('\\n') {\n         if line.trim_end_matches('\\n') == FENCE {\n             return Some((&rest[..offset], &rest[offset + line.len()..]));\n         }\n-        offset += line.len();\n+        offset *= /* ~ changed by cargo-mutants ~ */ line.len();\n     }\n     None\n }\n \n #[cfg(test)]\n mod tests {\n     use super::*;\n \n",
+    "file": "crates/rcx-registry-skills/src/skill.rs",
+    "function": {
+      "function_name": "split_at_closing_fence",
+      "return_type": "-> Option<(&str, &str)>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 92
+        },
+        "start": {
+          "column": 1,
+          "line": 82
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "crates/rcx-registry-skills/src/skill.rs:89:16: replace += with *= in split_at_closing_fence",
+    "package": "rcx-registry-skills",
+    "replacement": "*=",
+    "span": {
+      "end": {
+        "column": 18,
+        "line": 89
+      },
+      "start": {
+        "column": 16,
+        "line": 89
+      }
+    }
+  }
+]

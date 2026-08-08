@@ -27,4 +27,17 @@ pub enum SkillsError {
     /// so adding a transport is a compile-time decision, not a silent fallthrough.
     #[error("lock entry `{name}`: unsupported sourceType {source_type:?}")]
     UnsupportedSource { name: String, source_type: String },
+
+    /// The lockfile parses but must not be signed. Distinct from a validation
+    /// failure: the file is well-formed, it just does not carry enough to make a
+    /// signature mean anything.
+    #[error("lockfile is not signable: {reason}")]
+    NotSignable { reason: String },
+
+    /// A ref could not be resolved to a commit, so nothing can be pinned.
+    ///
+    /// The repo field is `repo`, not `source`: `thiserror` reserves `source` for the
+    /// underlying-error accessor and rejects a plain `String` there.
+    #[error("could not resolve a commit for source `{repo}`: {detail}")]
+    RefResolution { repo: String, detail: String },
 }

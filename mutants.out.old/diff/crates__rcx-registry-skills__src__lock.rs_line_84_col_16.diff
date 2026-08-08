@@ -1,0 +1,21 @@
+--- crates/rcx-registry-skills/src/lock.rs
++++ delete ! in SkillLock::validate
+@@ -76,17 +76,17 @@
+     pub fn to_json(&self) -> Result<String, SkillsError> {
+         let mut out = serde_json::to_string_pretty(self)?;
+         out.push('\n');
+         Ok(out)
+     }
+ 
+     pub fn validate(&self) -> Result<(), SkillsError> {
+         for (name, entry) in &self.skills {
+-            if !is_sha256_hex(&entry.computed_hash) {
++            if  /* ~ changed by cargo-mutants ~ */is_sha256_hex(&entry.computed_hash) {
+                 return Err(SkillsError::BadHash {
+                     name: name.clone(),
+                     got: entry.computed_hash.clone(),
+                 });
+             }
+             if entry.source_type != "github" {
+                 return Err(SkillsError::UnsupportedSource {
+                     name: name.clone(),

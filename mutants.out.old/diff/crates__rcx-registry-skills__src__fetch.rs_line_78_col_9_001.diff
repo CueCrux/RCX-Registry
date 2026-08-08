@@ -1,0 +1,21 @@
+--- crates/rcx-registry-skills/src/fetch.rs
++++ replace FetchOutcome::verified -> impl Iterator<Item =(&String, &Fetched)> with ::std::iter::once((Box::leak(Box::new(String::new())), Box::leak(Box::new(Default::default()))))
+@@ -70,17 +70,17 @@
+ pub struct FetchOutcome {
+     pub fetched: BTreeMap<String, Fetched>,
+     pub mismatches: Vec<Mismatch>,
+ }
+ 
+ impl FetchOutcome {
+     /// Entries whose bytes matched their pinned digest — the only trusted content.
+     pub fn verified(&self) -> impl Iterator<Item = (&String, &Fetched)> {
+-        self.fetched.iter().filter(|(_, f)| f.matched_lock)
++        ::std::iter::once((Box::leak(Box::new(String::new())), Box::leak(Box::new(Default::default())))) /* ~ changed by cargo-mutants ~ */
+     }
+ 
+     pub fn verified_count(&self) -> usize {
+         self.verified().count()
+     }
+ 
+     pub fn is_clean(&self) -> bool {
+         self.mismatches.is_empty()

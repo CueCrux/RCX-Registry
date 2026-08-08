@@ -1,0 +1,21 @@
+--- crates/rcx-registry-skills/src/fetch.rs
++++ delete field computed_hash from struct LockEntry expression in FetchOutcome::relock
+@@ -103,17 +103,17 @@
+         let skills = self
+             .fetched
+             .iter()
+             .filter_map(|(name, f)| {
+                 let prev = previous.skills.get(name)?;
+                 Some((
+                     name.clone(),
+                     LockEntry {
+-                        computed_hash: f.digest.clone(),
++                         /* ~ changed by cargo-mutants ~ */
+                         git_ref: f.git_ref.clone(),
+                         ..prev.clone()
+                     },
+                 ))
+             })
+             .collect();
+         // Relocking always writes the current schema: the output carries whatever
+         // refs the fetch used, so labelling it v1 would understate it. A relock of

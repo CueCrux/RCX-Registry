@@ -1,0 +1,60 @@
+crates/rcx-registry-skills/src/fetch.rs:86:9: replace FetchOutcome::is_clean -> bool with true
+crates/rcx-registry-skills/src/fetch.rs:86:9: replace FetchOutcome::is_clean -> bool with false
+crates/rcx-registry-skills/src/fetch.rs:111:25: delete field computed_hash from struct LockEntry expression in FetchOutcome::relock
+crates/rcx-registry-skills/src/fetch.rs:112:25: delete field git_ref from struct LockEntry expression in FetchOutcome::relock
+crates/rcx-registry-skills/src/fetch.rs:135:5: replace raw_url -> String with String::new()
+crates/rcx-registry-skills/src/fetch.rs:135:5: replace raw_url -> String with "xyzzy".into()
+crates/rcx-registry-skills/src/fetch.rs:221:5: replace parse_commit_sha -> Option<String> with None
+crates/rcx-registry-skills/src/fetch.rs:221:5: replace parse_commit_sha -> Option<String> with Some(String::new())
+crates/rcx-registry-skills/src/fetch.rs:221:5: replace parse_commit_sha -> Option<String> with Some("xyzzy".into())
+crates/rcx-registry-skills/src/fetch.rs:222:24: replace || with && in parse_commit_sha
+crates/rcx-registry-skills/src/fetch.rs:222:18: replace != with == in parse_commit_sha
+crates/rcx-registry-skills/src/fetch.rs:222:27: delete ! in parse_commit_sha
+crates/rcx-registry-skills/src/fetch.rs:234:5: replace verify_bytes -> Result<(), String> with Ok(())
+crates/rcx-registry-skills/src/fetch.rs:235:15: replace == with != in verify_bytes
+crates/rcx-registry-skills/src/fetch.rs:243:5: replace hex_digest -> String with String::new()
+crates/rcx-registry-skills/src/fetch.rs:243:5: replace hex_digest -> String with "xyzzy".into()
+crates/rcx-registry-skills/src/lock.rs:77:9: replace SkillLock::to_json -> Result<String, SkillsError> with Ok(String::new())
+crates/rcx-registry-skills/src/lock.rs:77:9: replace SkillLock::to_json -> Result<String, SkillsError> with Ok("xyzzy".into())
+crates/rcx-registry-skills/src/lock.rs:83:9: replace SkillLock::validate -> Result<(), SkillsError> with Ok(())
+crates/rcx-registry-skills/src/lock.rs:84:16: delete ! in SkillLock::validate
+crates/rcx-registry-skills/src/lock.rs:90:34: replace != with == in SkillLock::validate
+crates/rcx-registry-skills/src/lock.rs:107:9: replace SkillLock::signable -> Result<(), SkillsError> with Ok(())
+crates/rcx-registry-skills/src/lock.rs:107:25: replace < with == in SkillLock::signable
+crates/rcx-registry-skills/src/lock.rs:107:25: replace < with > in SkillLock::signable
+crates/rcx-registry-skills/src/lock.rs:107:25: replace < with <= in SkillLock::signable
+crates/rcx-registry-skills/src/lock.rs:122:16: delete ! in SkillLock::signable
+crates/rcx-registry-skills/src/lock.rs:135:9: replace SkillLock::len -> usize with 0
+crates/rcx-registry-skills/src/lock.rs:135:9: replace SkillLock::len -> usize with 1
+crates/rcx-registry-skills/src/lock.rs:146:5: replace is_sha256_hex -> bool with true
+crates/rcx-registry-skills/src/lock.rs:146:5: replace is_sha256_hex -> bool with false
+crates/rcx-registry-skills/src/lock.rs:152:5: replace is_git_sha_hex -> bool with true
+crates/rcx-registry-skills/src/lock.rs:152:5: replace is_git_sha_hex -> bool with false
+crates/rcx-registry-skills/src/lock.rs:156:5: replace is_lower_hex -> bool with true
+crates/rcx-registry-skills/src/lock.rs:156:5: replace is_lower_hex -> bool with false
+crates/rcx-registry-skills/src/lock.rs:157:9: replace && with || in is_lower_hex
+crates/rcx-registry-skills/src/lock.rs:156:13: replace == with != in is_lower_hex
+crates/rcx-registry-skills/src/lock.rs:158:41: replace || with && in is_lower_hex
+crates/rcx-registry-skills/src/sign.rs:36:5: replace digest_entries -> Vec<SnapshotEntry> with vec![]
+crates/rcx-registry-skills/src/sign.rs:60:5: replace lock_merkle_root -> Result<[u8; HASH_LEN], SkillsError> with Ok([0; HASH_LEN])
+crates/rcx-registry-skills/src/sign.rs:60:5: replace lock_merkle_root -> Result<[u8; HASH_LEN], SkillsError> with Ok([1; HASH_LEN])
+crates/rcx-registry-skills/src/sign.rs:111:5: replace signing_preimage -> Vec<u8> with vec![]
+crates/rcx-registry-skills/src/sign.rs:111:5: replace signing_preimage -> Vec<u8> with vec![0]
+crates/rcx-registry-skills/src/sign.rs:111:5: replace signing_preimage -> Vec<u8> with vec![1]
+crates/rcx-registry-skills/src/sign.rs:128:5: replace sign_receipt -> Result<(), E> with Ok(())
+crates/rcx-registry-skills/src/sign.rs:145:5: replace verify_lock_receipt -> Result<(), SkillsError> with Ok(())
+crates/rcx-registry-skills/src/sign.rs:152:19: replace != with == in verify_lock_receipt
+crates/rcx-registry-skills/src/sign.rs:163:32: replace != with == in verify_lock_receipt
+crates/rcx-registry-skills/src/sign.rs:171:26: replace != with == in verify_lock_receipt
+crates/rcx-registry-skills/src/skill.rs:74:9: replace SkillDocument::discovery_description -> &str with ""
+crates/rcx-registry-skills/src/skill.rs:74:9: replace SkillDocument::discovery_description -> &str with "xyzzy"
+crates/rcx-registry-skills/src/skill.rs:84:5: replace split_at_closing_fence -> Option<(&str, &str)> with None
+crates/rcx-registry-skills/src/skill.rs:84:5: replace split_at_closing_fence -> Option<(&str, &str)> with Some(("", ""))
+crates/rcx-registry-skills/src/skill.rs:84:5: replace split_at_closing_fence -> Option<(&str, &str)> with Some(("", "xyzzy"))
+crates/rcx-registry-skills/src/skill.rs:84:5: replace split_at_closing_fence -> Option<(&str, &str)> with Some(("xyzzy", ""))
+crates/rcx-registry-skills/src/skill.rs:84:5: replace split_at_closing_fence -> Option<(&str, &str)> with Some(("xyzzy", "xyzzy"))
+crates/rcx-registry-skills/src/skill.rs:86:40: replace == with != in split_at_closing_fence
+crates/rcx-registry-skills/src/skill.rs:87:56: replace + with - in split_at_closing_fence
+crates/rcx-registry-skills/src/skill.rs:87:56: replace + with * in split_at_closing_fence
+crates/rcx-registry-skills/src/skill.rs:89:16: replace += with -= in split_at_closing_fence
+crates/rcx-registry-skills/src/skill.rs:89:16: replace += with *= in split_at_closing_fence

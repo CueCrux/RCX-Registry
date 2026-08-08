@@ -1,0 +1,43 @@
+--- crates/rcx-registry-skills/src/fetch.rs
++++ replace FetchOutcome::relock -> SkillLock with Default::default()
+@@ -95,39 +95,17 @@
+     /// against a live fetch produces hashes that are ours and checkable.
+     ///
+     /// Entries that could not be fetched are dropped: a lock entry with no
+     /// retrievable content is a promise the registry cannot keep.
+     ///
+     /// The output carries the ref each fetch actually used, so relocking after
+     /// [`pin_refs`] yields a signable lockfile.
+     pub fn relock(&self, previous: &SkillLock) -> SkillLock {
+-        let skills = self
+-            .fetched
+-            .iter()
+-            .filter_map(|(name, f)| {
+-                let prev = previous.skills.get(name)?;
+-                Some((
+-                    name.clone(),
+-                    LockEntry {
+-                        computed_hash: f.digest.clone(),
+-                        git_ref: f.git_ref.clone(),
+-                        ..prev.clone()
+-                    },
+-                ))
+-            })
+-            .collect();
+-        // Relocking always writes the current schema: the output carries whatever
+-        // refs the fetch used, so labelling it v1 would understate it. A relock of
+-        // an unpinned v1 lockfile still produces refless entries, which `signable`
+-        // then rejects — the version alone never implies the guarantee.
+-        SkillLock {
+-            version: crate::lock::LOCK_VERSION,
+-            skills,
+-        }
++        Default::default() /* ~ changed by cargo-mutants ~ */
+     }
+ }
+ 
+ /// Raw-content URL for a locked entry.
+ ///
+ /// Uses the pinned commit when the entry has one, which makes the URL immutable and
+ /// the digest attributable. Falls back to `HEAD` only for v1 entries, which is
+ /// exactly the ambiguity described above — those lockfiles cannot be signed.

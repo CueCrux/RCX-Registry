@@ -1,0 +1,51 @@
+--- crates/rcx-registry-skills/src/fetch.rs
++++ replace resolve_head_commit -> Result<String, SkillsError> with Ok(String::new())
+@@ -171,47 +171,17 @@
+     lock.version = crate::lock::LOCK_VERSION;
+     Ok(())
+ }
+ 
+ fn resolve_head_commit(
+     source: &str,
+     client: &reqwest::blocking::Client,
+ ) -> Result<String, SkillsError> {
+-    let url = format!("https://api.github.com/repos/{source}/commits/HEAD");
+-    let mut request = client
+-        .get(&url)
+-        .header("Accept", "application/vnd.github.sha");
+-    if let Ok(token) = std::env::var("GITHUB_TOKEN") {
+-        if !token.is_empty() {
+-            request = request.bearer_auth(token);
+-        }
+-    }
+-    let response = request.send().map_err(|error| SkillsError::RefResolution {
+-        repo: source.to_string(),
+-        detail: error.to_string(),
+-    })?;
+-    let status = response.status();
+-    let body = response.text().unwrap_or_default();
+-    if !status.is_success() {
+-        return Err(SkillsError::RefResolution {
+-            repo: source.to_string(),
+-            detail: format!(
+-                "HTTP {status}: {}",
+-                body.chars().take(120).collect::<String>()
+-            ),
+-        });
+-    }
+-    parse_commit_sha(&body).ok_or_else(|| SkillsError::RefResolution {
+-        repo: source.to_string(),
+-        detail: format!(
+-            "expected a 40-hex commit id, got {:?}",
+-            body.trim().chars().take(60).collect::<String>()
+-        ),
+-    })
++    Ok(String::new()) /* ~ changed by cargo-mutants ~ */
+ }
+ 
+ /// Accept a GitHub `.sha` response, or reject it.
+ ///
+ /// Split out of the request path so the guard is unit-testable — it is the only
+ /// thing standing between a surprising API response and a lockfile pinned to
+ /// garbage, and a network-gated test cannot exercise it.
+ ///

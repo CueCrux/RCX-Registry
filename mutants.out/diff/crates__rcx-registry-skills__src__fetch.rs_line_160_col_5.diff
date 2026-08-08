@@ -1,0 +1,33 @@
+--- crates/rcx-registry-skills/src/fetch.rs
++++ replace pin_refs -> Result<(), SkillsError> with Ok(())
+@@ -152,29 +152,17 @@
+ /// whatever each individual request happened to race.
+ ///
+ /// Honours `GITHUB_TOKEN` when set. Unauthenticated GitHub allows 60 requests an
+ /// hour, which covers this but leaves no headroom for a retry.
+ pub fn pin_refs(
+     lock: &mut SkillLock,
+     client: &reqwest::blocking::Client,
+ ) -> Result<(), SkillsError> {
+-    let sources: BTreeSet<String> = lock.skills.values().map(|e| e.source.clone()).collect();
+-    let mut resolved: BTreeMap<String, String> = BTreeMap::new();
+-    for source in sources {
+-        let sha = resolve_head_commit(&source, client)?;
+-        resolved.insert(source, sha);
+-    }
+-    for entry in lock.skills.values_mut() {
+-        if let Some(sha) = resolved.get(&entry.source) {
+-            entry.git_ref.clone_from(sha);
+-        }
+-    }
+-    lock.version = crate::lock::LOCK_VERSION;
+-    Ok(())
++    Ok(()) /* ~ changed by cargo-mutants ~ */
+ }
+ 
+ fn resolve_head_commit(
+     source: &str,
+     client: &reqwest::blocking::Client,
+ ) -> Result<String, SkillsError> {
+     let url = format!("https://api.github.com/repos/{source}/commits/HEAD");
+     let mut request = client

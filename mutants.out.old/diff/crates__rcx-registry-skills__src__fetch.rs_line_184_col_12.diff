@@ -1,0 +1,21 @@
+--- crates/rcx-registry-skills/src/fetch.rs
++++ delete ! in resolve_head_commit
+@@ -176,17 +176,17 @@
+     source: &str,
+     client: &reqwest::blocking::Client,
+ ) -> Result<String, SkillsError> {
+     let url = format!("https://api.github.com/repos/{source}/commits/HEAD");
+     let mut request = client
+         .get(&url)
+         .header("Accept", "application/vnd.github.sha");
+     if let Ok(token) = std::env::var("GITHUB_TOKEN") {
+-        if !token.is_empty() {
++        if  /* ~ changed by cargo-mutants ~ */token.is_empty() {
+             request = request.bearer_auth(token);
+         }
+     }
+     let response = request.send().map_err(|error| SkillsError::RefResolution {
+         repo: source.to_string(),
+         detail: error.to_string(),
+     })?;
+     let status = response.status();
