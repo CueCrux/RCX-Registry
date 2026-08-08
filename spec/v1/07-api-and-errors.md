@@ -16,6 +16,66 @@ The public API version is pinned **in the URL path** (`/v0`). There is **no** co
 | `GET /v0/servers/{name}/versions` | List all versions of one server |
 | `GET /v0/servers/{name}/versions/{version}` | Fetch one server version |
 | `GET /.well-known/rcx-keys.json` | Signing-key discovery — the ed25519 public key(s) keyed by `signer_kid` ([05-receipts.md §5.6.1](05-receipts.md); Erratum E-1) |
+| `GET /v0/snapshots` | List verifiable snapshots, newest first (Erratum E-2) |
+| `GET /v0/snapshots/latest` | The most recent verifiable snapshot (Erratum E-2) |
+| `GET /v0/snapshots/{snapshot_id}` | One snapshot by hex id (Erratum E-2) |
+| `GET /v0/snapshots/{snapshot_id}/entries` | The entry set that snapshot's root digests (Erratum E-2) |
+
+### 7.2.1 Snapshot artifacts (Erratum E-2)
+
+E-1 lets a verifier check a signature. These endpoints are how it obtains the
+bytes to check. Without them the specification describes a verification that
+nothing in it can supply the inputs for.
+
+A snapshot object:
+
+```json
+{
+  "snapshot_id": "<hex>",
+  "scraped_at": "<RFC-3339>",
+  "server_count": <int>,
+  "snapshot_root": "<hex>",
+  "receipt_hash": "<hex>",
+  "signer_kid": "<text>",
+  "receipt_cbor_hex": "<hex>",
+  "entries_available": <bool>
+}
+```
+
+- `receipt_cbor_hex` is the **signed canonical CBOR** of the RegistrySnapshot
+  receipt (§5.6) — the exact bytes `verifyReceipt` takes, signature in place.
+- `snapshot_root` is the receipt's `snapshot_merkle_root`: a **flat set digest**,
+  not a tree (§6.1). It is reproduced here for convenience; the authoritative
+  copy is the one inside the signed bytes, and a verifier **MUST** prefer that.
+- A server **MUST NOT** list or serve a snapshot it cannot supply signed bytes
+  for. A snapshot whose bytes were never retained has no verifiable form, and
+  offering it would hand a caller an artifact they cannot check.
+
+`entries_available` is `false` once the entry set has passed the server's
+retention window. The receipt still verifies; **membership can no longer be
+recomputed** for that snapshot. The two are independent, and a client **MUST
+NOT** infer one from the other.
+
+`GET /v0/snapshots` takes `limit` (1–100, default 20) and `before`, an RFC-3339
+instant returning snapshots strictly older. The response carries `next_before`,
+the oldest returned `scraped_at`, so paging is a copy rather than a computation.
+A malformed `before` is a **400** — never a silent restart from the newest row,
+which would page a caller in a loop over the same snapshots indefinitely.
+
+```json
+{ "count": <int>, "snapshots": [ … ], "next_before": "<RFC-3339|null>" }
+```
+
+`GET /v0/snapshots/{snapshot_id}/entries` returns the `{name, version,
+canonical_json}` array the root digests, in digest order-independent form —
+§6.1's ordering rule is applied by the verifier, not by the wire. It is
+**large** (tens of megabytes at production scale) because v1 has no inclusion
+proof: establishing that one server is in a snapshot means recomputing the whole
+digest (§6.1, OQ-4). `404` once the entry set has aged out.
+
+An unknown **or malformed** `snapshot_id` is `404`, not `400`: a caller asking
+about a snapshot that does not exist and one asking with a malformed id are
+both asking about nothing.
 
 `GET /v0/servers` list response:
 ```json

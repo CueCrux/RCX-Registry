@@ -202,7 +202,7 @@ None. Every computable vector field checked by the runner matched.
 
 - **A-09 — still-open.** The insufficient sentence is explicit: “v1 does **not** define a normative algorithm for deriving the true inter-snapshot delta” (`05-receipts.md:87-92`). The present chain fixtures remain computable because every `previous_servers` input is empty and lines 79-82 document the live all-added result; a non-empty prior set is not derivable.
 
-- **A-10 — still-open.** The insufficient sentence remains: “v1 does **not** define how a verifier obtains the registry's 32-byte ed25519 public key from `signer_kid`” (`05-receipts.md:215-224`). Test vectors supply an out-of-band key.
+- **A-10 — resolved-by-erratum.** Erratum E-1 replaced the insufficient sentence. §5.6.1 now specifies `GET /.well-known/rcx-keys.json` normatively, so a verifier obtains the public key from the specification rather than out of band. The test vectors still carry their own key, deliberately — they are offline fixtures and must not depend on a live endpoint.
 
 - **A-11 — still-open.** `04-hashing.md:57-59` says the exact producer field set, ordering, and zeroing are outside v1 and that construction “is therefore **not normative in v1**.” The three producer-defined hash preimages remain uncomputable from this workspace.
 
@@ -232,7 +232,7 @@ None. Every computable vector field checked by the runner matched.
 
 - **D-08 — resolved.** `attestation_bytes` is explicitly opaque and verbatim, not canonicalised.
 
-- **D-09 — still-open.** Intentional v1 public-key-discovery gap (A-10).
+- **D-09 — resolved-by-erratum.** The v1 public-key-discovery gap was closed by Erratum E-1 (A-10).
 
 - **D-10 — still-open.** Intentional producer-defined hash gap (A-11).
 
