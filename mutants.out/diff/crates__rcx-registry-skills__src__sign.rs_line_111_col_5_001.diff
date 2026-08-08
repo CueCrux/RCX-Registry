@@ -1,0 +1,23 @@
+--- crates/rcx-registry-skills/src/sign.rs
++++ replace signing_preimage -> Vec<u8> with vec![0]
+@@ -103,19 +103,17 @@
+ /// the wrong one produces a signature that never verifies, with `BadSignature` as
+ /// the only symptom for all three.
+ ///
+ /// Crown has no exported helper for this, so callers reconstruct it by knowing to
+ /// call `to_canonical_cbor()` *before* populating the signature field. That ordering
+ /// requirement is invisible at the call site and easy to get backwards. This function
+ /// zeroes the field itself, so it is correct whatever the receipt currently holds.
+ pub fn signing_preimage(receipt: &SkillSnapshotReceipt) -> Vec<u8> {
+-    let mut unsigned = receipt.clone();
+-    unsigned.receipt_signature = [0u8; 64];
+-    unsigned.to_canonical_cbor()
++    vec![0] /* ~ changed by cargo-mutants ~ */
+ }
+ 
+ /// Sign `receipt` in place with a caller-supplied signer.
+ ///
+ /// The closure shape matches the server's Vault Transit signer, which never exposes
+ /// a key — so this works for both a local test key and the production HSM path
+ /// without either one reimplementing the preimage rule above.
+ pub fn sign_receipt<E>(

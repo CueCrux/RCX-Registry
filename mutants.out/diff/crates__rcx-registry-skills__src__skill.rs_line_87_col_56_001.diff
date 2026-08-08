@@ -1,0 +1,21 @@
+--- crates/rcx-registry-skills/src/skill.rs
++++ replace + with * in split_at_closing_fence
+@@ -79,17 +79,17 @@
+     }
+ }
+ 
+ /// Split frontmatter from body at the first line that is exactly `---`.
+ fn split_at_closing_fence(rest: &str) -> Option<(&str, &str)> {
+     let mut offset = 0usize;
+     for line in rest.split_inclusive('\n') {
+         if line.trim_end_matches('\n') == FENCE {
+-            return Some((&rest[..offset], &rest[offset + line.len()..]));
++            return Some((&rest[..offset], &rest[offset * /* ~ changed by cargo-mutants ~ */ line.len()..]));
+         }
+         offset += line.len();
+     }
+     None
+ }
+ 
+ #[cfg(test)]
+ mod tests {

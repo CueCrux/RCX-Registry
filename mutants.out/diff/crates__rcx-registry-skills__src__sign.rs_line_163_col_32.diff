@@ -1,0 +1,21 @@
+--- crates/rcx-registry-skills/src/sign.rs
++++ replace != with == in verify_lock_receipt
+@@ -155,17 +155,17 @@
+                 .to_string(),
+         });
+     }
+ 
+     // Split rather than `||`-joined: a combined condition is satisfied by either
+     // half, so a test that trips both at once never proves the other is checked.
+     // `cargo-mutants` flagged exactly that — flipping the `||` to `&&` survived the
+     // whole suite, because every case that changed the count also changed the root.
+-    if u64::from(lock.version) != receipt.lock_version {
++    if u64::from(lock.version) == /* ~ changed by cargo-mutants ~ */ receipt.lock_version {
+         return Err(SkillsError::NotSignable {
+             reason: format!(
+                 "receipt describes lock version {} but this lockfile is version {}",
+                 receipt.lock_version, lock.version
+             ),
+         });
+     }
+     if lock.len() as u64 != receipt.skill_count {

@@ -1,0 +1,23 @@
+--- crates/rcx-registry-skills/src/lock.rs
++++ replace SkillLock::from_json -> Result<Self, SkillsError> with Ok(Default::default())
+@@ -61,19 +61,17 @@
+     pub computed_hash: String,
+ }
+ 
+ impl SkillLock {
+     /// Parse and validate. Validation is not optional here — an entry whose hash is
+     /// malformed can never match a real digest, so accepting it would push a
+     /// guaranteed failure to fetch time and report it as a content mismatch.
+     pub fn from_json(raw: &str) -> Result<Self, SkillsError> {
+-        let lock: Self = serde_json::from_str(raw)?;
+-        lock.validate()?;
+-        Ok(lock)
++        Ok(Default::default()) /* ~ changed by cargo-mutants ~ */
+     }
+ 
+     /// Serialise in the canonical on-disk form: 2-space indent, sorted keys,
+     /// trailing newline.
+     pub fn to_json(&self) -> Result<String, SkillsError> {
+         let mut out = serde_json::to_string_pretty(self)?;
+         out.push('\n');
+         Ok(out)

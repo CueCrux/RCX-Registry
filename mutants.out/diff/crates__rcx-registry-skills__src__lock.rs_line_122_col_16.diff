@@ -1,0 +1,21 @@
+--- crates/rcx-registry-skills/src/lock.rs
++++ delete ! in SkillLock::signable
+@@ -114,17 +114,17 @@
+         }
+         if self.skills.is_empty() {
+             return Err(SkillsError::NotSignable {
+                 reason: "refusing to sign an empty lockfile — an empty Merkle root attests nothing"
+                     .to_string(),
+             });
+         }
+         for (name, entry) in &self.skills {
+-            if !is_git_sha_hex(&entry.git_ref) {
++            if  /* ~ changed by cargo-mutants ~ */is_git_sha_hex(&entry.git_ref) {
+                 return Err(SkillsError::NotSignable {
+                     reason: format!(
+                         "entry `{name}` has ref {:?}; a full 40-hex commit id is required",
+                         entry.git_ref
+                     ),
+                 });
+             }
+         }

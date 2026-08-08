@@ -1,0 +1,17 @@
+crates/rcx-registry-skills/src/fetch.rs:45:9: replace Mismatch::name -> &str with ""
+crates/rcx-registry-skills/src/fetch.rs:45:9: replace Mismatch::name -> &str with "xyzzy"
+crates/rcx-registry-skills/src/fetch.rs:78:9: replace FetchOutcome::verified -> impl Iterator<Item =(&String, &Fetched)> with ::std::iter::empty()
+crates/rcx-registry-skills/src/fetch.rs:82:9: replace FetchOutcome::verified_count -> usize with 0
+crates/rcx-registry-skills/src/fetch.rs:82:9: replace FetchOutcome::verified_count -> usize with 1
+crates/rcx-registry-skills/src/fetch.rs:160:5: replace pin_refs -> Result<(), SkillsError> with Ok(())
+crates/rcx-registry-skills/src/fetch.rs:179:5: replace resolve_head_commit -> Result<String, SkillsError> with Ok(String::new())
+crates/rcx-registry-skills/src/fetch.rs:179:5: replace resolve_head_commit -> Result<String, SkillsError> with Ok("xyzzy".into())
+crates/rcx-registry-skills/src/fetch.rs:184:12: delete ! in resolve_head_commit
+crates/rcx-registry-skills/src/fetch.rs:194:8: delete ! in resolve_head_commit
+crates/rcx-registry-skills/src/fetch.rs:258:5: replace fetch_locked -> FetchOutcome with Default::default()
+crates/rcx-registry-skills/src/fetch.rs:270:20: delete ! in fetch_locked
+crates/rcx-registry-skills/src/fetch.rs:302:5: replace fetch_one -> Result<Vec<u8>, SkillsError> with Ok(vec![])
+crates/rcx-registry-skills/src/fetch.rs:302:5: replace fetch_one -> Result<Vec<u8>, SkillsError> with Ok(vec![0])
+crates/rcx-registry-skills/src/fetch.rs:302:5: replace fetch_one -> Result<Vec<u8>, SkillsError> with Ok(vec![1])
+crates/rcx-registry-skills/src/lock.rs:139:9: replace SkillLock::is_empty -> bool with true
+crates/rcx-registry-skills/src/lock.rs:139:9: replace SkillLock::is_empty -> bool with false

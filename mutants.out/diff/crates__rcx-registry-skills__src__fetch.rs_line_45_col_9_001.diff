@@ -1,0 +1,23 @@
+--- crates/rcx-registry-skills/src/fetch.rs
++++ replace Mismatch::name -> &str with "xyzzy"
+@@ -37,19 +37,17 @@
+         name: String,
+         source: String,
+         detail: String,
+     },
+ }
+ 
+ impl Mismatch {
+     pub fn name(&self) -> &str {
+-        match self {
+-            Self::Digest { name, .. } | Self::Unreachable { name, .. } => name,
+-        }
++        "xyzzy" /* ~ changed by cargo-mutants ~ */
+     }
+ }
+ 
+ /// Bytes that arrived for one entry, and how they compared to the pinned digest.
+ #[derive(Debug, Clone, PartialEq, Eq)]
+ pub struct Fetched {
+     pub bytes: Vec<u8>,
+     /// Commit the bytes were read at; empty when fetched from an unpinned `HEAD`.

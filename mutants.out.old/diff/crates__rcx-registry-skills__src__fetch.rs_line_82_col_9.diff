@@ -1,0 +1,21 @@
+--- crates/rcx-registry-skills/src/fetch.rs
++++ replace FetchOutcome::verified_count -> usize with 0
+@@ -74,17 +74,17 @@
+ 
+ impl FetchOutcome {
+     /// Entries whose bytes matched their pinned digest — the only trusted content.
+     pub fn verified(&self) -> impl Iterator<Item = (&String, &Fetched)> {
+         self.fetched.iter().filter(|(_, f)| f.matched_lock)
+     }
+ 
+     pub fn verified_count(&self) -> usize {
+-        self.verified().count()
++        0 /* ~ changed by cargo-mutants ~ */
+     }
+ 
+     pub fn is_clean(&self) -> bool {
+         self.mismatches.is_empty()
+     }
+ 
+     /// Rebuild a lockfile from what was actually fetched, pinning the digests
+     /// observed rather than the ones inherited.

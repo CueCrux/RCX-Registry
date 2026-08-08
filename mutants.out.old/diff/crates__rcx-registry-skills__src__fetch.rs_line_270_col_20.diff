@@ -1,0 +1,21 @@
+--- crates/rcx-registry-skills/src/fetch.rs
++++ delete ! in fetch_locked
+@@ -262,17 +262,17 @@
+                 // Route through `verify_bytes` rather than comparing inline: an
+                 // inline duplicate is a second implementation of the security
+                 // comparison, and it is the one no unit test covers. `cargo-mutants`
+                 // confirmed that — inverting the inline `==` survived the suite.
+                 let (digest, matched_lock) = match verify_bytes(&bytes, &entry.computed_hash) {
+                     Ok(()) => (entry.computed_hash.clone(), true),
+                     Err(actual) => (actual, false),
+                 };
+-                if !matched_lock {
++                if  /* ~ changed by cargo-mutants ~ */matched_lock {
+                     outcome.mismatches.push(Mismatch::Digest {
+                         name: name.clone(),
+                         source: entry.source.clone(),
+                         expected: entry.computed_hash.clone(),
+                         actual: digest.clone(),
+                     });
+                 }
+                 outcome.fetched.insert(

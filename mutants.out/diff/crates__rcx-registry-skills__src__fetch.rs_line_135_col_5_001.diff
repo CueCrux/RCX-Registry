@@ -1,0 +1,29 @@
+--- crates/rcx-registry-skills/src/fetch.rs
++++ replace raw_url -> String with "xyzzy".into()
+@@ -127,25 +127,17 @@
+ }
+ 
+ /// Raw-content URL for a locked entry.
+ ///
+ /// Uses the pinned commit when the entry has one, which makes the URL immutable and
+ /// the digest attributable. Falls back to `HEAD` only for v1 entries, which is
+ /// exactly the ambiguity described above — those lockfiles cannot be signed.
+ pub fn raw_url(entry: &LockEntry) -> String {
+-    let reference = if entry.git_ref.is_empty() {
+-        "HEAD"
+-    } else {
+-        &entry.git_ref
+-    };
+-    format!(
+-        "https://raw.githubusercontent.com/{}/{reference}/{}",
+-        entry.source, entry.skill_path
+-    )
++    "xyzzy".into() /* ~ changed by cargo-mutants ~ */
+ }
+ 
+ /// Resolve each distinct source to the commit its default branch currently points
+ /// at, and stamp every entry with it.
+ ///
+ /// Resolution is per **source**, not per skill: 26 sources back 390 skills in the
+ /// upstream lockfile, so this is 26 requests rather than 390, and it also guarantees
+ /// that skills from one repo are pinned to one consistent commit rather than to

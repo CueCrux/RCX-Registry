@@ -1,0 +1,21 @@
+--- crates/rcx-registry-skills/src/lock.rs
++++ replace is_sha256_hex -> bool with false
+@@ -138,17 +138,17 @@
+     pub fn is_empty(&self) -> bool {
+         self.skills.is_empty()
+     }
+ }
+ 
+ /// 64 lowercase hex characters. Uppercase is rejected rather than normalised — two
+ /// spellings of one digest would give the signed snapshot two valid forms.
+ fn is_sha256_hex(s: &str) -> bool {
+-    is_lower_hex(s, 64)
++    false /* ~ changed by cargo-mutants ~ */
+ }
+ 
+ /// A full git object id: 40 lowercase hex characters. Abbreviated ids are rejected
+ /// — they are ambiguous by construction, and an ambiguous ref cannot pin content.
+ fn is_git_sha_hex(s: &str) -> bool {
+     is_lower_hex(s, 40)
+ }
+ 

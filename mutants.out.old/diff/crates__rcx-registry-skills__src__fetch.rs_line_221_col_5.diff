@@ -1,0 +1,25 @@
+--- crates/rcx-registry-skills/src/fetch.rs
++++ replace parse_commit_sha -> Option<String> with None
+@@ -213,21 +213,17 @@
+ ///
+ /// Split out of the request path so the guard is unit-testable — it is the only
+ /// thing standing between a surprising API response and a lockfile pinned to
+ /// garbage, and a network-gated test cannot exercise it.
+ ///
+ /// Normalises case on the way through: GitHub returns lowercase, but an uppercase
+ /// id would otherwise reach `signable()` and be rejected far from its cause.
+ fn parse_commit_sha(body: &str) -> Option<String> {
+-    let sha = body.trim();
+-    if sha.len() != 40 || !sha.bytes().all(|b| b.is_ascii_hexdigit()) {
+-        return None;
+-    }
+-    Some(sha.to_ascii_lowercase())
++    None /* ~ changed by cargo-mutants ~ */
+ }
+ 
+ /// Check bytes against a pinned digest. Returns the digest actually computed on
+ /// failure so the caller can report both sides.
+ ///
+ /// Fails closed: any difference at all rejects, and the comparison is over the full
+ /// 32-byte digest rather than a prefix.
+ pub fn verify_bytes(bytes: &[u8], expected_hex: &str) -> Result<(), String> {

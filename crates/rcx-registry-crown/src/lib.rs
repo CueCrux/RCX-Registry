@@ -8,6 +8,7 @@ mod canonical;
 mod error;
 pub mod hashing;
 mod receipt;
+mod skill_receipt;
 
 pub use canonical::{decode, to_canonical_json, CborValue};
 pub use error::CrownError;
@@ -19,6 +20,7 @@ pub use receipt::{
     EntryAutoEnrichedReceipt, EntryEnrichedReceipt, PublisherRightsVerifiedReceipt,
     ReceiptDocument, RegistrySnapshotReceipt, SnapshotChanges, HASH_LEN, SIGNATURE_LEN, ULID_LEN,
 };
+pub use skill_receipt::{SkillSnapshotReceipt, MIN_SIGNABLE_LOCK_VERSION};
 
 #[cfg(test)]
 mod tests;

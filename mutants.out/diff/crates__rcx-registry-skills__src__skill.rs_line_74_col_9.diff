@@ -1,0 +1,25 @@
+--- crates/rcx-registry-skills/src/skill.rs
++++ replace SkillDocument::discovery_description -> &str with ""
+@@ -66,21 +66,17 @@
+     }
+ 
+     /// Description as agents see it at discovery time.
+     ///
+     /// Claude Code truncates each description to 250 characters in its skill index
+     /// and caps the whole index at 1% of the context window, so a long description
+     /// does not merely get cut — it crowds out other skills' descriptions too.
+     pub fn discovery_description(&self, limit: usize) -> &str {
+-        let d = &self.front_matter.description;
+-        match d.char_indices().nth(limit) {
+-            Some((byte_idx, _)) => &d[..byte_idx],
+-            None => d,
+-        }
++        "" /* ~ changed by cargo-mutants ~ */
+     }
+ }
+ 
+ /// Split frontmatter from body at the first line that is exactly `---`.
+ fn split_at_closing_fence(rest: &str) -> Option<(&str, &str)> {
+     let mut offset = 0usize;
+     for line in rest.split_inclusive('\n') {
+         if line.trim_end_matches('\n') == FENCE {

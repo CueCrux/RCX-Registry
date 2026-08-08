@@ -1,0 +1,37 @@
+--- crates/rcx-registry-skills/src/sign.rs
++++ replace digest_entries -> Vec<SnapshotEntry> with vec![]
+@@ -28,33 +28,17 @@
+ 
+ /// Project a lockfile onto the digest entries the Merkle root is taken over.
+ ///
+ /// `version` in the digest is the **commit ref**, not a semver: it is what makes
+ /// two lockings of the same skill at different commits distinct leaves. Entries are
+ /// framed and sorted inside `snapshot_merkle_root`, so map iteration order here
+ /// cannot affect the root.
+ pub fn digest_entries(lock: &SkillLock) -> Vec<SnapshotEntry> {
+-    lock.skills
+-        .iter()
+-        .map(|(name, entry)| {
+-            // Every field that identifies the content enters the digest. `source`
+-            // and `skillPath` are included because the same bytes fetched from a
+-            // different repo is a different provenance claim, and the root must
+-            // move when provenance moves.
+-            let canonical = canonicalize_json(&json!({
+-                "source": entry.source,
+-                "sourceType": entry.source_type,
+-                "skillPath": entry.skill_path,
+-                "ref": entry.git_ref,
+-                "computedHash": entry.computed_hash,
+-            }));
+-            SnapshotEntry::new(name.clone(), entry.git_ref.clone(), canonical)
+-        })
+-        .collect()
++    vec![] /* ~ changed by cargo-mutants ~ */
+ }
+ 
+ /// Merkle root over a lockfile.
+ ///
+ /// Refuses unsignable lockfiles rather than returning a root nobody should use —
+ /// a root is only meaningful if the entries under it can be re-derived.
+ pub fn lock_merkle_root(lock: &SkillLock) -> Result<[u8; HASH_LEN], SkillsError> {
+     lock.signable()?;

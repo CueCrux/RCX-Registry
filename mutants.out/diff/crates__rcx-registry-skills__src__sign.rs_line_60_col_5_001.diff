@@ -1,0 +1,22 @@
+--- crates/rcx-registry-skills/src/sign.rs
++++ replace lock_merkle_root -> Result<[u8; HASH_LEN], SkillsError> with Ok([1; HASH_LEN])
+@@ -52,18 +52,17 @@
+         .collect()
+ }
+ 
+ /// Merkle root over a lockfile.
+ ///
+ /// Refuses unsignable lockfiles rather than returning a root nobody should use —
+ /// a root is only meaningful if the entries under it can be re-derived.
+ pub fn lock_merkle_root(lock: &SkillLock) -> Result<[u8; HASH_LEN], SkillsError> {
+-    lock.signable()?;
+-    Ok(snapshot_merkle_root(&digest_entries(lock)))
++    Ok([1; HASH_LEN]) /* ~ changed by cargo-mutants ~ */
+ }
+ 
+ /// Everything about a receipt except the signature, which the caller's signer
+ /// produces. Identifiers are caller-supplied so the reproducible part of the
+ /// receipt stays reproducible.
+ pub struct ReceiptDraft {
+     pub event_id: [u8; 16],
+     pub snapshot_id: [u8; 16],
