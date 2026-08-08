@@ -351,7 +351,16 @@ fn a_receipt_signed_by_the_wrong_key_is_rejected() {
     let lock = signable_lock();
     let receipt = sign(&lock, &impostor);
 
-    assert!(verify_lock_receipt(&lock, &receipt, &real.verifying_key().to_bytes()).is_err());
+    // Assert *why* it was rejected, not merely that it was. A bare `is_err()` on a
+    // verify path passes just as happily when the rejection comes from somewhere
+    // else entirely — a broken `signable()` would satisfy it while the signature
+    // check itself was dead.
+    let err = verify_lock_receipt(&lock, &receipt, &real.verifying_key().to_bytes())
+        .expect_err("an impostor signature must be rejected");
+    assert!(
+        format!("{err}").contains("signature did not verify"),
+        "expected rejection on the signature, got: {err}"
+    );
 }
 
 #[test]
@@ -361,7 +370,17 @@ fn a_mutated_receipt_body_is_rejected() {
     let mut receipt = sign(&lock, &key);
     receipt.skill_count += 1;
 
-    assert!(verify_lock_receipt(&lock, &receipt, &key.verifying_key().to_bytes()).is_err());
+    // Mutating the body after signing must trip the *signature*, not the metadata
+    // comparison further down: the receipt hash is recomputed over the body, so a
+    // changed field breaks the signature before anything semantic is checked.
+    // Pinning that means a reordering of the checks shows up here instead of
+    // silently changing which guard is load-bearing.
+    let err = verify_lock_receipt(&lock, &receipt, &key.verifying_key().to_bytes())
+        .expect_err("a mutated body must be rejected");
+    assert!(
+        format!("{err}").contains("signature did not verify"),
+        "expected rejection on the signature, got: {err}"
+    );
 }
 
 // ── refusal to sign ──────────────────────────────────────────────────────────
