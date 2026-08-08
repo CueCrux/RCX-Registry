@@ -1,0 +1,21 @@
+--- crates/rcx-registry-skills/src/uri.rs
++++ replace && with || in is_commit_id
+@@ -132,17 +132,17 @@
+         if let Some(version) = &self.version {
+             write!(f, "@{version}")?;
+         }
+         Ok(())
+     }
+ }
+ 
+ fn is_commit_id(s: &str) -> bool {
+-    s.len() == 40 && s.bytes().all(|b| b.is_ascii_hexdigit())
++    s.len() == 40 || /* ~ changed by cargo-mutants ~ */ s.bytes().all(|b| b.is_ascii_hexdigit())
+ }
+ 
+ /// How much a registry is trusted, which is also its search precedence.
+ #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+ pub enum RegistryKind {
+     /// This node's own lockfile. Always answered first — a local pin must never be
+     /// silently overridden by a remote answer.
+     Local,

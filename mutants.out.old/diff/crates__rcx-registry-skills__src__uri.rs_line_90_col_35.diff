@@ -1,0 +1,21 @@
+--- crates/rcx-registry-skills/src/uri.rs
++++ replace || with && in SkillUri::parse
+@@ -82,17 +82,17 @@
+             None => (tail, None),
+         };
+ 
+         if skill_id.is_empty() {
+             return Err(bad("empty skill id"));
+         }
+         // A '/' in the id would make the authority boundary ambiguous, and '..'
+         // is a traversal attempt against any store that maps ids onto paths.
+-        if skill_id.contains('/') || skill_id.contains("..") {
++        if skill_id.contains('/') && /* ~ changed by cargo-mutants ~ */ skill_id.contains("..") {
+             return Err(bad("skill id may not contain '/' or '..'"));
+         }
+         if skill_id.contains('@') {
+             return Err(bad("skill id may not contain '@'"));
+         }
+ 
+         let version = match version {
+             None => None,

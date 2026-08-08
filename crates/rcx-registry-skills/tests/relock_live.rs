@@ -87,6 +87,7 @@ fn a_relocked_lockfile_reverifies_completely() {
         ReceiptDraft {
             event_id: [7u8; 16],
             snapshot_id: [9u8; 16],
+            signed_at_ms: 1_786_147_200_000,
             previous_snapshot_hash: None,
             signer_kid: "test:local".to_string(),
         },

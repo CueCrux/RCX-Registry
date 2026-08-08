@@ -3,5 +3,11 @@ crates/rcx-registry-skills/src/fetch.rs:78:9: replace FetchOutcome::verified -> 
 crates/rcx-registry-skills/src/fetch.rs:103:9: replace FetchOutcome::relock -> SkillLock with Default::default()
 crates/rcx-registry-skills/src/lock.rs:69:9: replace SkillLock::from_json -> Result<Self, SkillsError> with Ok(Default::default())
 crates/rcx-registry-skills/src/sign.rs:36:5: replace digest_entries -> Vec<SnapshotEntry> with vec![Default::default()]
-crates/rcx-registry-skills/src/sign.rs:82:5: replace prepare_receipt -> Result<SkillSnapshotReceipt, SkillsError> with Ok(Default::default())
+crates/rcx-registry-skills/src/sign.rs:86:5: replace prepare_receipt -> Result<SkillSnapshotReceipt, SkillsError> with Ok(Default::default())
 crates/rcx-registry-skills/src/skill.rs:50:9: replace SkillDocument::parse -> Result<Self, SkillsError> with Ok(Default::default())
+crates/rcx-registry-skills/src/uri.rs:56:9: replace SkillUri::parse -> Result<Self, SkillsError> with Ok(Default::default())
+crates/rcx-registry-skills/src/uri.rs:122:9: replace SkillUri::pinned_to -> Self with Default::default()
+crates/rcx-registry-skills/src/uri.rs:176:5: replace resolution_order -> Vec<&Registry> with vec![Box::leak(Box::new(Default::default()))]
+crates/rcx-registry-skills/src/uri.rs:191:5: replace resolve -> Option<Resolved<'a>> with Some(Default::default())
+crates/rcx-registry-skills/src/uri.rs:211:5: replace resolve_by_id -> Option<Resolved<'a>> with Some(Default::default())
+crates/rcx-registry-skills/src/uri.rs:234:5: replace uris_for -> Vec<SkillUri> with vec![Default::default()]

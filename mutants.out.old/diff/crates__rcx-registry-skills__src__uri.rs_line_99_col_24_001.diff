@@ -1,0 +1,21 @@
+--- crates/rcx-registry-skills/src/uri.rs
++++ replace match guard is_commit_id(v) with false in SkillUri::parse
+@@ -91,17 +91,17 @@
+             return Err(bad("skill id may not contain '/' or '..'"));
+         }
+         if skill_id.contains('@') {
+             return Err(bad("skill id may not contain '@'"));
+         }
+ 
+         let version = match version {
+             None => None,
+-            Some(v) if is_commit_id(v) => Some(v.to_ascii_lowercase()),
++            Some(v) if false /* ~ changed by cargo-mutants ~ */ => Some(v.to_ascii_lowercase()),
+             Some(v) if v.is_empty() => return Err(bad("empty version after '@'")),
+             Some(_) => {
+                 return Err(bad(
+                     "version must be a full 40-hex commit id — a mutable tag or semver cannot pin content",
+                 ))
+             }
+         };
+ 
