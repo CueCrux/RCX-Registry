@@ -30,6 +30,7 @@ recorded here, dated, rather than applied silently.
 | ID | Date | Section | Change |
 |---|---|---|---|
 | **E-1** | 2026-08-07 | [05-receipts.md §5.6.1](05-receipts.md), OQ-2 above, [07-api-and-errors.md §7.2](07-api-and-errors.md) | Public-key distribution is no longer a documented gap. `GET /.well-known/rcx-keys.json` is specified normatively (three-state contract; match on `signer_kid`, not position). **Discovery endpoint only — no receipt field added or altered**, and the conformance vectors pass unchanged before and after. Key *history* across rotation remains unsolved and stays v2. |
+| **E-2** | 2026-08-08 | [07-api-and-errors.md §7.2/§7.2.1](07-api-and-errors.md), [05-receipts.md §5.5.5](05-receipts.md), [reimpl/REPORT.md](reimpl/REPORT.md) | The snapshot-artifact endpoints are specified: `GET /v0/snapshots`, `/latest`, `/{id}` and `/{id}/entries`, with response shape, `entries_available` semantics, pagination and the rule that a server **MUST NOT** serve a snapshot it cannot supply signed bytes for. E-1 let a verifier check a signature; without these the spec never said how to obtain what to check. Also corrects the §5.5.5 revoker pointer — it cited OQ-2, but OQ-2 is resolved **and** the revoker key is a different key, so the reference misled twice — and re-dispositions reimpl findings **A-10** and **D-09**, which still described the sentence E-1 rewrote. **Prose only: no receipt field added or altered, and the 292 reimpl vectors pass unchanged.** |
 
 ## Documents
 

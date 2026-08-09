@@ -1,5 +1,5 @@
 {
   "sourceCommit": "310ace858172b6f4acdd982ef25c2441f20d6b7a",
-  "specTree": "990f48d46ce519a48e57c2b8786916854ca152bd",
-  "note": "sourceCommit is the original v1 freeze (#7); it does not move, it is what the site cites as provenance, and diffing against it shows every erratum applied since. specTree is the git tree hash of spec/v1 as it stands now and is what the freeze check asserts — a tree hash survives squash-merges and shallow clones, a commit sha does not. Bump specTree ONLY for a dated erratum recorded in spec/v1/README.md. Errata: E-1 (2026-08-07, key publication)."
+  "specTree": "70e51bd3bcb2c2a4ef12f3a75dc7d9856958ff8b",
+  "note": "sourceCommit is the original v1 freeze (#7); it does not move, it is what the site cites as provenance, and diffing against it shows every erratum applied since. specTree is the git tree hash of spec/v1 as it stands now and is what the freeze check asserts \u2014 a tree hash survives squash-merges and shallow clones, a commit sha does not. Bump specTree ONLY for a dated erratum recorded in spec/v1/README.md. Errata: E-1 (2026-08-07, key publication)."
 }

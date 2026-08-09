@@ -156,8 +156,13 @@ producer, outside this repository. A v1 verifier therefore treats
 `revocation_signature` as **opaque signed content**: it verifies the outer
 receipt (§5.6) but **cannot independently validate the revoker's inner signature
 from this specification alone**. Defining the inner-signature preimage and the
-revoker key-discovery path is deferred to a future revision (tracked with OQ-2,
-§5.6.1).
+revoker key-discovery path is deferred to a future revision.
+
+> **Erratum E-2.** This previously pointed at OQ-2 / §5.6.1. That pointer is now
+> wrong in two ways: OQ-2 is resolved, and the revoker key is a **different key**
+> from the registry signing key §5.6.1 publishes. Resolving `signer_kid` through
+> the key-discovery endpoint does nothing for `revocation_signature`. This gap is
+> genuinely still open and is not tracked by OQ-2.
 
 ### 5.5.6 PublisherRightsVerified
 | Key | Type | Notes |
