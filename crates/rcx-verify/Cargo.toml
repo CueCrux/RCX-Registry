@@ -1,10 +1,11 @@
 [package]
 name = "rcx-verify"
 description = "Offline verification for the RCX protocol (rcx-spec/v1) — receipts, snapshots, publisher declarations, namespaces, chains."
-version.workspace = true
+version = "1.0.0"
 edition.workspace = true
 license.workspace = true
 repository.workspace = true
+readme = "README.md"
 
 # Deliberately minimal. This crate is what third parties depend on to verify
 # published bytes, so the tree must contain no HTTP client, TLS stack, async
@@ -14,7 +15,7 @@ repository.workspace = true
 blake3.workspace = true
 ed25519-dalek.workspace = true
 hex.workspace = true
-rcx-registry-crown = { path = "../rcx-registry-crown" }
+rcx-registry-crown = { path = "../rcx-registry-crown", version = "1.0.0" }
 serde_json.workspace = true
 thiserror.workspace = true
 

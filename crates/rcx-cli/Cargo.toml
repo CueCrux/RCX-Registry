@@ -1,10 +1,11 @@
 [package]
 name = "rcx-cli"
 description = "Command-line verification for the RCX protocol (rcx-spec/v1)."
-version.workspace = true
+version = "1.0.0"
 edition.workspace = true
 license.workspace = true
 repository.workspace = true
+readme = "README.md"
 
 # Same dependency discipline as the SDK: no HTTP client, no TLS stack, no async
 # runtime. `rcx` verifies bytes you already have — if it could fetch, it could be
@@ -15,7 +16,7 @@ repository.workspace = true
 # audit".
 [dependencies]
 hex.workspace = true
-rcx-verify = { path = "../rcx-verify" }
+rcx-verify = { path = "../rcx-verify", version = "1.0.0" }
 serde_json.workspace = true
 
 [dev-dependencies]

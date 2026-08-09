@@ -1653,7 +1653,7 @@ checksum = "63b8176103e19a2643978565ca18b50549f6101881c443590420e4dc998a3c69"
 
 [[package]]
 name = "rcx-cli"
-version = "0.1.0"
+version = "1.0.0"
 dependencies = [
  "blake3",
  "hex",
@@ -1701,7 +1701,7 @@ version = "0.1.0"
 
 [[package]]
 name = "rcx-registry-crown"
-version = "0.1.0"
+version = "1.0.0"
 dependencies = [
  "blake3",
  "ed25519-dalek",
@@ -1789,7 +1789,7 @@ dependencies = [
 
 [[package]]
 name = "rcx-verify"
-version = "0.1.0"
+version = "1.0.0"
 dependencies = [
  "blake3",
  "ed25519-dalek",
