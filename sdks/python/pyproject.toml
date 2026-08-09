@@ -1,0 +1,55 @@
+# Packaging for the Python verify SDK.
+#
+# Same dependency discipline as the Rust and TypeScript SDKs: `blake3` and
+# `cryptography`, and nothing else. No HTTP client, no schema validator — this
+# verifies bytes you already hold, and a verifier that could fetch could be
+# talked into fetching from the party it is checking.
+#
+# `adapter.py` is deliberately NOT packaged. It is the conformance-harness
+# driver, a test fixture, and shipping it inside the distribution would put a
+# test entry point in every install.
+
+[build-system]
+requires = ["hatchling>=1.24"]
+build-backend = "hatchling.build"
+
+[project]
+name = "rcx-verify"
+version = "1.0.0"
+description = "Offline verification for the RCX protocol (rcx-spec/v1) — receipts, snapshots, publisher declarations, namespaces, chains."
+readme = "README.md"
+license = "Apache-2.0"
+requires-python = ">=3.10"
+authors = [{ name = "CueCrux" }]
+keywords = ["rcx", "mcp", "verification", "ed25519", "blake3", "transparency"]
+
+# Pinned to major versions rather than exact: this is a library, and an exact
+# pin in a library forces a resolver conflict onto every consumer.
+dependencies = [
+  "blake3>=0.4,<2",
+  "cryptography>=42,<47",
+]
+
+classifiers = [
+  "Development Status :: 5 - Production/Stable",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: Apache Software License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Topic :: Security :: Cryptography",
+  "Topic :: Software Development :: Libraries",
+  "Typing :: Typed",
+]
+
+[project.urls]
+Homepage = "https://rcxprotocol.org"
+Repository = "https://github.com/CueCrux/RCX-Registry"
+Specification = "https://rcxprotocol.org/spec/v1"
+Contract = "https://github.com/CueCrux/RCX-Registry/blob/main/crates/rcx-verify/CONTRACT.md"
+
+[tool.hatch.build.targets.wheel]
+packages = ["rcx_verify"]
+
+[tool.hatch.build.targets.sdist]
+# The sdist carries the package and its docs, not the harness adapter.
+include = ["rcx_verify", "README.md", "pyproject.toml"]
